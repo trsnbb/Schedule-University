@@ -1,0 +1,9 @@
+
+.calendar_container {
+    width: 100%;
+    display: flex;
+    justify-content:right;
+    align-items:end;
+    margin: 0 25px 25px 0;
+  }
+  

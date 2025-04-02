@@ -1,44 +1,68 @@
 .calendar {
-    background-color: #3D544D;
-    color: white;
-    opacity: 24%;
-    width: 80%;
-    max-width: 1000px;
-    height: 80%;
-    max-height: 600px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    
-  }
-  
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    grid-template-rows: repeat(5, 1fr); 
-    width: 100%;
-    height: 100%;
-    border: none; 
-  }
-  
-  
-  
-  .cell {
-    border: 1px solid #ADB2B1;
-   
-  }
+  color: white;
+  width: 110%;
+  max-width: 1200px;
+  height: 78vh;
+  max-height: 600px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.calendar_grid {
+  background-color: rgba(61, 84, 77, 0.24);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  width: 100%;
+  height: 100%;
+  border: none;
+}
 
-  .grid .cell:nth-child(n+1):nth-child(-n+6) {
-    border-top: none;
-  }
-    .grid .cell:nth-child(6n+1) {
-        border-left: none;
-    }
+.cell {
+  border: 1px solid rgba(173, 178, 177, 0.24);
 
-    .grid .cell:nth-child(6n) {
-        border-right: none;
-    }
+}
 
-    .grid .cell:nth-child(n+25):nth-child(-n+30) {
-        border-bottom: none;
-    }
+.grid .cell:nth-child(n + 1):nth-child(-n + 6) {
+  border-top: none;
+}
+.grid .cell:nth-child(6n + 1) {
+  border-left: none;
+}
+
+.grid .cell:nth-child(6n) {
+  border-right: none;
+}
+
+.grid .cell:nth-child(n + 25):nth-child(-n + 30) {
+  border-bottom: none;
+}
+
+.count_lesson {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around; 
+  align-items: center;
+  height: 100%;
+  width: 100px; 
+  margin-right: 10px;
+  
+}
+
+.lesson_number {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+  height: 20%; 
+}
