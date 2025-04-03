@@ -2,8 +2,7 @@
 .calendar_container {
     width: 100%;
     display: flex;
-    justify-content:right;
+    justify-content:flex-end;
     align-items:end;
-    margin: 0 25px 25px 0;
   }
   

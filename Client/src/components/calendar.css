@@ -1,59 +1,64 @@
+/* Загальний стиль календаря */
 .calendar {
   color: white;
-  width: 110%;
+  width: 100%;
   max-width: 1200px;
   height: 78vh;
   max-height: 600px;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin: 0 25px 25px 0;
 }
-.calendar_grid {
-  background-color: rgba(61, 84, 77, 0.24);
+
+/* Контейнер для днів та сітки */
+.calendar_container {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
   width: 100%;
   height: 100%;
 }
-.grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(5, 1fr);
+
+/* Рядок з днями тижня */
+.count_day {
+  display: flex;
+  justify-content: space-between;
   width: 100%;
-  height: 100%;
-  border: none;
 }
 
-.cell {
-  border: 1px solid rgba(173, 178, 177, 0.24);
-
+.day_number {
+  flex: 1;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+  padding: 5px;
 }
 
-.grid .cell:nth-child(n + 1):nth-child(-n + 6) {
-  border-top: none;
-}
-.grid .cell:nth-child(6n + 1) {
-  border-left: none;
-}
-
-.grid .cell:nth-child(6n) {
-  border-right: none;
-}
-
-.grid .cell:nth-child(n + 25):nth-child(-n + 30) {
-  border-bottom: none;
-}
-
+/* Колонка з номерами пар (уроків) */
 .count_lesson {
   display: flex;
   flex-direction: column;
-  justify-content: space-around; 
+  justify-content: stretch; /* Рівномірний розподіл */
   align-items: center;
-  height: 100%;
-  width: 100px; 
+  height: 100%; /* Висота відповідає висоті календаря без днів */
+  width: 100px;
   margin-right: 10px;
-  
+}
+/* Контейнер для уроків та сітки */
+.schedule_wrapper {
+  display: flex;
+  align-items: center; /* Центрування пар відносно сітки */
+  width: 100%;
+  height: 100%;
+}
+
+/* Контейнер для днів */
+.days_wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 
 .lesson_number {
@@ -64,5 +69,30 @@
   font-size: 18px;
   font-weight: 500;
   color: white;
-  height: 20%; 
+  height: 20%;
+}
+
+/* Контейнер сітки */
+.calendar_grid {
+  background-color: rgba(61, 84, 77, 0.24);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Сітка */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Стиль для кожної клітинки сітки */
+.cell {
+  border: 1px solid rgba(173, 178, 177, 0.24);
 }
