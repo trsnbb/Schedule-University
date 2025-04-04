@@ -9,9 +9,7 @@ const HomePage = () => {
     <div className='backround'>
       <Sidebar />
       <div className='main_content'>
-        VVVVV
         <div className='calendar_container'>
-          
           <Calendar />
         </div>
       </div>

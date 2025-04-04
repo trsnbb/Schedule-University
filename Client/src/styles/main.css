@@ -19,4 +19,6 @@ body {
 .main_content {
   display: flex;
   flex-grow: 1;
+  align-items: flex-end;
+  justify-content: end;
 }

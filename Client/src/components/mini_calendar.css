@@ -1,0 +1,82 @@
+.calendar-container {
+  width: 100%;
+  height: 100%;
+  color: white;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  justify-content: space-around;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+.arrow {
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.arrow:hover {
+  color: #2ecc71;
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: #71717a;
+}
+
+.weekday {
+  text-align: center;
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  flex-grow: 1;
+  overflow-y: auto;
+  justify-items: center;
+}
+
+.day {
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 11px;
+  position: relative;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background 0.3s;
+}
+
+.day.selected {
+  background: #2ecc71;
+  color: black;
+}
+
+.day.gray {
+  color: #71717a; /* Сірий колір для днів неактивного місяця */
+}
+
+.day_grid {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+}
