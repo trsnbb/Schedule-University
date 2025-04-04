@@ -2,19 +2,22 @@ import React, { useEffect, useState } from "react";
 import "./calendar.css";
 import dzyobik from "./../image/dzyobik.svg";
 
-const getWeekDays = () => {
-  const today = new Date();
-  const currentDay = today.getDay();
+const getMonday = (date = new Date()) => {
+  const currentDay = date.getDay();
   const diffToMonday = (currentDay + 6) % 7;
-  const monday = new Date(today);
-  monday.setDate(today.getDate() - diffToMonday);
+  const monday = new Date(date);
+  monday.setDate(date.getDate() - diffToMonday);
+  return monday;
+};
 
+const getWeekDays = (startDate) => {
+  const today = new Date();
   const dayNames = ["пн", "вт", "ср", "чт", "пт", "сб"];
   const days = [];
 
   for (let i = 0; i < 6; i++) {
-    const day = new Date(monday);
-    day.setDate(monday.getDate() + i);
+    const day = new Date(startDate);
+    day.setDate(startDate.getDate() + i);
     days.push({
       number: day.getDate().toString(),
       name: dayNames[i],
@@ -28,7 +31,19 @@ const getWeekDays = () => {
   return days;
 };
 
-// Розклад пар
+const getWeekRangeText = (monday) => {
+  const start = new Date(monday);
+  const end = new Date(monday);
+  end.setDate(start.getDate() + 5);
+
+  const format = (d) =>
+    `${d.getDate().toString().padStart(2, "0")}.${(d.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}`;
+
+  return `${format(start)}–${format(end)}`;
+};
+
 const lessonsSchedule = [
   { start: "08:00", end: "09:20" },
   { start: "09:40", end: "11:00" },
@@ -42,7 +57,28 @@ const Calendar = () => {
     current: null,
     next: null,
   });
-  const days = getWeekDays();
+  const [weekStartDate, setWeekStartDate] = useState(getMonday());
+  const [days, setDays] = useState(getWeekDays(getMonday()));
+
+  useEffect(() => {
+    setDays(getWeekDays(weekStartDate));
+  }, [weekStartDate]);
+
+  const goToToday = () => {
+    setWeekStartDate(getMonday(new Date()));
+  };
+
+  const goToPrevWeek = () => {
+    const prev = new Date(weekStartDate);
+    prev.setDate(prev.getDate() - 7);
+    setWeekStartDate(prev);
+  };
+
+  const goToNextWeek = () => {
+    const next = new Date(weekStartDate);
+    next.setDate(next.getDate() + 7);
+    setWeekStartDate(next);
+  };
 
   useEffect(() => {
     const checkLessonTime = () => {
@@ -84,7 +120,7 @@ const Calendar = () => {
     };
 
     checkLessonTime();
-    const interval = setInterval(checkLessonTime, 30000); // оновлюємо кожні 30 сек
+    const interval = setInterval(checkLessonTime, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -97,11 +133,27 @@ const Calendar = () => {
           <p className='style_group'>4 група</p>
           <p className='style_group'>2 підгрупа</p>
         </div>
+
         <div className='date_change'>
-          <div className='style_group '>
-            <img src={dzyobik} alt='dzyobik'></img>
-            <p>Сьогодні</p>
-            <img src={dzyobik} alt='dzyobik' className='flipped'></img>
+          <div className='style_group'>
+            <img
+              src={dzyobik}
+              onClick={goToPrevWeek}
+              alt='prev'
+              style={{ cursor: "pointer" }}
+            />
+
+            <p onClick={goToToday} style={{ cursor: "pointer" }}>
+              {getWeekRangeText(weekStartDate)}
+            </p>
+
+            <img
+              src={dzyobik}
+              alt='next'
+              className='flipped'
+              onClick={goToNextWeek}
+              style={{ cursor: "pointer" }}
+            />
           </div>
         </div>
       </div>

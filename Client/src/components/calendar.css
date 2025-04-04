@@ -176,4 +176,6 @@
 
 .date_change {
   margin-right: 15px;
+  display: flex;
+  
 }
