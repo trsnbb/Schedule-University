@@ -18,16 +18,13 @@ const MiniCalendar = () => {
   const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
   const daysInMonth = getDaysInMonth(currentYear, currentMonth);
 
-  // Отримуємо кількість днів у попередньому місяці
   const prevMonthDays = getDaysInMonth(
     currentMonth === 0 ? currentYear - 1 : currentYear,
     currentMonth === 0 ? 11 : currentMonth - 1
   );
 
-  // Кількість пустих клітинок перед 1-м числом
   const emptyCellsStart = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
 
-  // Отримуємо кількість днів, щоб заповнити тиждень після останнього дня місяця
   const totalCells = emptyCellsStart + daysInMonth;
   const emptyCellsEnd = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
 

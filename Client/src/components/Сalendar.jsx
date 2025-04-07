@@ -144,7 +144,9 @@ const Calendar = () => {
             />
 
             <p onClick={goToToday} style={{ cursor: "pointer" }}>
-              {getWeekRangeText(weekStartDate)}
+              {getMonday().toDateString() === weekStartDate.toDateString()
+                ? "Cьогодні"
+                : getWeekRangeText(weekStartDate)}
             </p>
 
             <img
@@ -180,7 +182,7 @@ const Calendar = () => {
                 (text, index) => {
                   let lessonClass = "lesson_number";
                   if (lessonStatus.current === index) {
-                    lessonClass += " active-lesson";
+                    lessonClass += "active_lesson";
                   } else if (lessonStatus.next === index) {
                     lessonClass += " next-lesson";
                   }

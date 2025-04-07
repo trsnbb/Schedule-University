@@ -91,7 +91,7 @@
   transition: all 0.3s ease;
 }
 
-.lesson_number.active-lesson {
+.lesson_number.active_lesson {
   font-size: 24px;
   color: white;
   font-weight: 600;

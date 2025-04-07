@@ -1,12 +1,16 @@
 import React from "react";
 import "./sidebar_style.css";
 import MiniCalendar from "./MiniCalendar.jsx";
+import Notes from "./Notes.jsx";
 const Sidebar = () => {
   return (
     <>
       <div className='sidebar_background'>
         <div className='sidebar_mini_kalendar'>
           <MiniCalendar />
+        </div>
+        <div className='notes_sidebar'>
+          <Notes />
         </div>
       </div>
     </>

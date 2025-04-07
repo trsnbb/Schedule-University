@@ -1,0 +1,45 @@
+.notes_sidebar {
+  color: white;
+  width: 100%;
+}
+
+.notes_day {
+  margin: 6% 4%;
+  font-size: 20px;
+}
+
+.subject {
+  font-weight: 600;
+  color: #a1a1aa;
+  font-size: 16px;
+  margin-top: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 95%;
+}
+
+.note {
+  width: 90%;
+  color: white;
+  font-size: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.note_info {
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+}
+.circle_note {
+  aspect-ratio: 1 / 1;
+  width: 18px;
+  border-radius: 50%;
+  background-color: #10b981;
+}
+
+.note_container {
+  display: flex;
+}
