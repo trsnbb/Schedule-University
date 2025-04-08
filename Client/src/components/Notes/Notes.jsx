@@ -1,65 +1,87 @@
 import React from "react";
 import "./note.css";
 
-const Sidebar = () => {
-  const notes = [
-    {
-      label: "Сьогодні",
-      date: "21/01",
-      items: [
-        {
-          subject: "Розробка інтернет клієнт-серверних систем",
-          note: "Зробити лабораторні 1 - 3",
-        },
-      ],
-    },
-    {
-      label: "Завтра",
-      date: "22/01",
-      items: [
-        {
-          subject: "Веб-технології та веб-дизайн",
-          note: "Переглянути презентацію на тему Вплив",
-        },
-        { subject: "Проєктування баз даних і ІС", note: "Доробити лаб 2" },
-        {
-          subject: "Основи психології та педагогіки",
-          note: "Підготувати презентацію на тему Вплив",
-        },
-      ],
-    },{
-      label: "Четвер",
-      date: "22/01",
-      items: [
-        {
-          subject: "Веб-технології та веб-дизайн",
-          note: "Переглянути презентацію на тему Вплив",
-        },
-      ],
-    },
+const notesFromDatabase = [
+  {
+    date: "2025-04-08", 
+    subject: "Розробка інтернет клієнт-серверних систем",
+    note: "Зробити лабораторні 1 - 3",
+  },
+  {
+    date: "2025-04-09",
+    subject: "Веб-технології та веб-дизайн",
+    note: "Переглянути презентацію на тему Вплив",
+  },
+  {
+    date: "2025-04-09",
+    subject: "Проєктування баз даних і ІС",
+    note: "Доробити лаб 2",
+  },
+  {
+    date: "2025-04-11",
+    subject: "Основи психології та педагогіки",
+    note: "Підготувати презентацію на тему Вплив",
+  },
+];
+
+const groupByDate = (notes) => {
+  const grouped = {};
+  notes.forEach((note) => {
+    if (!grouped[note.date]) grouped[note.date] = [];
+    grouped[note.date].push(note);
+  });
+  return grouped;
+};
+
+const getLabel = (dateStr) => {
+  const inputDate = new Date(dateStr);
+  const today = new Date();
+  const tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
+
+  const format = (date) =>
+    `${date.getFullYear()}-${(date.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
+
+  if (format(inputDate) === format(today)) return "Сьогодні";
+  if (format(inputDate) === format(tomorrow)) return "Завтра";
+
+  const daysOfWeek = [
+    "Неділя",
+    "Понеділок",
+    "Вівторок",
+    "Середа",
+    "Четвер",
+    "П’ятниця",
+    "Субота",
   ];
+  return daysOfWeek[inputDate.getDay()];
+};
+
+const Sidebar = () => {
+  const groupedNotes = groupByDate(notesFromDatabase);
+  const sortedDates = Object.keys(groupedNotes).sort(); 
 
   return (
-    <>
-      <div className='notes_sidebar'>
-        {notes.map((day) => (
-          <div key={day.date} className='notes_day'>
-            <p>{day.label}</p>
-            <div className="notes_day_info">
-              {day.items.map((item, index) => (
-                <div className="note" key={index}>
-                  <div className='circle_note'></div>
-                  <div className='note_info'>
-                    <div className='subject'>{item.subject}</div>
-                    <div className='note'>{item.note}</div>
-                  </div>
+    <div className="notes_sidebar">
+      {sortedDates.map((date) => (
+        <div key={date} className="notes_day">
+          <p>{getLabel(date)}</p>
+          <div className="notes_day_info">
+            {groupedNotes[date].map((item, index) => (
+              <div className="note" key={index}>
+                <div className="circle_note"></div>
+                <div className="note_info">
+                  <div className="subject">{item.subject}</div>
+                  <div className="note">{item.note}</div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-    </>
+        </div>
+      ))}
+    </div>
   );
 };
 
