@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./calendar.css";
-import dzyobik from "./../image/dzyobik.svg";
+import dzyobik from "./../../image/dzyobik.svg";
 
 const getMonday = (date = new Date()) => {
   const currentDay = date.getDay();
@@ -182,7 +182,7 @@ const Calendar = () => {
                 (text, index) => {
                   let lessonClass = "lesson_number";
                   if (lessonStatus.current === index) {
-                    lessonClass += "active_lesson";
+                    lessonClass += " active_lesson";
                   } else if (lessonStatus.next === index) {
                     lessonClass += " next-lesson";
                   }

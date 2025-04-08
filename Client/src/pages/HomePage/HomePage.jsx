@@ -1,7 +1,7 @@
 import React from "react";
 import "./../../layouts/backround.css";
-import Sidebar from "./../../components/Sidebar.jsx";
-import Calendar from "././../../components/Сalendar.jsx";
+import Sidebar from "./../../components/Side bar/Sidebar.jsx";
+import Calendar from "././../../components/Calendar/Сalendar.jsx";
 import "./../../layouts/home_style.css";
 
 const HomePage = () => {

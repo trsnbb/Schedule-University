@@ -1,7 +1,7 @@
 import React from "react";
 import "./sidebar_style.css";
-import MiniCalendar from "./MiniCalendar.jsx";
-import Notes from "./Notes.jsx";
+import MiniCalendar from "./../Mini Calendar/MiniCalendar.jsx";
+import Notes from "./../Notes/Notes.jsx";
 const Sidebar = () => {
   return (
     <>

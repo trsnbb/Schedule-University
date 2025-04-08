@@ -11,35 +11,45 @@
 .subject {
   font-weight: 600;
   color: #a1a1aa;
-  font-size: 16px;
+  font-size: 14px;
   margin-top: 10px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+ 
   width: 95%;
 }
 
 .note {
-  width: 90%;
+  width: 95%;
   color: white;
-  font-size: 16px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 14px;
+
 }
 
 .note_info {
   display: flex;
   gap: 8px;
   flex-direction: column;
+  width: 95%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .circle_note {
-  aspect-ratio: 1 / 1;
-  width: 18px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   background-color: #10b981;
 }
 
-.note_container {
+.notes_day_info {
   display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-left: 3%;
+}
+
+.note{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
 }

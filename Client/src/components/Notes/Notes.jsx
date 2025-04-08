@@ -27,6 +27,15 @@ const Sidebar = () => {
           note: "Підготувати презентацію на тему Вплив",
         },
       ],
+    },{
+      label: "Четвер",
+      date: "22/01",
+      items: [
+        {
+          subject: "Веб-технології та веб-дизайн",
+          note: "Переглянути презентацію на тему Вплив",
+        },
+      ],
     },
   ];
 
@@ -36,17 +45,17 @@ const Sidebar = () => {
         {notes.map((day) => (
           <div key={day.date} className='notes_day'>
             <p>{day.label}</p>
-            <p>
+            <div className="notes_day_info">
               {day.items.map((item, index) => (
-                <p key={index} className='note_container'>
+                <div className="note" key={index}>
                   <div className='circle_note'></div>
                   <div className='note_info'>
                     <div className='subject'>{item.subject}</div>
                     <div className='note'>{item.note}</div>
                   </div>
-                </p>
+                </div>
               ))}
-            </p>
+            </div>
           </div>
         ))}
       </div>
