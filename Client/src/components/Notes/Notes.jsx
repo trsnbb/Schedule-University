@@ -3,7 +3,7 @@ import "./note.css";
 
 const notesFromDatabase = [
   {
-    date: "2025-04-08", 
+    date: "2025-04-08",
     subject: "Розробка інтернет клієнт-серверних систем",
     note: "Зробити лабораторні 1 - 3",
   },
@@ -22,16 +22,8 @@ const notesFromDatabase = [
     subject: "Основи психології та педагогіки",
     note: "Підготувати презентацію на тему Вплив",
   },
+  
 ];
-
-const groupByDate = (notes) => {
-  const grouped = {};
-  notes.forEach((note) => {
-    if (!grouped[note.date]) grouped[note.date] = [];
-    grouped[note.date].push(note);
-  });
-  return grouped;
-};
 
 const getLabel = (dateStr) => {
   const inputDate = new Date(dateStr);
@@ -59,15 +51,34 @@ const getLabel = (dateStr) => {
   return daysOfWeek[inputDate.getDay()];
 };
 
-const Sidebar = () => {
+const formatDateDisplay = (dateStr) => {
+  const date = new Date(dateStr);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  return `${day}/${month}`;
+};
+
+const groupByDate = (notes) => {
+  const grouped = {};
+  notes.forEach((note) => {
+    if (!grouped[note.date]) grouped[note.date] = [];
+    grouped[note.date].push(note);
+  });
+  return grouped;
+};
+
+const Notes = () => {
   const groupedNotes = groupByDate(notesFromDatabase);
-  const sortedDates = Object.keys(groupedNotes).sort(); 
+  const sortedDates = Object.keys(groupedNotes).sort();
 
   return (
     <div className="notes_sidebar">
       {sortedDates.map((date) => (
         <div key={date} className="notes_day">
-          <p>{getLabel(date)}</p>
+          <div className="day_header">
+            <p className="day_label">{getLabel(date)}</p>
+            <p className="day_date">{formatDateDisplay(date)}</p>
+          </div>
           <div className="notes_day_info">
             {groupedNotes[date].map((item, index) => (
               <div className="note" key={index}>
@@ -85,4 +96,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default Notes;

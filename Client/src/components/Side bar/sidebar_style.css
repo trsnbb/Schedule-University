@@ -18,5 +18,31 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden; /* Не дає контенту вийти за межі */
+  overflow: hidden; 
+}
+.sidebar_background {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; 
+}
+
+
+.sidebar_mini_kalendar {
+  padding: 10px;
+  flex-shrink: 0;
+}
+
+.notes_sidebar {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.notes_sidebar {
+  overflow-y: scroll;
+  scrollbar-width: none; 
+}
+
+.notes_sidebar::-webkit-scrollbar {
+  display: none; 
 }
