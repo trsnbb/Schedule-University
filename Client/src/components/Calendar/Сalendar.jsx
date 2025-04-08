@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./calendar.css";
 import dzyobik from "./../../image/dzyobik.svg";
+import LessonBlock from "./../LessonBlock/LessonBlock.jsx";
 
 const getMonday = (date = new Date()) => {
   const currentDay = date.getDay();
@@ -199,7 +200,48 @@ const Calendar = () => {
             <div className='calendar_grid'>
               <div className='grid'>
                 {Array.from({ length: 30 }).map((_, index) => (
-                  <div key={index} className='cell'></div>
+                  <div key={index} className='cell'>
+                    {index === 0 && (
+                      <LessonBlock
+                        title='Операційні системи'
+                        type='Лекція'
+                        mode='Онлайн'
+                        time='08:00 – 09:20'
+                      />
+                    )}
+                    {index === 6 && (
+                      <LessonBlock
+                        title='Бази Даних'
+                        type='Лаб'
+                        mode='Офлайн'
+                        time='08:00 – 09:20'
+                      />
+                    )}
+                    {index === 12 && (
+                      <LessonBlock
+                        title='Програмування'
+                        type='Практика'
+                        mode='Онлайн'
+                        time='08:00 – 09:20'
+                      />
+                    )}
+                    {index === 13 && (
+                      <LessonBlock
+                        title='Інженерія ПЗ'
+                        type='Лекція'
+                        mode='Офлайн'
+                        time='09:40 – 11:00'
+                      />
+                    )}
+                    {index === 19 && (
+                      <LessonBlock
+                        title='Web-технології'
+                        type='Лаб'
+                        mode='Офлайн'
+                        time='11:20 – 12:40'
+                      />
+                    )}
+                  </div>
                 ))}
               </div>
             </div>

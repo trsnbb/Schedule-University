@@ -1,0 +1,31 @@
+import React from "react";
+import "./lesson.css";
+
+const LessonBlock = ({ title, type = "Лекція", mode = "Онлайн", time = "08.00 – 09.20" }) => {
+  const getTypeClass = (type) => {
+    switch (type.toLowerCase()) {
+      case "лаб":
+      case "лабораторна":
+        return "lab";
+      case "практика":
+        return "practice";
+      default:
+        return "lecture";
+    }
+  };
+
+  const typeClass = getTypeClass(type);
+
+  return (
+    <div className={`lesson-block ${typeClass}`}>
+      <div className="lesson-tags">
+        <div className={`lesson-tag ${typeClass}`}>{type}</div>
+        <div className="lesson-tag green">{mode}</div>
+      </div>
+      <div className={`lesson-time ${typeClass}`}>{time}</div>
+      <div className={`lesson-title ${typeClass}`}>{title}</div>
+    </div>
+  );
+};
+
+export default LessonBlock;

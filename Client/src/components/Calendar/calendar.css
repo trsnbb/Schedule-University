@@ -2,7 +2,7 @@
   color: white;
   width: 100%;
   max-width: 1200px;
-  height: 85vh;
+  height: 86vh;
   max-height: 1200px;
   display: flex;
   justify-content: center;
@@ -28,7 +28,6 @@
 .day_cell {
   flex: 1;
   text-align: center;
-  font-size: 16px;
   color: white;
   display: flex;
   flex-direction: column;
@@ -44,7 +43,7 @@
 .day_cell.today .day_number,
 .day_cell.today .day_name {
   color: white;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 500;
 }
 
@@ -53,7 +52,8 @@
   color: #adb2b1;
 }
 .day_name {
-  font-size: 20px;
+  font-size: 16px;
+
   color: white;
 }
 
@@ -84,7 +84,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 500;
   color: #adb2b1;
   height: 20%;
@@ -92,7 +92,7 @@
 }
 
 .lesson_number.active_lesson {
-  font-size: 24px;
+  font-size: 20px;
   color: white;
   font-weight: 600;
 }
@@ -123,6 +123,7 @@
 
 .cell {
   border: 1px solid rgba(173, 178, 177, 0.24);
+  padding: 5px 3px;
 }
 
 .grid .cell:nth-child(n + 1):nth-child(-n + 6) {
