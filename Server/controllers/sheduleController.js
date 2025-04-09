@@ -47,7 +47,6 @@ export const createSchedule = async (req, res) => {
       await group.save();
     }
 
-    // Генерація розкладу для кожного уроку
     let weeklySchedule = lessons.map((lesson) => {
       const weeksInSemester = 18;
       let weeklyLectures = Math.floor(lesson.countLec / weeksInSemester);
@@ -98,7 +97,6 @@ export const createSchedule = async (req, res) => {
       return lessonSchedule;
     }).flat();
 
-    // Обрізання списку до 22 пар
     weeklySchedule = weeklySchedule.slice(0, 22);
 
     const newSchedule = new Schedule({
