@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./calendar.css";
 import dzyobik from "./../../image/dzyobik.svg";
 import LessonBlock from "./../LessonBlock/LessonBlock.jsx";
+import Modal from "../Modal/Modal.jsx"; // новий компонент
 
 const getMonday = (date = new Date()) => {
   const currentDay = date.getDay();
@@ -60,6 +61,7 @@ const Calendar = () => {
   });
   const [weekStartDate, setWeekStartDate] = useState(getMonday());
   const [days, setDays] = useState(getWeekDays(getMonday()));
+  const [modalData, setModalData] = useState(null); // стан для модалки
 
   useEffect(() => {
     setDays(getWeekDays(weekStartDate));
@@ -127,20 +129,20 @@ const Calendar = () => {
 
   return (
     <>
-      <div className='header_calendar'>
-        <div className='group_calendar'>
-          <p className='style_group'>ІПЗ</p>
-          <p className='style_group'>3 курс</p>
-          <p className='style_group'>4 група</p>
-          <p className='style_group'>2 підгрупа</p>
+      <div className="header_calendar">
+        <div className="group_calendar">
+          <p className="style_group">ІПЗ</p>
+          <p className="style_group">3 курс</p>
+          <p className="style_group">4 група</p>
+          <p className="style_group">2 підгрупа</p>
         </div>
 
-        <div className='date_change'>
-          <div className='style_group'>
+        <div className="date_change">
+          <div className="style_group">
             <img
               src={dzyobik}
               onClick={goToPrevWeek}
-              alt='prev'
+              alt="prev"
               style={{ cursor: "pointer" }}
             />
 
@@ -152,8 +154,8 @@ const Calendar = () => {
 
             <img
               src={dzyobik}
-              alt='next'
-              className='flipped'
+              alt="next"
+              className="flipped"
               onClick={goToNextWeek}
               style={{ cursor: "pointer" }}
             />
@@ -161,24 +163,24 @@ const Calendar = () => {
         </div>
       </div>
 
-      <div className='calendar'>
-        <div className='calendar_container'>
-          <div className='days_wrapper'>
-            <div className='count_day'>
+      <div className="calendar">
+        <div className="calendar_container">
+          <div className="days_wrapper">
+            <div className="count_day">
               {days.map((day, index) => (
                 <div
                   key={index}
                   className={`day_cell ${day.isToday ? "today" : "not-today"}`}
                 >
-                  <div className='day_number'>{day.number}</div>
-                  <div className='day_name'>{day.name}</div>
+                  <div className="day_number">{day.number}</div>
+                  <div className="day_name">{day.name}</div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className='schedule_wrapper'>
-            <div className='count_lesson'>
+          <div className="schedule_wrapper">
+            <div className="count_lesson">
               {["1 пара", "2 пара", "3 пара", "4 пара", "5 пара"].map(
                 (text, index) => {
                   let lessonClass = "lesson_number";
@@ -197,48 +199,88 @@ const Calendar = () => {
               )}
             </div>
 
-            <div className='calendar_grid'>
-              <div className='grid'>
+            <div className="calendar_grid">
+              <div className="grid">
                 {Array.from({ length: 30 }).map((_, index) => (
-                  <div key={index} className='cell'>
+                  <div key={index} className="cell">
                     {index === 0 && (
                       <LessonBlock
-                        title='Операційні системи'
-                        type='Лекція'
-                        mode='Онлайн'
-                        time='08:00 – 09:20'
+                        title="Операційні системи"
+                        type="Лекція"
+                        mode="Онлайн"
+                        time="08:00 – 09:20"
+                        onClick={() =>
+                          setModalData({
+                            title: "Операційні системи",
+                            type: "Лекція",
+                            mode: "Онлайн",
+                            time: "08:00 – 09:20",
+                          })
+                        }
                       />
                     )}
                     {index === 6 && (
                       <LessonBlock
-                        title='Бази Даних'
-                        type='Лаб'
-                        mode='Офлайн'
-                        time='08:00 – 09:20'
+                        title="Бази Даних"
+                        type="Лаб"
+                        mode="Офлайн"
+                        time="08:00 – 09:20"
+                        onClick={() =>
+                          setModalData({
+                            title: "Бази Даних",
+                            type: "Лаб",
+                            mode: "Офлайн",
+                            time: "08:00 – 09:20",
+                          })
+                        }
                       />
                     )}
                     {index === 12 && (
                       <LessonBlock
-                        title='Програмування'
-                        type='Практика'
-                        mode='Онлайн'
-                        time='08:00 – 09:20'
+                        title="Програмування"
+                        type="Практика"
+                        mode="Онлайн"
+                        time="08:00 – 09:20"
+                        onClick={() =>
+                          setModalData({
+                            title: "Програмування",
+                            type: "Практика",
+                            mode: "Онлайн",
+                            time: "08:00 – 09:20",
+                          })
+                        }
                       />
                     )}
                     {index === 13 && (
                       <LessonBlock
-                        title='Інженерія ПЗ'
-                        type='Лекція'
-                        mode='Офлайн'
-                        time='09:40 – 11:00'
+                        title="Інженерія ПЗ"
+                        type="Лекція"
+                        mode="Офлайн"
+                        time="09:40 – 11:00"
+                        onClick={() =>
+                          setModalData({
+                            title: "Інженерія ПЗ",
+                            type: "Лекція",
+                            mode: "Офлайн",
+                            time: "09:40 – 11:00",
+                          })
+                        }
                       />
                     )}
                     {index === 19 && (
                       <LessonBlock
-                        title='Web-технології'
-                        type='Лаб'
-                        mode='Офлайн'
-                        time='11:20 – 12:40'
+                        title="Web-технології"
+                        type="Лаб"
+                        mode="Офлайн"
+                        time="11:20 – 12:40"
+                        onClick={() =>
+                          setModalData({
+                            title: "Web-технології",
+                            type: "Лаб",
+                            mode: "Офлайн",
+                            time: "11:20 – 12:40",
+                          })
+                        }
                       />
                     )}
                   </div>
@@ -248,6 +290,15 @@ const Calendar = () => {
           </div>
         </div>
       </div>
+
+      {modalData && (
+        <Modal onClose={() => setModalData(null)}>
+          <h2>{modalData.title}</h2>
+          <p><strong>Тип:</strong> {modalData.type}</p>
+          <p><strong>Формат:</strong> {modalData.mode}</p>
+          <p><strong>Час:</strong> {modalData.time}</p>
+        </Modal>
+      )}
     </>
   );
 };

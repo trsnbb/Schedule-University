@@ -1,7 +1,7 @@
 import React from "react";
 import "./lesson.css";
 
-const LessonBlock = ({ title, type = "Лекція", mode = "Онлайн", time = "08.00 – 09.20" }) => {
+const LessonBlock = ({ title, type = "Лекція", mode = "Онлайн", time = "08.00 – 09.20", onClick }) => {
   const getTypeClass = (type) => {
     switch (type.toLowerCase()) {
       case "лаб":
@@ -17,7 +17,7 @@ const LessonBlock = ({ title, type = "Лекція", mode = "Онлайн", time
   const typeClass = getTypeClass(type);
 
   return (
-    <div className={`lesson-block ${typeClass}`}>
+    <div className={`lesson-block ${typeClass}`} onClick={onClick} style={{ cursor: "pointer" }}>
       <div className="lesson-tags">
         <div className={`lesson-tag ${typeClass}`}>{type}</div>
         <div className="lesson-tag green">{mode}</div>
