@@ -1,39 +1,69 @@
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 999;
-  }
-  
-  .modal-content {
-    background: #fff;
-    padding: 20px 30px;
-    border-radius: 10px;
-    max-width: 400px;
-    width: 90%;
-    text-align: center;
-  }
-  
-  .modal-content h2 {
-    margin-top: 0;
-  }
-  
-  .modal-content button {
-    margin-top: 20px;
-    padding: 8px 16px;
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-  
-  .modal-content button:hover {
-    background-color: #45a049;
-  }
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  z-index: 999;
+}
+
+.modal-content {
+  backdrop-filter: blur(3px);
+  padding: 30px 30px 20px 30px;
+  border-radius: 20px;
+  max-width: 520px;
+  max-height: 80vh;
+  min-height: 55vh; 
+  width: 90%;
+  height: auto;
+  color: white;
+  z-index: 1000;
+  transition: opacity 0.3s ease;
+  font-weight: 100;
+  overflow-y: auto;
+  box-shadow: none; 
+}
+
+.modal-header {
+  padding: 8px 12px;
+  border-radius: 20px;
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.modal_time {
+  margin-left: auto; /* Вирівнює час праворуч */
+}
+
+.modal-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  font-size: 16px;
+}
+
+.label {
+  font-weight: 400;
+}
+
+.teacher-notes,
+.student-notes {
+  background: #1A1E1C;
+  border-radius: 15px;
+  padding: 12px;
+  font-size: 14px;
+  margin-top: -15px;
+  white-space: pre-line;
+  min-height: 35px; /* Мінімальна висота */
+  width: 100%; /* Або max-width, якщо потрібно */
+  box-sizing: border-box; /* Щоб padding не звужував блок */
+}
