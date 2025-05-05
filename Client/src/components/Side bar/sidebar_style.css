@@ -13,7 +13,7 @@
   height: 38%;
   width: 90%;
   min-height: 250px;
-  margin-top: 50px;
+  margin-top: 10px;
   background: #071508; 
   display: flex;
   justify-content: center;
@@ -45,4 +45,28 @@
 
 .notes_sidebar::-webkit-scrollbar {
   display: none; 
+}
+
+/* В sidebar_style.css */
+.burger_wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  padding: 10px;
+}
+
+.burger_icon {
+  width: 26px;
+  height: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.burger_icon .line {
+  height: 3px;
+  background-color: white;
+  border-radius: 2px;
+  cursor: pointer;
 }
