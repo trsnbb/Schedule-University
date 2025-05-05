@@ -17,8 +17,7 @@
   align-items: center;
   font-size: 18px;
   font-weight: bold;
-  margin-bottom: 10px;
-  margin-top: 10px;
+  margin: 5px 0 10px;
 }
 
 .arrow {
@@ -50,6 +49,7 @@
   flex-grow: 1;
   overflow-y: auto;
   justify-items: center;
+  transition: transform 0.3s ease;
 }
 
 .day {
@@ -74,15 +74,69 @@
   color: #71717a;
 }
 
-.day_grid {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  gap: 5px;
-}
-
 .reset-today {
   cursor: pointer;
   user-select: none;
   font-weight: bold;
+}
+
+/* Анімації */
+.slide-left {
+  animation: slideRight 0.3s forwards;  /* Слайд вліво: зсув вправо */
+}
+
+.slide-right {
+  animation: slideLeft 0.3s forwards;  /* Слайд вправо: зсув вліво */
+}
+
+.slide-fast-left {
+  animation: slideFastRight 0.15s forwards;  /* Швидка анімація вліво: зсув вправо */
+}
+
+.slide-fast-right {
+  animation: slideFastLeft 0.15s forwards;  /* Швидка анімація вправо: зсув вліво */
+}
+
+@keyframes slideLeft {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideRight {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideFastLeft {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideFastRight {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
