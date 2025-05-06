@@ -1,14 +1,25 @@
-// components/ProfileMenu/ProfileMenu.jsx
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "./ProfileMenu.css";
 import avatarStudent from "./../../image/avatarStudent.jpg";
 import message from "./../../image/message.svg";
 import setting from "./../../image/setting-2.svg";
 import logOut from "./../../image/Log out.png";
 
-const ProfileMenu = ({ isOpen, onClose }) => {
+const ProfileMenu = ({ isOpen, onClose, disableAnimation = false }) => {
+  const navigate = useNavigate();
+
+  const handleSettingsClick = () => {
+    navigate("/settings");
+    onClose(); // закрити меню після переходу
+  };
+
   return (
-    <div className={`profile_menu_overlay ${isOpen ? "open" : ""}`}>
+    <div
+      className={`profile_menu_overlay ${isOpen ? "open" : ""} ${
+        disableAnimation ? "no_animation" : ""
+      }`}
+    >
       <div className='profile_menu_content'>
         <button className='close_button' onClick={onClose}>
           ×
@@ -26,7 +37,7 @@ const ProfileMenu = ({ isOpen, onClose }) => {
             Зворотній зв'язок
           </button>
           <line className='lineMenu'></line>
-          <button>
+          <button onClick={handleSettingsClick}>
             <img className='imgBurger setting' src={setting} alt='setting' />
             Налаштування
           </button>

@@ -1,0 +1,230 @@
+.settings_container {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+  font-size: 14px;
+}
+
+.settings_form {
+  display: flex;
+  gap: 40px;
+  padding: 60px 30px;
+  background-color: rgba(61, 84, 77, 0.24);
+  color: white;
+  width: 95%;
+  height: 95%;
+  max-width: 1000px;
+  justify-content: space-between;
+  align-items: center;
+
+}
+
+.form_inputs {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 300px;
+}
+
+.form_inputs label {
+  font-weight: 200;
+  margin-top: 10px;
+}
+
+.form_inputs input[type="text"],
+.form_inputs input[type="password"] {
+  padding: 15px;
+  border-radius: 8px;
+  border: none;
+  background-color: #131715;
+
+  color: white;
+}
+
+.time_format {
+  margin-top: 15px;
+}
+
+.time_format p {
+  margin-bottom: 5px;
+}
+
+.time_format label {
+  display: block;
+}
+
+.checkbox_label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.delete_btn {
+  background-color: rgba(245, 105, 80, 0.4);
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  margin-top: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.report_btn {
+  background-color: rgba(191, 189, 41, 0.4);
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  margin-top: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile_section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatar_large {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
+  border: 3px solid #131715;
+}
+
+.change_avatar_btn {
+  background-color: #131715;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.user_info_box {
+  background-color: #131715;
+  padding: 15px 20px;
+  border-radius: 10px;
+  width: 80%;
+ 
+  font-weight: 200;
+  margin-bottom: 10px;
+}
+
+.user_info_box h3 {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 400;
+}
+.user_info_box p {
+  line-height: 2; /* або 1.6, якщо хочеш більше повітря */
+  word-break: break-word; /* щоб переносило при потребі */
+}
+
+
+.form_inputs label {
+  margin-left: 20px;
+}
+
+.custom_radio {
+  position: relative;
+  padding-left: 30px;
+  margin: 10px 0;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+}
+
+.custom_radio input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.radio_mark {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 14px;
+  width: 14px;
+  background-color: #131715;
+  border-radius: 50%;
+  transition: 0.2s;
+  box-shadow: 0 0 0 4px rgba(19, 23, 23, 1);
+}
+
+.custom_radio input:checked ~ .radio_mark {
+  background-color: #34833b;
+}
+
+.custom_checkbox {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding-left: 30px;
+  margin: 10px 0;
+  cursor: pointer;
+  font-size: 16px;
+  user-select: none;
+}
+
+.custom_checkbox input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.checkmark {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  height: 18px;
+  width: 18px;
+  background-color: #131715;
+  border-radius: 4px;
+  transition: 0.2s;
+}
+
+.custom_checkbox input:checked ~ .checkmark {
+  background-color: #34833b;
+}
+
+.checkmark::after {
+  content: "";
+  position: absolute;
+  display: none;
+  top: 10%;
+  left: 50%;
+  border-width: 0 2px 2px 0;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.custom_checkbox input:checked ~ .checkmark::after {
+  display: block;
+}
+
+.checkmark::after {
+  left: 5px;
+  width: 6px;
+  height: 12px;
+  border: solid #131715;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
