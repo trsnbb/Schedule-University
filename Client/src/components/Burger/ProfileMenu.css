@@ -65,7 +65,7 @@
   border-radius: 25px;
 }
 
-button {
+.button_menu {
   display: flex;
   align-items: center;
   gap: 2px; /* Добавляем промежуток между иконкой и текстом */

@@ -32,17 +32,17 @@ const ProfileMenu = ({ isOpen, onClose, disableAnimation = false }) => {
           </div>
         </div>
         <div className='menu_items'>
-          <button>
+        <button className="button_menu">
             <img className='imgBurger message' src={message} alt='message' />
             Зворотній зв'язок
           </button>
           <line className='lineMenu'></line>
-          <button onClick={handleSettingsClick}>
+          <button className="button_menu" onClick={handleSettingsClick}>
             <img className='imgBurger setting' src={setting} alt='setting' />
             Налаштування
           </button>
           <line className='lineMenu'></line>
-          <button>
+          <button className="button_menu">
             <img className='imgBurger logOut' src={logOut} alt='logOut' />
             Вихід
           </button>

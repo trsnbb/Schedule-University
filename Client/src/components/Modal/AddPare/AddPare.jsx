@@ -61,19 +61,32 @@ const AddPare = ({ onClose }) => {
           </div>
           <div className='form-group'>
             <label>Оберіть вид</label>
+
             <div className='radio_button_modal_format'>
               <label className='custom_radio_modal'>
-                <input type='radio' name='format' defaultChecked />
+                <input
+                  type='radio'
+                  name='type'
+                  value='lecture'
+                />
                 <span className='radio_mark_modal'></span>
                 Лекція
               </label>
               <label className='custom_radio_modal'>
-                <input type='radio' name='format' />
+                <input
+                  type='radio'
+                  name='type'
+                  value='practice'
+                />
                 <span className='radio_mark_modal'></span>
                 Практика
               </label>
               <label className='custom_radio_modal'>
-                <input type='radio' name='format' />
+                <input
+                  type='radio'
+                  name='type'
+                  value='lab'
+                />
                 <span className='radio_mark_modal'></span>
                 Лабораторна робота
               </label>
@@ -81,14 +94,23 @@ const AddPare = ({ onClose }) => {
           </div>
           <div className='form-group'>
             <label>Оберіть формат</label>
+
             <div className='radio_button_modal_format'>
               <label className='custom_radio_modal'>
-                <input type='radio' name='format' defaultChecked />
+                <input
+                  type='radio'
+                  name='mode'
+                  value='online'
+                />
                 <span className='radio_mark_modal'></span>
                 Онлайн
               </label>
               <label className='custom_radio_modal'>
-                <input type='radio' name='format' />
+                <input
+                  type='radio'
+                  name='mode'
+                  value='offline'
+                />
                 <span className='radio_mark_modal'></span>
                 Очно
               </label>
@@ -100,20 +122,28 @@ const AddPare = ({ onClose }) => {
               type='text'
               name='teacher'
               value={lessonData.teacher}
-              onChange={handleInputChange}
               required
             />
           </div>
           <div className='form-group'>
             <label>Оберіть тип</label>
+
             <div className='radio_button_modal_format'>
               <label className='custom_radio_modal'>
-                <input type='radio' name='format' defaultChecked />
+                <input
+                  type='radio'
+                  name='lessonType'
+                  value='single'
+                />
                 <span className='radio_mark_modal'></span>
                 Разова
               </label>
               <label className='custom_radio_modal'>
-                <input type='radio' name='format' />
+                <input
+                  type='radio'
+                  name='lessonType'
+                  value='permanent'
+                />
                 <span className='radio_mark_modal'></span>
                 Постійна
               </label>
@@ -123,24 +153,36 @@ const AddPare = ({ onClose }) => {
             <label>Варіант</label>
             <div className='radio_button_modal_format'>
               <label className='custom_radio_modal'>
-                <input type='radio' name='format' defaultChecked />
+                <input
+                  type='radio'
+                  name='variant'
+                  value='first'
+                />
                 <span className='radio_mark_modal'></span>
                 Перший
               </label>
               <label className='custom_radio_modal'>
-                <input type='radio' name='format' />
+                <input
+                  type='radio'
+                  name='variant'
+                  value='second'
+                />
                 <span className='radio_mark_modal'></span>
                 Другий
               </label>
               <label className='custom_radio_modal'>
-                <input type='radio' name='format' />
+                <input
+                  type='radio'
+                  name='variant'
+                  value='both'
+                />
                 <span className='radio_mark_modal'></span>
                 Оба варіанти
               </label>
             </div>
           </div>
-          <div className='button_form'>
-            <button type='submit'>Додати</button>
+          <div className='button_from_modal'>
+            <button type='submit'>Підтвердити</button>
           </div>
         </form>
       </div>

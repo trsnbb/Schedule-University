@@ -1,75 +1,74 @@
 .add-pare-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(27, 47, 30, 0.3);
-    backdrop-filter: blur(5px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-size: 14px;
-    
-  }
-  
-  .add-pare-modal-content{
-    background-color: #131715;
-    padding: 30px 20px;
-    border-radius: 8px;
-    max-width: 800px;
-    width: 100%;
-    height: 90%;
-  }
-  
-  h2 {
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  
-  .form-group {
-    margin-bottom: 20px;
-    margin-left: 40px;
-  }
-  
-  label {
-    display: block;
-    font-weight: 200;
-  }
-  
-  input {
-    width: 70%;
-    padding: 8px;
-    margin-top: 15px;
-    border-radius: 4px;
-    background-color: #1C331E;
-  }
-  
-  .form-actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-  }
-  
-  button {
-    padding: 8px 16px;
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  button[type="button"] {
-    background-color: #f44336;
-  }
-  
-  button:hover {
-    opacity: 0.8;
-  }
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(27, 47, 30, 0.3);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 14px;
+}
 
-.button_form{
+.add-pare-modal-content {
+  background-color: #131715;
+  padding: 30px 20px;
+  border-radius: 8px;
+  max-width: 800px;
+  width: 100%;
+  height: 95%;
+}
+
+h2 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  margin-left: 40px;
+}
+
+label {
+  display: block;
+  font-weight: 200;
+}
+
+input {
+  width: 70%;
+  padding: 8px;
+  margin-top: 15px;
+  border-radius: 4px;
+  background-color: #1c331e;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.button_from_modal button {
+  padding: 8px 40px;
+  background-color: #34833b;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.button_from_modal button[type="button"] {
+  background-color: #f44336;
+}
+
+.button_from_modal button:hover {
+  opacity: 0.8;
+}
+
+.button_from_modal  {
   display: flex;
   justify-content: center;
   margin-top: 30px;
