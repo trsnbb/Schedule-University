@@ -6,6 +6,7 @@ import "./styles/main.css";
 
 import HomePage from "./pages/HomePage/HomePage.jsx";
 import Settings from "./pages/Settings/Settings.jsx";
+import Feedback from "./pages/Feedback/Feedback.jsx";
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
           <Routes>
             <Route path='/' element={<HomePage />} />
             <Route path='/settings' element={<Settings />} />
-
+            <Route path='/feedback' element={<Feedback/>} />
           </Routes>
         </Router>
       /* </AuthProvider>

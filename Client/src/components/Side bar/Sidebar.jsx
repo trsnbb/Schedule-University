@@ -11,15 +11,20 @@ const Sidebar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    if (location.pathname === "/settings") {
+    if (location.pathname === "/settings" || location.pathname === "/feedback") {
       setMenuOpen(true);
     }
   }, [location.pathname]);
-
-  const handleCloseMenu = () => {
+  
+  const handleCloseMenu = (navigateHome = true) => {
+    // Не закриваємо меню, якщо ми вже на сторінці settings або feedback і не хочемо редиректу
+    if (!navigateHome && (location.pathname === "/settings" || location.pathname === "/feedback")) {
+      return;
+    }
+  
     setMenuOpen(false);
-
-    if (location.pathname === "/settings") {
+  
+    if (navigateHome && (location.pathname === "/settings" || location.pathname === "/feedback")) {
       navigate("/");
     }
   };
@@ -48,7 +53,8 @@ const Sidebar = () => {
       <ProfileMenu
         isOpen={menuOpen}
         onClose={handleCloseMenu}
-        disableAnimation={location.pathname === "/settings"}
+        disableAnimation={location.pathname === "/settings" || location.pathname === "/feedback"}
+
       />
     </>
   );

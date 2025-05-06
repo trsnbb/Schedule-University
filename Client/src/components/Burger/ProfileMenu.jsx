@@ -10,10 +10,20 @@ const ProfileMenu = ({ isOpen, onClose, disableAnimation = false }) => {
   const navigate = useNavigate();
 
   const handleSettingsClick = () => {
-    navigate("/settings");
-    onClose(); // закрити меню після переходу
+    if (window.location.pathname !== "/settings") {
+      navigate("/settings");
+    }
+    onClose(false); // не закривати меню + не редиректити
   };
-
+  
+  const handleFeedbackClick = () => {
+    if (window.location.pathname !== "/feedback") {
+      navigate("/feedback");
+    }
+    onClose(false);
+  };
+  
+  
   return (
     <div
       className={`profile_menu_overlay ${isOpen ? "open" : ""} ${
@@ -32,17 +42,17 @@ const ProfileMenu = ({ isOpen, onClose, disableAnimation = false }) => {
           </div>
         </div>
         <div className='menu_items'>
-        <button className="button_menu">
+          <button className='button_menu' onClick={handleFeedbackClick}>
             <img className='imgBurger message' src={message} alt='message' />
             Зворотній зв'язок
           </button>
           <line className='lineMenu'></line>
-          <button className="button_menu" onClick={handleSettingsClick}>
+          <button className='button_menu' onClick={handleSettingsClick}>
             <img className='imgBurger setting' src={setting} alt='setting' />
             Налаштування
           </button>
           <line className='lineMenu'></line>
-          <button className="button_menu">
+          <button className='button_menu'>
             <img className='imgBurger logOut' src={logOut} alt='logOut' />
             Вихід
           </button>
