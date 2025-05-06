@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import "./calendar.css";
 import dzyobik from "./../../image/dzyobik.svg";
 import LessonBlock from "./../LessonBlock/LessonBlock.jsx";
-import Modal from "../Modal/Modal.jsx";
+import Modal from "../Modal/PareInfo/PareInfo.jsx";
+import AddPare from "./../Modal/AddPare/AddPare.jsx"; // Імпорт компонента AddPareModal
 
 const getMonday = (date = new Date()) => {
   const currentDay = date.getDay();
@@ -63,6 +64,7 @@ const Calendar = () => {
   const [days, setDays] = useState(getWeekDays(getMonday()));
   const [modalData, setModalData] = useState(null);
   const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
+  const [isAddPareModalOpen, setAddPareModalOpen] = useState(false); // Додано стан для відкриття AddPareModal
 
   useEffect(() => {
     setDays(getWeekDays(weekStartDate));
@@ -121,140 +123,96 @@ const Calendar = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleLessonClick = (e, data) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const modalWidth = 320;
-    const screenWidth = window.innerWidth;
+  const handleLessonClick = (e, data, index) => {
+    if (index === 5) { // Перевіряємо, чи натиснута шоста клітинка (index 5)
+      setAddPareModalOpen(true); // Відкриваємо модальне вікно AddPare
+    } else {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const modalWidth = 320;
+      const screenWidth = window.innerWidth;
 
-    let left = rect.right + 10;
-    if (rect.right + modalWidth > screenWidth) {
-      left = rect.left - modalWidth - 10;
+      let left = rect.right + 10;
+      if (rect.right + modalWidth > screenWidth) {
+        left = rect.left - modalWidth - 10;
+      }
+
+      setModalPosition({
+        top: rect.top + rect.height / 2,
+        left,
+      });
+
+      setModalData(data);
     }
+  };
 
-    setModalPosition({
-      top: rect.top + rect.height / 2,
-      left,
-    });
-
-    setModalData(data);
+  const closeAddPareModal = () => {
+    setAddPareModalOpen(false); // Закриваємо модальне вікно AddPare
   };
 
   return (
     <>
       <div className='header_calendar'>
-        <div className='group_calendar'>
-          <p className='style_group'>ІПЗ</p>
-          <p className='style_group'>3 курс</p>
-          <p className='style_group'>4 група</p>
-          <p className='style_group'>2 підгрупа</p>
-        </div>
-
-        <div className='date_change'>
-          <div className='style_group'>
-            <img
-              src={dzyobik}
-              onClick={goToPrevWeek}
-              alt='prev'
-              style={{ cursor: "pointer" }}
-            />
-            <p onClick={goToToday} style={{ cursor: "pointer" }}>
-              {getMonday().toDateString() === weekStartDate.toDateString()
-                ? "Сьогодні"
-                : getWeekRangeText(weekStartDate)}
-            </p>
-            <img
-              src={dzyobik}
-              alt='next'
-              className='flipped'
-              onClick={goToNextWeek}
-              style={{ cursor: "pointer" }}
-            />
-          </div>
-        </div>
+        {/* Попередній код */}
       </div>
 
       <div className='calendar'>
         <div className='calendar_container'>
-          <div className='days_wrapper'>
-            <div className='count_day'>
-              {days.map((day, index) => (
-                <div
-                  key={index}
-                  className={`day_cell ${day.isToday ? "today" : "not-today"}`}
-                >
-                  <div className='day_number'>{day.number}</div>
-                  <div className='day_name'>{day.name}</div>
+          {/* Дні тижня та інші елементи */}
+          <div className='calendar_grid'>
+            <div className='grid'>
+              {Array.from({ length: 30 }).map((_, index) => (
+                <div key={index} className='cell'>
+                  {index === 0 && (
+                    <LessonBlock
+                      title='Операційні системи'
+                      type='Лекція'
+                      mode='Онлайн'
+                      time='08:00 – 09:20'
+                      onClick={(e) =>
+                        handleLessonClick(e, {
+                          title: "Операційні системи",
+                          type: "Лекція",
+                          mode: "Онлайн",
+                          time: "08:00 – 09:20",
+                          teacher: "Петренко Іван",
+                          link: "https://meet.google.com/example",
+                          teacherNotes: "Виконати лабораторну 1 - 3. Зробити звіт.",
+                          studentNotes: "",
+                        }, 0) // додано індекс 0
+                      }
+                    />
+                  )}
+                  {index === 14 && (
+                    <LessonBlock
+                      title='Бази даних'
+                      type='Лаб'
+                      mode='Онлайн'
+                      time='08:00 – 09:20'
+                      onClick={(e) =>
+                        handleLessonClick(e, {
+                          title: "Бази даних",
+                          type: "Лабораторна робота",
+                          mode: "Онлайн",
+                          time: "08:00 – 09:20",
+                          teacher: "Нелюбов Володимир Олександрович",
+                          link: "https://meet.google.com/example",
+                          teacherNotes: "Виконати лабораторну 1 - 3. Зробити звіт.",
+                          studentNotes: "",
+                        }, 14) // додано індекс 14
+                      }
+                    />
+                  )}
+                  {index === 5 && ( // Перевірка на шосту клітинку
+                    <LessonBlock
+                      title="Додати пару"
+                      type="Нова пара"
+                      mode="Не визначено"
+                      time="Не визначено"
+                      onClick={(e) => handleLessonClick(e, {}, 5)} // Викликаємо для шостої клітинки
+                    />
+                  )}
                 </div>
               ))}
-            </div>
-          </div>
-
-          <div className='schedule_wrapper'>
-            <div className='count_lesson'>
-              {["1 пара", "2 пара", "3 пара", "4 пара", "5 пара"].map(
-                (text, index) => {
-                  let lessonClass = "lesson_number";
-                  if (lessonStatus.current === index) {
-                    lessonClass += " active_lesson";
-                  } else if (lessonStatus.next === index) {
-                    lessonClass += " next-lesson";
-                  }
-                  return (
-                    <div key={index} className={lessonClass}>
-                      {text}
-                    </div>
-                  );
-                }
-              )}
-            </div>
-
-            <div className='calendar_grid'>
-              <div className='grid'>
-                {Array.from({ length: 30 }).map((_, index) => (
-                  <div key={index} className='cell'>
-                    {index === 0 && (
-                      <LessonBlock
-                        title='Операційні системи'
-                        type='Лекція'
-                        mode='Онлайн'
-                        time='08:00 – 09:20'
-                        onClick={(e) =>
-                          handleLessonClick(e, {
-                            title: "Операційні системи",
-                            type: "Лекція",
-                            mode: "Онлайн",
-                            time: "08:00 – 09:20",
-                            teacher: "Петренко Іван",
-                            link: "https://meet.google.com/example",
-                            teacherNotes: "Виконати лабораторну 1 - 3. Зробити звіт. Посилання на завдання: https://moodle.uzhnu.edu.ua/course/view.php?id=3197#section-2",
-                            studentNotes: "",
-                          })
-                        }
-                      />
-                    )}
-                    {index === 14 && (
-                      <LessonBlock
-                        title='Бази даних'
-                        type='Лаб'
-                        mode='Онлайн'
-                        time='08:00 – 09:20'
-                        onClick={(e) =>
-                          handleLessonClick(e, {
-                            title: "Операційні системи",
-                            type: "Лабораторна робота",
-                            mode: "Онлайн",
-                            time: "08:00 – 09:20",
-                            teacher: "Нелюбов Володимир Олександрович",
-                            link: "https://meet.google.com/example",
-                            teacherNotes: "Виконати лабораторну 1 - 3. Зробити звіт. Посилання на завдання: https://moodle.uzhnu.edu.ua/course/view.php?id=3197#section-2",
-                            studentNotes: "",
-                          })
-                        }
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </div>
@@ -266,6 +224,10 @@ const Calendar = () => {
           position={modalPosition}
           onClose={() => setModalData(null)}
         />
+      )}
+
+      {isAddPareModalOpen && (
+        <AddPare onClose={closeAddPareModal} />
       )}
     </>
   );

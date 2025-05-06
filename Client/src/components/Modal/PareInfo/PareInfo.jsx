@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
-import "./modal.css";
+import "./PareInfo.css";
 
-const Modal = ({ data, position, onClose }) => {
+const PareInfo = ({ data, position, onClose }) => {
   const modalRef = useRef(null);
 
   useEffect(() => {
@@ -123,4 +123,4 @@ const Modal = ({ data, position, onClose }) => {
   );
 };
 
-export default Modal;
+export default PareInfo;

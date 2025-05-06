@@ -1,0 +1,44 @@
+  
+.radio_button_modal_format {
+    display: flex;
+    gap: 20px;
+    margin: 20px 0;
+    font-size: 12px;
+  }
+  
+  .custom_radio_modal {
+    position: relative;
+    padding-left: 20px;
+    cursor: pointer; 
+    font-size: 12px;
+    user-select: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    height: 20px; /* Додано */
+  }
+  
+  
+  .custom_radio_modal input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+  }
+  
+  .radio_mark_modal {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 15px;
+    width: 15px;
+    background-color: #1C331E;
+    border-radius: 50%;
+    border: 2px solid #1C331E;
+  }
+  
+  
+  .custom_radio_modal input:checked ~ .radio_mark_modal {
+    background-color: #48ff68;
+  }
+  
