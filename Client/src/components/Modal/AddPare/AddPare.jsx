@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import "./AddPare.css";
 import "./../../CustomRadio.css";
+import plus from "./../../../image/plus.svg";
 
 const AddPare = ({ onClose }) => {
   const modalRef = useRef();
@@ -36,7 +37,11 @@ const AddPare = ({ onClose }) => {
 
   return (
     <div className='add-pare-modal' onClick={handleClickOutside}>
+      
       <div className='add-pare-modal-content' ref={modalRef}>
+      <button className='close-plus-icon' onClick={onClose}>
+          <img src={plus}></img>
+        </button>
         <h2>Додати пару</h2>
         <form onSubmit={handleSubmit}>
           <div className='form-group'>
@@ -64,29 +69,17 @@ const AddPare = ({ onClose }) => {
 
             <div className='radio_button_modal_format'>
               <label className='custom_radio_modal'>
-                <input
-                  type='radio'
-                  name='type'
-                  value='lecture'
-                />
+                <input type='radio' name='type' value='lecture' />
                 <span className='radio_mark_modal'></span>
                 Лекція
               </label>
               <label className='custom_radio_modal'>
-                <input
-                  type='radio'
-                  name='type'
-                  value='practice'
-                />
+                <input type='radio' name='type' value='practice' />
                 <span className='radio_mark_modal'></span>
                 Практика
               </label>
               <label className='custom_radio_modal'>
-                <input
-                  type='radio'
-                  name='type'
-                  value='lab'
-                />
+                <input type='radio' name='type' value='lab' />
                 <span className='radio_mark_modal'></span>
                 Лабораторна робота
               </label>
@@ -97,20 +90,12 @@ const AddPare = ({ onClose }) => {
 
             <div className='radio_button_modal_format'>
               <label className='custom_radio_modal'>
-                <input
-                  type='radio'
-                  name='mode'
-                  value='online'
-                />
+                <input type='radio' name='mode' value='online' />
                 <span className='radio_mark_modal'></span>
                 Онлайн
               </label>
               <label className='custom_radio_modal'>
-                <input
-                  type='radio'
-                  name='mode'
-                  value='offline'
-                />
+                <input type='radio' name='mode' value='offline' />
                 <span className='radio_mark_modal'></span>
                 Очно
               </label>
@@ -130,20 +115,12 @@ const AddPare = ({ onClose }) => {
 
             <div className='radio_button_modal_format'>
               <label className='custom_radio_modal'>
-                <input
-                  type='radio'
-                  name='lessonType'
-                  value='single'
-                />
+                <input type='radio' name='lessonType' value='single' />
                 <span className='radio_mark_modal'></span>
                 Разова
               </label>
               <label className='custom_radio_modal'>
-                <input
-                  type='radio'
-                  name='lessonType'
-                  value='permanent'
-                />
+                <input type='radio' name='lessonType' value='permanent' />
                 <span className='radio_mark_modal'></span>
                 Постійна
               </label>
@@ -153,29 +130,17 @@ const AddPare = ({ onClose }) => {
             <label>Варіант</label>
             <div className='radio_button_modal_format'>
               <label className='custom_radio_modal'>
-                <input
-                  type='radio'
-                  name='variant'
-                  value='first'
-                />
+                <input type='radio' name='variant' value='first' />
                 <span className='radio_mark_modal'></span>
                 Перший
               </label>
               <label className='custom_radio_modal'>
-                <input
-                  type='radio'
-                  name='variant'
-                  value='second'
-                />
+                <input type='radio' name='variant' value='second' />
                 <span className='radio_mark_modal'></span>
                 Другий
               </label>
               <label className='custom_radio_modal'>
-                <input
-                  type='radio'
-                  name='variant'
-                  value='both'
-                />
+                <input type='radio' name='variant' value='both' />
                 <span className='radio_mark_modal'></span>
                 Оба варіанти
               </label>
