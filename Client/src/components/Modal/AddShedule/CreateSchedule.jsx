@@ -143,7 +143,7 @@ const CreateSchedule = ({ onClose }) => {
                   </label>
                 </div>
               </div>
-              <div className='button_from_modal'>
+              <div className='button_from_modal button_create'>
                 <button type='button' onClick={handleConfirmClick}>
                   Підтвердити
                 </button>
