@@ -1,10 +1,11 @@
 import React, { useRef, useState, useEffect } from "react";
 import "./scheduleModal.css";
 import "./../../CustomRadio.css";
-import plus from "./../../../image/plus.svg";
+import close from "./../../../image/close.svg";
 import dzyobik from "./../../../image/dzyobik.svg";
+import back from "./../../../image/Vector.svg";
 
-const ScheduleModal = ({ onClose }) => {
+const ScheduleModal = ({ onClose, onBack }) => {
   const modalRef = useRef();
   const accordionRef = useRef();
   const [openAccordionIndex, setOpenAccordionIndex] = useState(null);
@@ -32,7 +33,6 @@ const ScheduleModal = ({ onClose }) => {
     };
   }, [onClose]);
 
-  // Дані про предмети — можна замінити на динамічні
   const subjects = [
     "Розробка інтернет клієнт серверних систем",
     "Комп'ютерна графіка",
@@ -41,10 +41,18 @@ const ScheduleModal = ({ onClose }) => {
   return (
     <div className='create_schedule-modal'>
       <div className='create_schedule-modal-content' ref={modalRef}>
-        <button className='close-plus-icon' onClick={onClose}>
-          <img src={plus} alt='close' />
-        </button>
-        <h2>Автоматичне створення розкладу</h2>
+        <div className='button_icon'>
+          <button className='back-icon' onClick={onBack}>
+            {" "}
+            <img src={back} alt='back' />
+          </button>
+          <h2>Автоматичне створення розкладу</h2>
+          <button className='close-icon' onClick={onClose}>
+            <img src={close} alt='close' />
+          </button>
+        </div>
+
+        
         <form>
           <div className='accordion' ref={accordionRef}>
             {subjects.map((subject, index) => (
@@ -121,6 +129,9 @@ const ScheduleModal = ({ onClose }) => {
                 </div>
               </div>
             </div>
+          </div>
+          <div className='button_from_modal'>
+            <button type='button'>Підтвердити</button>
           </div>
         </form>
       </div>
