@@ -3,7 +3,7 @@ import "./calendar.css";
 import dzyobik from "./../../image/dzyobik.svg";
 import LessonBlock from "./../LessonBlock/LessonBlock.jsx";
 import Modal from "../Modal/PareInfo/PareInfo.jsx";
-import AddPare from "./../Modal/AddPare/AddPare.jsx"; // Імпорт компонента AddPareModal
+import CreateSchedule from "../Modal/AddShedule/CreateSchedule.jsx"; // Імпорт компонента AddPareModal
 
 const getMonday = (date = new Date()) => {
   const currentDay = date.getDay();
@@ -56,6 +56,7 @@ const lessonsSchedule = [
 ];
 
 const Calendar = () => {
+  
   const [lessonStatus, setLessonStatus] = useState({
     current: null,
     next: null,
@@ -227,7 +228,7 @@ const Calendar = () => {
       )}
 
       {isAddPareModalOpen && (
-        <AddPare onClose={closeAddPareModal} />
+        <CreateSchedule onClose={closeAddPareModal} />
       )}
     </>
   );
