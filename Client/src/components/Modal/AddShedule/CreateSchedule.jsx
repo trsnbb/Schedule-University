@@ -2,21 +2,21 @@ import React, { useState, useRef } from "react";
 import "./createSchedule.css";
 import "./../../CustomRadio.css";
 import plus from "./../../../image/plus.svg";
-import CreateSchedule2 from "./CreateSchedule2"; // Імпорт компонента CreateSchedule2
+import ScheduleModal from "./ScheduleModal"; // Імпорт компонента CreateSchedule2
 
 const CreateSchedule = ({ onClose }) => {
-  const [isCreateSchedule2Open, setCreateSchedule2Open] = useState(false);
+  const [isScheduleModalOpen, setScheduleModalOpen] = useState(false);
 
   const modalRef = useRef();
 
   const handleClickOutside = (e) => {
-    if (modalRef.current && !modalRef.current.contains(e.target)) {
+    if (modalRef.current && !modalRef.current.contains(e.target) && !isScheduleModalOpen) {
+      onClose();
     }
   };
 
   const handleConfirmClick = () => {
-    setCreateSchedule2Open(true); // Відкриваємо CreateSchedule2
-    onClose();
+    setScheduleModalOpen(true); // Відкриваємо ScheduleModal
   };
   return (
     <div className='add-schedule-modal' onClick={handleClickOutside}>
@@ -136,7 +136,9 @@ const CreateSchedule = ({ onClose }) => {
         </form>
       </div>
 
-      
+      {isScheduleModalOpen && (
+        <ScheduleModal onClose={() => setScheduleModalOpen(false)} />
+      )}
     </div>
   );
 };

@@ -153,7 +153,35 @@ const Calendar = () => {
   return (
     <>
       <div className='header_calendar'>
-        {/* Попередній код */}
+      <div className='group_calendar'>
+          <p className='style_group'>ІПЗ</p>
+          <p className='style_group'>3 курс</p>
+          <p className='style_group'>4 група</p>
+          <p className='style_group'>2 підгрупа</p>
+        </div>
+
+        <div className='date_change'>
+          <div className='style_group'>
+            <img
+              src={dzyobik}
+              onClick={goToPrevWeek}
+              alt='prev'
+              style={{ cursor: "pointer" }}
+            />
+            <p onClick={goToToday} style={{ cursor: "pointer" }}>
+              {getMonday().toDateString() === weekStartDate.toDateString()
+                ? "Сьогодні"
+                : getWeekRangeText(weekStartDate)}
+            </p>
+            <img
+              src={dzyobik}
+              alt='next'
+              className='flipped'
+              onClick={goToNextWeek}
+              style={{ cursor: "pointer" }}
+            />
+          </div>
+        </div>
       </div>
 
       <div className='calendar'>

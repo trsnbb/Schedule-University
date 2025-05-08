@@ -1,0 +1,149 @@
+.create_schedule-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 14px;
+}
+
+.create_schedule-modal-content {
+  background-color: #131715;
+  padding: 30px 20px;
+  border-radius: 20px;
+  max-width: 800px;
+  width: 100%;
+  height: 95%;
+  position: relative;
+}
+
+.create_schedule-modal-content h2 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.close-plus-icon {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+  width: 24px;
+  height: 24px;
+}
+
+.close-plus-icon img {
+  width: 100%;
+  height: 100%;
+}
+
+.accordion {
+  margin-top: 20px;
+}
+
+.accordion-header {
+  padding: 10px;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  font-size: 16px;
+  display: flex;
+  gap: 10px;
+}
+
+.accordion-body_count {
+  padding: 10px;
+  display: flex;
+}
+
+.accordion-body_count input {
+  width: 30%;
+  padding: 10px;
+  margin: 15px 0;
+  border-radius: 10px;
+  background-color: #1c331e;
+}
+
+.accordion-body_count input::placeholder {
+  color: #888;
+}
+
+.dzyobikAcc {
+  transition: transform 0.3s ease;
+}
+
+.dzyobikAcc.rotate {
+  transform: rotate(270deg);
+}
+
+.dzyobikAcc {
+  transform: rotate(180deg); /* Закритий стан */
+}
+
+
+.input_group_accordion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 12px;
+}
+
+.accordion-body_name input {
+  width: 80%;
+  padding: 10px;
+  margin: 15px 0;
+  border-radius: 10px;
+  background-color: #1c331e;
+}
+
+.accordion-body_name {
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  align-items: flex-start;
+}
+
+.accordion-body_name .input_group_accordion {
+  width: 100%;
+  align-items: flex-start;
+  margin-left: 30px;
+
+}
+.input_count_schedule{
+  margin-left: 30px;
+
+}
+
+.input_count_schedule input{
+  width: 10%;
+  padding: 10px;
+  margin: 15px 0;
+  border-radius: 10px;
+  background-color: #34403A;
+}
+
+.input_count_type{
+  display: flex;
+  
+  font-size: 12px;
+}
+.input_count_type input{
+  width:40%;
+
+}
+
+.input_count_schedule .input_group_accordion{
+  align-items: flex-start;
+ margin-top: 20px;
+}
+
+
+.input_count_content{
+  margin-top: 50px;
+}
