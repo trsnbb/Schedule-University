@@ -17,13 +17,13 @@ const LessonBlock = ({ title, type = "Лекція", mode = "Онлайн", time
   const typeClass = getTypeClass(type);
 
   return (
-    <div className={`lesson-block ${typeClass}`} onClick={onClick} style={{ cursor: "pointer" }}>
-      <div className="lesson-tags">
-        <div className={`lesson-tag ${typeClass}`}>{type}</div>
-        <div className="lesson-tag green">{mode}</div>
+    <div className={`lesson_block ${typeClass}`} onClick={onClick} style={{ cursor: "pointer" }}>
+      <div className="lesson_tags">
+        <div className={`lesson_tag ${typeClass}`}>{type}</div>
+        <div className="lesson_tag green">{mode}</div>
       </div>
-      <div className={`lesson-time ${typeClass}`}>{time}</div>
-      <div className={`lesson-title ${typeClass}`}>{title}</div>
+      <div className={`lesson_time ${typeClass}`}>{time}</div>
+      <div className={`lesson_title ${typeClass}`}>{title}</div>
     </div>
   );
 };

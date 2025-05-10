@@ -1,2 +1,32 @@
 
-  
+  .authText{
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+    height: 90%;
+    width: 90%;
+    background-color: rgba(61, 84, 77, 0.24);
+    margin: 5%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+  }
+
+  .button_auth{
+    margin-top: 15px;
+    padding: 8px 80px;
+    background-color: #34833b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .note_auth{
+    font-size: 12px;
+    font-weight: 100;
+    text-align: center;
+    justify-content: center;
+    margin-top: 10px;
+  }

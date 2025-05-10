@@ -1,4 +1,4 @@
-.lesson-block {
+.lesson_block {
   padding: 8px;
   border-radius: 5px;
   display: flex;
@@ -9,65 +9,65 @@
   height: 100%;
 }
 
-.lesson-tags {
+.lesson_tags {
   display: flex;
   gap: 6px;
 }
 
-.lesson-tag {
+.lesson_tag {
   padding: 2px 8px;
   border-radius: 4px;
   font-size: 12px;
   color: white;
 }
 
-.lesson-block.lecture {
+.lesson_block.lecture {
   background-color: rgba(14, 165, 233, 0.1);
   border-left: 3px solid #0478b6;
 }
 
-.lesson-block.lab {
+.lesson_block.lab {
   background-color: rgba(16, 185, 129, 0.1);
   border-left: 3px solid #10b981;
 }
 
-.lesson-block.practice {
+.lesson_block.practice {
   background-color: rgba(109, 40, 217, 0.1);
   border-left: 3px solid #6d28d9;
 }
 
-.lesson-tag.lecture {
+.lesson_tag.lecture {
   background-color: #0478b6;
 }
 
-.lesson-tag.lab {
+.lesson_tag.lab {
   background-color: #10b981;
 }
 
-.lesson-tag.practice {
+.lesson_tag.practice {
   background-color: #6d28d9;
 }
 
-.lesson-tag.green {
+.lesson_tag.green {
   background-color: #1baf23;
 }
 
-.lesson-time.lecture,
-.lesson-title.lecture {
+.lesson_time.lecture,
+.lesson_title.lecture {
   color: #0478b6;
   font-weight: 500;
   font-size: 13px;
 }
 
-.lesson-time.lab,
-.lesson-title.lab {
+.lesson_time.lab,
+.lesson_title.lab {
   color: #10b981;
   font-weight: 500;
   font-size: 13px;
 }
 
-.lesson-time.practice,
-.lesson-title.practice {
+.lesson_time.practice,
+.lesson_title.practice {
   color: #6d28d9;
   font-weight: 500;
   font-size: 13px;

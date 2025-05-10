@@ -69,7 +69,6 @@ const ProfileMenu = ({ isOpen, onClose, disableAnimation = false }) => {
         </div>
       </div>
 
-      {/* Відображаємо LogoutModal, якщо isLogoutModalOpen === true */}
       <ExitProfile isOpen={isLogoutModalOpen} onCancel={handleCancelLogout} />
     </>
   );

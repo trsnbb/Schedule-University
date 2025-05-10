@@ -28,15 +28,25 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-router.get(
-  "/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
+router.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+
 router.get(
   "/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "/" }),
-  googleAuthCallback
+  passport.authenticate("google", {
+    failureRedirect: "/login",
+  }),
+  (req, res) => {
+    // Успішна авторизація
+    res.redirect("http://localhost:3000"); // Перенаправлення на клієнт
+  }
 );
+router.get("/auth/user", (req, res) => {
+  if (req.isAuthenticated()) {
+    res.json(req.user); // Повертає дані авторизованого користувача
+  } else {
+    res.status(401).json({ message: "Необхідна авторизація" });
+  }
+});
 router.post("/upload", verifyToken, upload.single("image"), uploadAvatar);
 router.get("/profile", verifyToken, getProfile);
 router.patch("/updateUserProfile", verifyToken, updateUserProfile);

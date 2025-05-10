@@ -56,7 +56,6 @@ const lessonsSchedule = [
 ];
 
 const Calendar = () => {
-  
   const [lessonStatus, setLessonStatus] = useState({
     current: null,
     next: null,
@@ -125,7 +124,8 @@ const Calendar = () => {
   }, []);
 
   const handleLessonClick = (e, data, index) => {
-    if (index === 5) { // Перевіряємо, чи натиснута шоста клітинка (index 5)
+    if (index === 5) {
+      // Перевіряємо, чи натиснута шоста клітинка (index 5)
       setAddPareModalOpen(true); // Відкриваємо модальне вікно AddPare
     } else {
       const rect = e.currentTarget.getBoundingClientRect();
@@ -153,7 +153,7 @@ const Calendar = () => {
   return (
     <>
       <div className='header_calendar'>
-      <div className='group_calendar'>
+        <div className='group_calendar'>
           <p className='style_group'>ІПЗ</p>
           <p className='style_group'>3 курс</p>
           <p className='style_group'>4 група</p>
@@ -186,62 +186,107 @@ const Calendar = () => {
 
       <div className='calendar'>
         <div className='calendar_container'>
-          {/* Дні тижня та інші елементи */}
-          <div className='calendar_grid'>
-            <div className='grid'>
-              {Array.from({ length: 30 }).map((_, index) => (
-                <div key={index} className='cell'>
-                  {index === 0 && (
-                    <LessonBlock
-                      title='Операційні системи'
-                      type='Лекція'
-                      mode='Онлайн'
-                      time='08:00 – 09:20'
-                      onClick={(e) =>
-                        handleLessonClick(e, {
-                          title: "Операційні системи",
-                          type: "Лекція",
-                          mode: "Онлайн",
-                          time: "08:00 – 09:20",
-                          teacher: "Петренко Іван",
-                          link: "https://meet.google.com/example",
-                          teacherNotes: "Виконати лабораторну 1 - 3. Зробити звіт.",
-                          studentNotes: "",
-                        }, 0) // додано індекс 0
-                      }
-                    />
-                  )}
-                  {index === 14 && (
-                    <LessonBlock
-                      title='Бази даних'
-                      type='Лаб'
-                      mode='Онлайн'
-                      time='08:00 – 09:20'
-                      onClick={(e) =>
-                        handleLessonClick(e, {
-                          title: "Бази даних",
-                          type: "Лабораторна робота",
-                          mode: "Онлайн",
-                          time: "08:00 – 09:20",
-                          teacher: "Нелюбов Володимир Олександрович",
-                          link: "https://meet.google.com/example",
-                          teacherNotes: "Виконати лабораторну 1 - 3. Зробити звіт.",
-                          studentNotes: "",
-                        }, 14) // додано індекс 14
-                      }
-                    />
-                  )}
-                  {index === 5 && ( // Перевірка на шосту клітинку
-                    <LessonBlock
-                      title="Додати пару"
-                      type="Нова пара"
-                      mode="Не визначено"
-                      time="Не визначено"
-                      onClick={(e) => handleLessonClick(e, {}, 5)} // Викликаємо для шостої клітинки
-                    />
-                  )}
+          <div className='days_wrapper'>
+            <div className='count_day'>
+              {days.map((day, index) => (
+                <div
+                  key={index}
+                  className={`day_cell ${day.isToday ? "today" : "not-today"}`}
+                >
+                  <div className='day_number'>{day.number}</div>
+                  <div className='day_name'>{day.name}</div>
                 </div>
               ))}
+            </div>
+          </div>
+
+          <div className='schedule_wrapper'>
+            <div className='count_lesson'>
+              {["1 пара", "2 пара", "3 пара", "4 пара", "5 пара"].map(
+                (text, index) => {
+                  let lessonClass = "lesson_number";
+                  if (lessonStatus.current === index) {
+                    lessonClass += " active-lesson";
+                  } else if (lessonStatus.next === index) {
+                    lessonClass += " next-lesson";
+                  }
+
+                  return (
+                    <div key={index} className={lessonClass}>
+                      {text}
+                    </div>
+                  );
+                }
+              )}
+            </div>
+            <div className='calendar_grid'>
+              <div className='grid'>
+                {Array.from({ length: 30 }).map((_, index) => (
+                  <div key={index} className='cell'>
+                    {index === 0 && (
+                      <LessonBlock
+                        title='Операційні системи'
+                        type='Лекція'
+                        mode='Онлайн'
+                        time='08:00 – 09:20'
+                        onClick={
+                          (e) =>
+                            handleLessonClick(
+                              e,
+                              {
+                                title: "Операційні системи",
+                                type: "Лекція",
+                                mode: "Онлайн",
+                                time: "08:00 – 09:20",
+                                teacher: "Петренко Іван",
+                                link: "https://meet.google.com/example",
+                                teacherNotes:
+                                  "Виконати лабораторну 1 - 3. Зробити звіт.",
+                                studentNotes: "",
+                              },
+                              0
+                            ) // додано індекс 0
+                        }
+                      />
+                    )}
+                    {index === 14 && (
+                      <LessonBlock
+                        title='Бази даних'
+                        type='Лаб'
+                        mode='Онлайн'
+                        time='08:00 – 09:20'
+                        onClick={
+                          (e) =>
+                            handleLessonClick(
+                              e,
+                              {
+                                title: "Бази даних",
+                                type: "Лабораторна робота",
+                                mode: "Онлайн",
+                                time: "08:00 – 09:20",
+                                teacher: "Нелюбов Володимир Олександрович",
+                                link: "https://meet.google.com/example",
+                                teacherNotes:
+                                  "Виконати лабораторну 1 - 3. Зробити звіт.",
+                                studentNotes: "",
+                              },
+                              14
+                            ) // додано індекс 14
+                        }
+                      />
+                    )}
+                    {index === 5 && ( // Перевірка на шосту клітинку
+                      <LessonBlock
+                        title='Додати пару'
+                        type='Нова пара'
+                        mode='Не визначено'
+                        time='Не визначено'
+                        onClick={(e) => handleLessonClick(e, {}, 5)} // Викликаємо для шостої клітинки
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -255,9 +300,7 @@ const Calendar = () => {
         />
       )}
 
-      {isAddPareModalOpen && (
-        <CreateSchedule onClose={closeAddPareModal} />
-      )}
+      {isAddPareModalOpen && <CreateSchedule onClose={closeAddPareModal} />}
     </>
   );
 };

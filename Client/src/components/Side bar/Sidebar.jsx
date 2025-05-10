@@ -4,10 +4,12 @@ import "./sidebar_style.css";
 import MiniCalendar from "./../Mini Calendar/MiniCalendar.jsx";
 import Notes from "./../Notes/Notes.jsx";
 import ProfileMenu from "./../Burger/ProfileMenu.jsx";
+import { useAuth } from "../../AuthContext.jsx"; // Імпортуємо контекст авторизації
 
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth(); // Отримуємо статус авторизації
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -45,16 +47,19 @@ const Sidebar = () => {
         <div className='sidebar_mini_kalendar'>
           <MiniCalendar />
         </div>
-        <div className='notes_sidebar'>
-          <Notes />
-        </div>
+
+        {/* Перевірка авторизації для відображення Notes */}
+        {isAuthenticated && (
+          <div className='notes_sidebar'>
+            <Notes />
+          </div>
+        )}
       </div>
 
       <ProfileMenu
         isOpen={menuOpen}
         onClose={handleCloseMenu}
         disableAnimation={location.pathname === "/settings" || location.pathname === "/feedback"}
-
       />
     </>
   );

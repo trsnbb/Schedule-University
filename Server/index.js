@@ -7,12 +7,18 @@ import { configurePassport } from "./config/passportConfig.js";
 import userRoutes from "./routes/userRoutes.js";
 import teachingsRoutes from "./routes/teachingsRoutes.js";
 import auditoriumRoutes from "./routes/auditoriumRoutes.js";
-import scheduleRoutes from "./routes/scheduleRoutes.js"
+import scheduleRoutes from "./routes/scheduleRoutes.js";
+import cors from "cors";
 
 dotenv.config();
 
 const app = express();
-
+app.use(
+  cors({
+    origin: "http://localhost:3000", // URL клієнта
+    credentials: true, // Дозволяє передачу куків
+  })
+);
 app.use(express.json());
 app.use(
   session({
@@ -32,7 +38,6 @@ app.use("/", userRoutes);
 app.use("/", teachingsRoutes);
 app.use("/", auditoriumRoutes);
 app.use("/", scheduleRoutes);
-
 
 app.get("/", (req, res) => {
   res.send("Hello world!");
