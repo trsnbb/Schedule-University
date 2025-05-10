@@ -31,5 +31,12 @@ instance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
+export const logout = async () => {
+  try {
+    const response = await instance.get("/auth/logout");
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Помилка при виході:", error.response?.data || error.message);
+  }
+};
 export default instance;
