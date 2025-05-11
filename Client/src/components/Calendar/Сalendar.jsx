@@ -89,7 +89,9 @@ const Calendar = () => {
       const [hours, minutes] = time.split(":").map(Number);
       const period = hours >= 12 ? "PM" : "AM";
       const formattedHours = hours % 12 || 12; // Перетворюємо 0 на 12
-      return `${formattedHours}:${minutes.toString().padStart(2, "0")} ${period}`;
+      return `${formattedHours}:${minutes
+        .toString()
+        .padStart(2, "0")} ${period}`;
     }
     return time; // Якщо формат 24-годинний, повертаємо час без змін
   };
@@ -122,20 +124,20 @@ const Calendar = () => {
 
   return (
     <>
-      <div className="header_calendar">
-        <div className="group_calendar">
-          <p className="style_group">ІПЗ</p>
-          <p className="style_group">3 курс</p>
-          <p className="style_group">4 група</p>
-          <p className="style_group">2 підгрупа</p>
+      <div className='header_calendar'>
+        <div className='group_calendar'>
+          <p className='style_group'>ІПЗ</p>
+          <p className='style_group'>3 курс</p>
+          <p className='style_group'>4 група</p>
+          <p className='style_group'>2 підгрупа</p>
         </div>
 
-        <div className="date_change">
-          <div className="style_group">
+        <div className='date_change'>
+          <div className='style_group'>
             <img
               src={dzyobik}
               onClick={goToPrevWeek}
-              alt="prev"
+              alt='prev'
               style={{ cursor: "pointer" }}
             />
             <p onClick={goToToday} style={{ cursor: "pointer" }}>
@@ -145,8 +147,8 @@ const Calendar = () => {
             </p>
             <img
               src={dzyobik}
-              alt="next"
-              className="flipped"
+              alt='next'
+              className='flipped'
               onClick={goToNextWeek}
               style={{ cursor: "pointer" }}
             />
@@ -154,24 +156,24 @@ const Calendar = () => {
         </div>
       </div>
 
-      <div className="calendar">
-        <div className="calendar_container">
-          <div className="days_wrapper">
-            <div className="count_day">
+      <div className='calendar'>
+        <div className='calendar_container'>
+          <div className='days_wrapper'>
+            <div className='count_day'>
               {days.map((day, index) => (
                 <div
                   key={index}
                   className={`day_cell ${day.isToday ? "today" : "not-today"}`}
                 >
-                  <div className="day_number">{day.number}</div>
-                  <div className="day_name">{day.name}</div>
+                  <div className='day_number'>{day.number}</div>
+                  <div className='day_name'>{day.name}</div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="schedule_wrapper">
-            <div className="count_lesson">
+          <div className='schedule_wrapper'>
+            <div className='count_lesson'>
               {["1 пара", "2 пара", "3 пара", "4 пара", "5 пара"].map(
                 (text, index) => {
                   let lessonClass = "lesson_number";
@@ -189,16 +191,21 @@ const Calendar = () => {
                 }
               )}
             </div>
-            <div className="calendar_grid">
-              <div className="grid">
+            <div className='calendar_grid'>
+              <div className='grid'>
                 {Array.from({ length: 30 }).map((_, index) => (
-                  <div key={index} className="cell">
+                  <div key={index} className='cell'>
                     {index === 0 && (
                       <LessonBlock
-                        title="Операційні системи"
-                        type="Лекція"
-                        mode="Онлайн"
+                        title='Операційні системи'
+                        type='Лекція'
+                        mode='Онлайн'
                         time={`${formatTime("08:00")} – ${formatTime("09:20")}`}
+                        groupInfo={{
+                          specialization: "ІПЗ",
+                          course: 3,
+                          group: 4,
+                        }}
                         onClick={(e) =>
                           handleLessonClick(
                             e,

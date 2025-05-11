@@ -47,55 +47,52 @@ export const createSchedule = async (req, res) => {
       await group.save();
     }
 
-    let weeklySchedule = lessons.map((lesson) => {
-      const weeksInSemester = 18;
-      let weeklyLectures = Math.floor(lesson.countLec / weeksInSemester);
-      let weeklyPracticals = Math.floor(lesson.countPrac / weeksInSemester);
-      let weeklyLabs = Math.floor(lesson.countLab / weeksInSemester);
+let weeklySchedule = lessons.map((lesson) => {
+  const weeksInSemester = 18;
+  let weeklyLectures = Math.floor(lesson.countLec / weeksInSemester);
+  let weeklyPracticals = Math.floor(lesson.countPrac / weeksInSemester);
+  let weeklyLabs = Math.floor(lesson.countLab / weeksInSemester);
 
-      if (weeklyLabs < 1 && lesson.countLab > 0) {
-        weeklyLabs = 1;
+  const scheduleDays = [1, 2, 3, 4, 5];
+  const occupiedPairs = { 1: [], 2: [], 3: [], 4: [], 5: [] };
+
+  const getAvailablePair = (day) => {
+    for (let pair = 1; pair <= 4; pair++) {
+      if (!occupiedPairs[day].includes(pair)) {
+        return pair;
       }
+    }
+    return null;
+  };
 
-      const scheduleDays = [1, 2, 3, 4, 5];
-      const occupiedPairs = { 1: [], 2: [], 3: [], 4: [], 5: [] };
+  const getRandomDayAndPair = () => {
+    let day, pair, tries = 0;
+    do {
+      day = scheduleDays[Math.floor(Math.random() * scheduleDays.length)];
+      pair = getAvailablePair(day);
+      tries++;
+    } while (!pair && tries <= 10);
 
-      const getAvailablePair = (day) => {
-        for (let pair = 1; pair <= 4; pair++) {
-          if (!occupiedPairs[day].includes(pair)) {
-            return pair;
-          }
-        }
-        return null;
-      };
+    if (pair) occupiedPairs[day].push(pair);
+    return { day, pair };
+  };
 
-      const getRandomDayAndPair = () => {
-        let day, pair, tries = 0;
-        do {
-          day = scheduleDays[Math.floor(Math.random() * scheduleDays.length)];
-          pair = getAvailablePair(day);
-          tries++;
-        } while (!pair && tries <= 10);
-
-        if (pair) occupiedPairs[day].push(pair);
-        return { day, pair };
-      };
-
-      let lessonSchedule = [];
-      for (let i = 0; i < weeklyLectures; i++) {
-        const { day, pair } = getRandomDayAndPair();
-        lessonSchedule.push({ type: "lec", day: [day], pairNumber: [pair] });
-      }
-      for (let i = 0; i < weeklyPracticals; i++) {
-        const { day, pair } = getRandomDayAndPair();
-        lessonSchedule.push({ type: "pract", day: [day], pairNumber: [pair] });
-      }
-      for (let i = 0; i < weeklyLabs; i++) {
-        const { day, pair } = getRandomDayAndPair();
-        lessonSchedule.push({ type: "lab", day: [day], pairNumber: [pair] });
-      }
-      return lessonSchedule;
-    }).flat();
+  let lessonSchedule = [];
+  for (let i = 0; i < weeklyLectures; i++) {
+    const { day, pair } = getRandomDayAndPair();
+    lessonSchedule.push({
+      type: "lec",
+      day: [day],
+      pairNumber: [pair],
+      groupInfo: {
+        specialization: specializationName,
+        course: courseNumber,
+        group: groupNumber,
+      },
+    });
+  }
+  return lessonSchedule;
+}).flat();
 
     weeklySchedule = weeklySchedule.slice(0, 22);
 

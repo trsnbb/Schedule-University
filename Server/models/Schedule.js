@@ -22,13 +22,10 @@ const ScheduleSchema = new mongoose.Schema(
         predmetId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "predmet",
-          
         },
-       
         teacherId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "teacher",
-         
         },
         type: {
           type: String,
@@ -43,10 +40,10 @@ const ScheduleSchema = new mongoose.Schema(
           enum: [1, 2],
         },
         day: {
-          type: [Number], // This defines an array of numbers
+          type: [Number], // Масив днів
         },
         pairNumber: {
-          type: [Number], // This defines an array of numbers
+          type: [Number], // Масив номерів пар
         },
         link: {
           type: String,
@@ -54,19 +51,22 @@ const ScheduleSchema = new mongoose.Schema(
         auditorium: {
           num: {
             type: Number,
-            enum: [1, 2], // Ось тут виправлено "Ofline" на "Offline"
-            
+            enum: [1, 2],
           },
           size: {
             type: Number,
           },
+        },
+        groupInfo: {
+          specialization: { type: String }, // Наприклад, "ІПЗ"
+          course: { type: Number }, // Наприклад, 3
+          group: { type: Number }, // Наприклад, 4
         },
         isEvent: {
           type: Boolean,
         },
         eventTitle: {
           type: String,
-          
         },
         Note: [
           {
