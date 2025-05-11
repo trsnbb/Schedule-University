@@ -1,16 +1,19 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./ProfileMenu.css";
-import avatarStudent from "./../../image/avatarStudent.jpg";
+import avatarPlaceholder from "./../../image/User-avatar.png"; // Дефолтний аватар
 import message from "./../../image/message.svg";
 import setting from "./../../image/setting-2.svg";
 import logOut from "./../../image/Log out.png";
 import ExitProfile from "../Modal/ExitProfile/ExitProfile.jsx";
 import { logout } from "../../axios.js";
+import { useAuth } from "../../AuthContext.jsx"; // Імпортуємо контекст авторизації
 
 const ProfileMenu = ({ isOpen, onClose, disableAnimation = false }) => {
   const navigate = useNavigate();
-  const [isLogoutModalOpen, setLogoutModalOpen] = useState(false); // Стан модального вікна
+  const [isLogoutModalOpen, setLogoutModalOpen] = useState(false);
+  const { user } = useAuth(); // Отримуємо дані користувача з контексту
+  console.log("Avatar URL:", user?.avatarUrl);
 
   const handleSettingsClick = () => {
     if (window.location.pathname !== "/settings") {
@@ -27,22 +30,35 @@ const ProfileMenu = ({ isOpen, onClose, disableAnimation = false }) => {
   };
 
   const handleLogoutClick = async () => {
-    setLogoutModalOpen(true); // Відкриваємо модалку для підтвердження
+    setLogoutModalOpen(true);
   };
 
   const handleConfirmLogout = async () => {
     try {
-      await logout(); // Викликаємо функцію виходу
-      setLogoutModalOpen(false); // Закриваємо модалку
-      window.location.reload(); // Оновлюємо сторінку
+      await logout();
+      setLogoutModalOpen(false);
+      window.location.reload();
     } catch (error) {
       console.error("Помилка при виході:", error);
     }
   };
 
   const handleCancelLogout = () => {
-    setLogoutModalOpen(false); // Закриваємо модалку
+    setLogoutModalOpen(false);
   };
+
+  const translateRole = (role) => {
+  switch (role) {
+    case "student":
+      return "Студент";
+    case "teacher":
+      return "Викладач";
+    case "deanery":
+      return "Деканат";
+    default:
+      return "Роль не визначена";
+  }
+};
 
   return (
     <>
@@ -51,30 +67,48 @@ const ProfileMenu = ({ isOpen, onClose, disableAnimation = false }) => {
           disableAnimation ? "no_animation" : ""
         }`}
       >
-        <div className="profile_menu_content">
-          <button className="close_button" onClick={onClose}>
+        <div className='profile_menu_content'>
+          <button className='close_button' onClick={onClose}>
             ×
           </button>
-          <div className="profile_info">
-            <img className="avatar" src={avatarStudent} alt="Avatar" />
+          <div className='profile_info'>
+            <img
+              className='avatar'
+              src={
+                user?.avatarUrl ? `${user.avatarUrl}?sz=200` : avatarPlaceholder
+              }
+              alt='Avatar'
+              crossOrigin='anonymous'
+              referrerPolicy='no-referrer'
+            />
+
             <div>
-              <h3>Беата Янчов</h3>
-              <p className="role">Учень</p>
+              <h3>
+                {user?.name
+                  ? (() => {
+                      const nameParts = user.name.split(" ");
+                      return nameParts.length > 1
+                        ? `${nameParts[0]} ${nameParts[nameParts.length - 1]}` // Беремо перше і останнє слово
+                        : nameParts[0];
+                    })()
+                  : "Анонім"}
+              </h3>
+          <p className="role">{translateRole(user?.role)}</p>
             </div>
           </div>
-          <div className="menu_items">
-            <button className="button_menu" onClick={handleFeedbackClick}>
-              <img className="imgBurger message" src={message} alt="message" />
+          <div className='menu_items'>
+            <button className='button_menu' onClick={handleFeedbackClick}>
+              <img className='imgBurger message' src={message} alt='message' />
               Зворотній зв'язок
             </button>
-            <line className="lineMenu"></line>
-            <button className="button_menu" onClick={handleSettingsClick}>
-              <img className="imgBurger setting" src={setting} alt="setting" />
+            <line className='lineMenu'></line>
+            <button className='button_menu' onClick={handleSettingsClick}>
+              <img className='imgBurger setting' src={setting} alt='setting' />
               Налаштування
             </button>
-            <line className="lineMenu"></line>
-            <button className="button_menu" onClick={handleLogoutClick}>
-              <img className="imgBurger logOut" src={logOut} alt="logOut" />
+            <line className='lineMenu'></line>
+            <button className='button_menu' onClick={handleLogoutClick}>
+              <img className='imgBurger logOut' src={logOut} alt='logOut' />
               Вихід
             </button>
           </div>
