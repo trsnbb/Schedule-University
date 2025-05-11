@@ -8,21 +8,12 @@ import axios from "./../../axios.js";
 const Settings = () => {
   const { user, setUser } = useAuth(); // Отримуємо дані користувача з контексту
   const [newName, setNewName] = useState(user?.name || ""); // Локальний стан для нового імені
-  const [timeFormat, setTimeFormat] = useState(user?.timeFormat || 24); // Локальний стан для формату часу
-
-  useEffect(() => {
-    // Оновлюємо стан, якщо дані користувача змінюються
-    if (user) {
-      setNewName(user.name || "");
-      setTimeFormat(user.timeFormat || 24);
-    }
-  }, [user]);
-
+  const [isSaving, setIsSaving] = useState(false); // Стан для кнопки збереження
+  const [timeFormat, setTimeFormat] = useState(24); // Локальний стан для формату часу
   const handleNameChange = (e) => {
     setNewName(e.target.value); // Оновлюємо локальний стан
   };
-
-  const handleTimeFormatChange = async (format) => {
+const handleTimeFormatChange = async (format) => {
     setTimeFormat(format); // Оновлюємо локальний стан
     try {
       const response = await axios.patch(
@@ -44,12 +35,18 @@ const Settings = () => {
         "Помилка при оновленні формату часу:",
         error.response?.data || error.message
       );
+      alert("Не вдалося оновити формат часу.");
     }
   };
+
+  useEffect(() => {
+    console.log("Оновлений user:", user);
+  }, [user]); // Логування оновленого користувача
 
   const handleSaveName = async () => {
     try {
       console.log("Відправка запиту:", { name: newName });
+      setIsSaving(true);
       const response = await axios.patch(
         "/updateUserProfile",
         { name: newName },
@@ -61,35 +58,46 @@ const Settings = () => {
       if (response.data.success) {
         setUser((prevUser) => ({ ...prevUser, name: newName }));
         alert("Ім'я успішно змінено!");
+        return; // Виходимо з функції, щоб `catch` не спрацював випадково
       }
+
+      throw new Error("Сервер не повернув успішний статус");
     } catch (error) {
       console.error(
         "Помилка при зміні імені:",
         error.response?.data || error.message
       );
-      alert("Не вдалося змінити ім'я.");
+
+      // Відображаємо помилку лише якщо вона реальна
+      if (error.response?.status && error.response.status !== 200) {
+        alert("Не вдалося змінити ім'я.");
+      }
+    } finally {
+      setIsSaving(false);
     }
   };
 
   return (
-    <div className="backround">
+    <div className='backround'>
       <Sidebar />
-      <div className="settings_container">
-        <div className="settings_form">
-          <div className="form_inputs">
+      <div className='settings_container'>
+        <div className='settings_form'>
+          <div className='form_inputs'>
             <label>Імʼя</label>
             <input
-              type="text"
+              type='text'
               value={newName}
               onChange={handleNameChange}
               placeholder="Введіть нове ім'я"
             />
             <button
-              className="save_btn"
+              className='save_btn'
               onClick={handleSaveName}
-              disabled={newName.length < 3 || newName === user?.name}
+              disabled={
+                isSaving || newName.length < 3 || newName === user?.name
+              } // Додаємо перевірку на довжину
             >
-              Зберегти
+              {isSaving ? "Збереження..." : "Зберегти"}
             </button>
 
             <div className="time_format">
@@ -115,19 +123,27 @@ const Settings = () => {
                 12-годинний
               </label>
             </div>
+            <label className='custom_checkbox'>
+              <input type='checkbox' defaultChecked />
+              <span className='checkmark'></span>
+              Відображати події від деканату
+            </label>
+
+            <button className='delete_btn'>Видалити аккаунт</button>
+            <button className='report_btn'>Повідомити про помилку</button>
           </div>
 
-          <div className="profile_section">
+          <div className='profile_section'>
             <img
-              className="avatar_large"
+              className='avatar_large'
               src={
                 user?.avatarUrl || require("./../../image/avatarStudent.jpg")
               }
-              alt="Avatar"
-              crossOrigin="anonymous"
-              referrerPolicy="no-referrer"
+              alt='Avatar'
+              crossOrigin='anonymous'
+              referrerPolicy='no-referrer'
             />
-            <div className="user_info_box">
+            <div className='user_info_box'>
               <h3>Особиста інформація</h3>
               <p>Ім’я: {user?.name || "Невідомо"}</p>
               <p>

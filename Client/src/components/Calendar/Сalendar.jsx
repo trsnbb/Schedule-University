@@ -126,10 +126,16 @@ const Calendar = () => {
     <>
       <div className='header_calendar'>
         <div className='group_calendar'>
-          <p className='style_group'>ІПЗ</p>
-          <p className='style_group'>3 курс</p>
-          <p className='style_group'>4 група</p>
-          <p className='style_group'>2 підгрупа</p>
+          {user?.role === "teacher" ? (
+            <p className='style_group'>{user?.name || "Ім'я викладача"}</p>
+          ) : (
+            <>
+              <p className='style_group'>ІПЗ</p>
+              <p className='style_group'>3 курс</p>
+              <p className='style_group'>4 група</p>
+              <p className='style_group'>2 підгрупа</p>
+            </>
+          )}
         </div>
 
         <div className='date_change'>
@@ -221,7 +227,7 @@ const Calendar = () => {
                               teacherNotes:
                                 "Виконати лабораторну 1 - 3. Зробити звіт.",
                               studentNotes: "",
-                              group: "ІПЗ 3 курс 4 група", 
+                              group: "ІПЗ 3 курс 4 група",
                             },
                             0
                           )
