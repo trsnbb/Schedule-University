@@ -75,38 +75,31 @@ export const updateUserProfile = async (req, res) => {
     const userId = req.user._id;
 
     if (!userId) {
-      return res.status(400).json({
-        message: "ID користувача не надано",
-      });
+      return res.status(400).json({ message: "ID користувача не надано" });
     }
 
     const user = await UserSchema.findById(userId);
 
     if (!user) {
-      return res.status(404).json({
-        message: "Не вдалося знайти користувача",
-      });
+      return res.status(404).json({ message: "Користувача не знайдено" });
     }
 
-    await UserSchema.updateOne(
-      { _id: userId },
-      {
-        name: req.body.userName,
-        avatarUrl: req.body.avatarUrl,
-        timeFormat: req.body.timeFormat,
-        eventVision: req.body.eventVision,
-      }
-    );
+    if (req.body.name) {
+      user.name = req.body.name; // Оновлюємо ім'я
+    }
 
-    res.json({ success: true });
+    if (req.body.timeFormat) {
+      user.timeFormat = req.body.timeFormat; // Оновлюємо формат часу
+    }
+
+    await user.save();
+
+    res.json({ success: true, message: "Профіль успішно оновлено" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: "Не вдалося змінити профіль користувача",
-    });
+    console.error("Помилка при оновленні профілю:", error);
+    res.status(500).json({ message: "Не вдалося оновити профіль" });
   }
 };
-
 export const deleteAvatar = async (req, res) => {
   try {
     const userId = req.user._id;

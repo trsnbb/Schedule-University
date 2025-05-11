@@ -1,8 +1,10 @@
 import React, { useEffect, useRef } from "react";
 import "./PareInfo.css";
+import { useAuth } from "../../../AuthContext.jsx"; // Імпортуємо контекст авторизації
 
 const PareInfo = ({ data, position, onClose }) => {
   const modalRef = useRef(null);
+  const { user } = useAuth(); // Отримуємо дані користувача з контексту
 
   useEffect(() => {
     if (modalRef.current) {
@@ -56,12 +58,23 @@ const PareInfo = ({ data, position, onClose }) => {
     };
   }, [onClose]);
 
+  const formatTime = (time) => {
+    if (user?.timeFormat === 12) {
+      const [hours, minutes] = time.split(":").map(Number);
+      const period = hours >= 12 ? "PM" : "AM";
+      const formattedHours = hours % 12 || 12; // Перетворюємо 0 на 12
+      return `${formattedHours}:${minutes.toString().padStart(2, "0")} ${period}`;
+    }
+    return time; // Якщо формат 24-годинний, повертаємо час без змін
+  };
+
   const getModalBackground = () => {
     const type = data?.type?.toLowerCase();
     if (type === "лекція") return "rgba(3, 105, 161, 0.4)";
     if (type === "практика") return "rgba(109, 40, 217, 0.4)";
     return "rgba(16, 185, 129, 0.4)"; // дефолтний варіант
   };
+
   const getHeaderBackground = () => {
     const type = data?.type?.toLowerCase();
     if (type === "лекція") return "#0369A1"; // для лекції
@@ -71,41 +84,46 @@ const PareInfo = ({ data, position, onClose }) => {
 
   return (
     <>
-      <div className='modal-overlay' onClick={onClose} />
+      <div className="modal-overlay" onClick={onClose} />
       <div
         ref={modalRef}
-        className='modal-content'
+        className="modal-content"
         style={{
           position: "fixed",
           background: getModalBackground(),
         }}
       >
         <div
-          className='modal-header'
+          className="modal-header"
           style={{ background: getHeaderBackground() }}
         >
           {data.title}
         </div>
-        <div className='modal-body'>
-          <div className='modal-row'>
+        <div className="modal-body">
+          <div className="modal-row">
             {data.type}
-            <span className='modal_time'>{data.time}</span>
+            <span className="modal_time">
+              {data.time
+                .split("–")
+                .map((t) => formatTime(t.trim()))
+                .join(" – ")}
+            </span>
           </div>
-          <div className='modal-row'>
-            <span className='label'>Формат:</span> {data.mode}
+          <div className="modal-row">
+            <span className="label">Формат:</span> {data.mode}
           </div>
           {data.teacher && (
-            <div className='modal-row'>
-              <span className='label'>Викладач:</span> {data.teacher}
+            <div className="modal-row">
+              <span className="label">Викладач:</span> {data.teacher}
             </div>
           )}
           {data.link && (
-            <div className='modal-row'>
-              <span className='label'>Посилання:</span>
+            <div className="modal-row">
+              <span className="label">Посилання:</span>
               <a
                 href={data.link}
-                target='_blank'
-                rel='noopener noreferrer'
+                target="_blank"
+                rel="noopener noreferrer"
                 style={{ color: "#fff" }}
               >
                 {data.link}
@@ -113,10 +131,10 @@ const PareInfo = ({ data, position, onClose }) => {
             </div>
           )}
           <span>Нотатки від викладача:</span>
-          <div className='teacher-notes'>{data.teacherNotes || ""}</div>
+          <div className="teacher-notes">{data.teacherNotes || ""}</div>
 
           <span>Мої нотатки:</span>
-          <div className='student-notes'>{data.studentNotes || ""}</div>
+          <div className="student-notes">{data.studentNotes || ""}</div>
         </div>
       </div>
     </>

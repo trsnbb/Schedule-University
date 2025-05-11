@@ -16,7 +16,7 @@ const app = express();
 app.use(
   cors({
     origin: "http://localhost:3000", // URL клієнта
-    credentials: true, // Дозволяє передачу куків
+    credentials: true, // Дозволяє передавати куки
   })
 );
 app.use(express.json());

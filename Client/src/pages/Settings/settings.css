@@ -228,3 +228,20 @@
   border-width: 0 3px 3px 0;
   transform: rotate(45deg);
 }
+.save_btn {
+  padding: 8px 40px;
+  background-color: #34833b; /* Зелений колір, як у модалці */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: opacity 0.2s ease-in-out;
+}
+
+
+.save_btn:disabled {
+  background-color: rgba(52, 131, 59, 0.5); /* Світліший колір для неактивної кнопки */
+  cursor: not-allowed;
+}

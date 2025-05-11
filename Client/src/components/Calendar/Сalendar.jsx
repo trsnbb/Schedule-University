@@ -4,6 +4,7 @@ import dzyobik from "./../../image/dzyobik.svg";
 import LessonBlock from "./../LessonBlock/LessonBlock.jsx";
 import Modal from "../Modal/PareInfo/PareInfo.jsx";
 import CreateSchedule from "../Modal/AddShedule/CreateSchedule.jsx"; // Імпорт компонента AddPareModal
+import { useAuth } from "../../AuthContext.jsx"; // Імпортуємо контекст авторизації
 
 const getMonday = (date = new Date()) => {
   const currentDay = date.getDay();
@@ -56,6 +57,7 @@ const lessonsSchedule = [
 ];
 
 const Calendar = () => {
+  const { user } = useAuth(); // Отримуємо дані користувача з контексту
   const [lessonStatus, setLessonStatus] = useState({
     current: null,
     next: null,
@@ -82,50 +84,18 @@ const Calendar = () => {
     setWeekStartDate(next);
   };
 
-  useEffect(() => {
-    const checkLessonTime = () => {
-      const now = new Date().toLocaleTimeString("uk-UA", {
-        timeZone: "Europe/Kyiv",
-        hour12: false,
-      });
-      const [nowHours, nowMinutes] = now.split(":").map(Number);
-      const nowMinutesTotal = nowHours * 60 + nowMinutes;
-
-      let current = null;
-      let next = null;
-
-      for (let i = 0; i < lessonsSchedule.length; i++) {
-        const start = lessonsSchedule[i].start.split(":").map(Number);
-        const end = lessonsSchedule[i].end.split(":").map(Number);
-        const startMinutes = start[0] * 60 + start[1];
-        const endMinutes = end[0] * 60 + end[1];
-
-        if (nowMinutesTotal >= startMinutes && nowMinutesTotal <= endMinutes) {
-          current = i;
-          break;
-        }
-        if (
-          i < lessonsSchedule.length - 1 &&
-          nowMinutesTotal > endMinutes &&
-          nowMinutesTotal <
-            lessonsSchedule[i + 1].start.split(":").map(Number)[0] * 60 +
-              lessonsSchedule[i + 1].start.split(":").map(Number)[1]
-        ) {
-          next = i + 1;
-          break;
-        }
-      }
-      setLessonStatus({ current, next });
-    };
-
-    checkLessonTime();
-    const interval = setInterval(checkLessonTime, 30000);
-    return () => clearInterval(interval);
-  }, []);
+  const formatTime = (time) => {
+    if (user?.timeFormat === 12) {
+      const [hours, minutes] = time.split(":").map(Number);
+      const period = hours >= 12 ? "PM" : "AM";
+      const formattedHours = hours % 12 || 12; // Перетворюємо 0 на 12
+      return `${formattedHours}:${minutes.toString().padStart(2, "0")} ${period}`;
+    }
+    return time; // Якщо формат 24-годинний, повертаємо час без змін
+  };
 
   const handleLessonClick = (e, data, index) => {
     if (index === 5) {
-      // Перевіряємо, чи натиснута шоста клітинка (index 5)
       setAddPareModalOpen(true); // Відкриваємо модальне вікно AddPare
     } else {
       const rect = e.currentTarget.getBoundingClientRect();
@@ -152,20 +122,20 @@ const Calendar = () => {
 
   return (
     <>
-      <div className='header_calendar'>
-        <div className='group_calendar'>
-          <p className='style_group'>ІПЗ</p>
-          <p className='style_group'>3 курс</p>
-          <p className='style_group'>4 група</p>
-          <p className='style_group'>2 підгрупа</p>
+      <div className="header_calendar">
+        <div className="group_calendar">
+          <p className="style_group">ІПЗ</p>
+          <p className="style_group">3 курс</p>
+          <p className="style_group">4 група</p>
+          <p className="style_group">2 підгрупа</p>
         </div>
 
-        <div className='date_change'>
-          <div className='style_group'>
+        <div className="date_change">
+          <div className="style_group">
             <img
               src={dzyobik}
               onClick={goToPrevWeek}
-              alt='prev'
+              alt="prev"
               style={{ cursor: "pointer" }}
             />
             <p onClick={goToToday} style={{ cursor: "pointer" }}>
@@ -175,8 +145,8 @@ const Calendar = () => {
             </p>
             <img
               src={dzyobik}
-              alt='next'
-              className='flipped'
+              alt="next"
+              className="flipped"
               onClick={goToNextWeek}
               style={{ cursor: "pointer" }}
             />
@@ -184,24 +154,24 @@ const Calendar = () => {
         </div>
       </div>
 
-      <div className='calendar'>
-        <div className='calendar_container'>
-          <div className='days_wrapper'>
-            <div className='count_day'>
+      <div className="calendar">
+        <div className="calendar_container">
+          <div className="days_wrapper">
+            <div className="count_day">
               {days.map((day, index) => (
                 <div
                   key={index}
                   className={`day_cell ${day.isToday ? "today" : "not-today"}`}
                 >
-                  <div className='day_number'>{day.number}</div>
-                  <div className='day_name'>{day.name}</div>
+                  <div className="day_number">{day.number}</div>
+                  <div className="day_name">{day.name}</div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className='schedule_wrapper'>
-            <div className='count_lesson'>
+          <div className="schedule_wrapper">
+            <div className="count_lesson">
               {["1 пара", "2 пара", "3 пара", "4 пара", "5 пара"].map(
                 (text, index) => {
                   let lessonClass = "lesson_number";
@@ -219,69 +189,35 @@ const Calendar = () => {
                 }
               )}
             </div>
-            <div className='calendar_grid'>
-              <div className='grid'>
+            <div className="calendar_grid">
+              <div className="grid">
                 {Array.from({ length: 30 }).map((_, index) => (
-                  <div key={index} className='cell'>
+                  <div key={index} className="cell">
                     {index === 0 && (
                       <LessonBlock
-                        title='Операційні системи'
-                        type='Лекція'
-                        mode='Онлайн'
-                        time='08:00 – 09:20'
-                        onClick={
-                          (e) =>
-                            handleLessonClick(
-                              e,
-                              {
-                                title: "Операційні системи",
-                                type: "Лекція",
-                                mode: "Онлайн",
-                                time: "08:00 – 09:20",
-                                teacher: "Петренко Іван",
-                                link: "https://meet.google.com/example",
-                                teacherNotes:
-                                  "Виконати лабораторну 1 - 3. Зробити звіт.",
-                                studentNotes: "",
-                              },
-                              0
-                            ) // додано індекс 0
+                        title="Операційні системи"
+                        type="Лекція"
+                        mode="Онлайн"
+                        time={`${formatTime("08:00")} – ${formatTime("09:20")}`}
+                        onClick={(e) =>
+                          handleLessonClick(
+                            e,
+                            {
+                              title: "Операційні системи",
+                              type: "Лекція",
+                              mode: "Онлайн",
+                              time: `${formatTime("08:00")} – ${formatTime(
+                                "09:20"
+                              )}`,
+                              teacher: "Петренко Іван",
+                              link: "https://meet.google.com/example",
+                              teacherNotes:
+                                "Виконати лабораторну 1 - 3. Зробити звіт.",
+                              studentNotes: "",
+                            },
+                            0
+                          )
                         }
-                      />
-                    )}
-                    {index === 14 && (
-                      <LessonBlock
-                        title='Бази даних'
-                        type='Лаб'
-                        mode='Онлайн'
-                        time='08:00 – 09:20'
-                        onClick={
-                          (e) =>
-                            handleLessonClick(
-                              e,
-                              {
-                                title: "Бази даних",
-                                type: "Лабораторна робота",
-                                mode: "Онлайн",
-                                time: "08:00 – 09:20",
-                                teacher: "Нелюбов Володимир Олександрович",
-                                link: "https://meet.google.com/example",
-                                teacherNotes:
-                                  "Виконати лабораторну 1 - 3. Зробити звіт.",
-                                studentNotes: "",
-                              },
-                              14
-                            ) // додано індекс 14
-                        }
-                      />
-                    )}
-                    {index === 5 && ( // Перевірка на шосту клітинку
-                      <LessonBlock
-                        title='Додати пару'
-                        type='Нова пара'
-                        mode='Не визначено'
-                        time='Не визначено'
-                        onClick={(e) => handleLessonClick(e, {}, 5)} // Викликаємо для шостої клітинки
                       />
                     )}
                   </div>

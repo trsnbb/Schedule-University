@@ -13,7 +13,6 @@ const ProfileMenu = ({ isOpen, onClose, disableAnimation = false }) => {
   const navigate = useNavigate();
   const [isLogoutModalOpen, setLogoutModalOpen] = useState(false);
   const { user } = useAuth(); // Отримуємо дані користувача з контексту
-  console.log("Avatar URL:", user?.avatarUrl);
 
   const handleSettingsClick = () => {
     if (window.location.pathname !== "/settings") {

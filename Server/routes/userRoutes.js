@@ -7,11 +7,12 @@ import {
   googleAuthCallback,
   updateUserProfile,
   deleteAvatar,
-  deleteUser
+  deleteUser,
 } from "../controllers/userController.js";
 import passport from "passport";
 import verifyToken from "../verifyToken.js";
 import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
 
 dotenv.config();
 
@@ -28,7 +29,10 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-router.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+router.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
 
 router.get(
   "/auth/google/callback",
@@ -65,6 +69,5 @@ router.get("/profile", verifyToken, getProfile);
 router.patch("/updateUserProfile", verifyToken, updateUserProfile);
 router.delete("/deleteAvatar", verifyToken, deleteAvatar);
 router.delete("/deleteUser", verifyToken, deleteUser);
-
 
 export default router;

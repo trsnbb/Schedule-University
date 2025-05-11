@@ -7,25 +7,32 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null); // Додаємо стан для збереження даних користувача
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await axios.get("/auth/user");
-        console.log("Користувач авторизований:", response.data);
-        setIsAuthenticated(true);
-        setUser(response.data); // Зберігаємо дані користувача
-      } catch (error) {
-        console.error(
-          "Помилка авторизації:",
-          error.response?.data || error.message
-        );
-        setIsAuthenticated(false);
-        setUser(null); // Очищаємо дані користувача
-      }
-    };
+ useEffect(() => {
+  const checkAuth = async () => {
+    try {
+      const response = await axios.get("/auth/user");
+      console.log("Користувач авторизований:", response.data);
 
-    checkAuth();
-  }, []);
+      // Зберігаємо токен у localStorage
+      const token = response.data.token; // Переконайтеся, що сервер повертає токен
+      if (token) {
+        localStorage.setItem("authToken", token);
+      }
+
+      setIsAuthenticated(true);
+      setUser(response.data); // Зберігаємо дані користувача
+    } catch (error) {
+      console.error(
+        "Помилка авторизації:",
+        error.response?.data || error.message
+      );
+      setIsAuthenticated(false);
+      setUser(null); // Очищаємо дані користувача
+    }
+  };
+
+  checkAuth();
+}, []);
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, user }}>
