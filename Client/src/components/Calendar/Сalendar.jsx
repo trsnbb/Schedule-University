@@ -221,6 +221,7 @@ const Calendar = () => {
                               teacherNotes:
                                 "Виконати лабораторну 1 - 3. Зробити звіт.",
                               studentNotes: "",
+                              group: "ІПЗ 3 курс 4 група", 
                             },
                             0
                           )

@@ -63,7 +63,9 @@ const PareInfo = ({ data, position, onClose }) => {
       const [hours, minutes] = time.split(":").map(Number);
       const period = hours >= 12 ? "PM" : "AM";
       const formattedHours = hours % 12 || 12; // Перетворюємо 0 на 12
-      return `${formattedHours}:${minutes.toString().padStart(2, "0")} ${period}`;
+      return `${formattedHours}:${minutes
+        .toString()
+        .padStart(2, "0")} ${period}`;
     }
     return time; // Якщо формат 24-годинний, повертаємо час без змін
   };
@@ -84,57 +86,99 @@ const PareInfo = ({ data, position, onClose }) => {
 
   return (
     <>
-      <div className="modal-overlay" onClick={onClose} />
+      <div className='modal-overlay' onClick={onClose} />
       <div
         ref={modalRef}
-        className="modal-content"
+        className='modal-content'
         style={{
           position: "fixed",
           background: getModalBackground(),
         }}
       >
         <div
-          className="modal-header"
+          className='modal-header'
           style={{ background: getHeaderBackground() }}
         >
           {data.title}
         </div>
-        <div className="modal-body">
-          <div className="modal-row">
-            {data.type}
-            <span className="modal_time">
-              {data.time
-                .split("–")
-                .map((t) => formatTime(t.trim()))
-                .join(" – ")}
-            </span>
-          </div>
-          <div className="modal-row">
-            <span className="label">Формат:</span> {data.mode}
-          </div>
-          {data.teacher && (
-            <div className="modal-row">
-              <span className="label">Викладач:</span> {data.teacher}
-            </div>
-          )}
-          {data.link && (
-            <div className="modal-row">
-              <span className="label">Посилання:</span>
-              <a
-                href={data.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: "#fff" }}
-              >
-                {data.link}
-              </a>
-            </div>
-          )}
-          <span>Нотатки від викладача:</span>
-          <div className="teacher-notes">{data.teacherNotes || ""}</div>
+        <div className='modal-body'>
+          {user?.role === "teacher" ? (
+            // Пустий рендеринг для викладача
+            <>
+              <div className='modal-row'>
+                {data.type}
+                <span className='modal_time'>
+                  {data.time
+                    .split("–")
+                    .map((t) => formatTime(t.trim()))
+                    .join(" – ")}
+                </span>
+              </div>
+              <div className='modal-row'>
+                <span className='label'>Формат:</span> {data.mode}
+              </div>
+                <div className='modal-row'>
+                  <span className='label'>Група:</span> {data.group}
+                  
+                </div>
+              {data.link && (
+                <div className='modal-row'>
+                  <span className='label'>Посилання:</span>
+                  <a
+                    href={data.link}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    style={{ color: "#fff" }}
+                  >
+                    {data.link}
+                  </a>
+                </div>
+              )}
+              <span>Нотатки для учнів:</span>
+              <div className='teacher-notes'>{data.teacherNotes || ""}</div>
 
-          <span>Мої нотатки:</span>
-          <div className="student-notes">{data.studentNotes || ""}</div>
+              <span>Мої нотатки:</span>
+              <div className='student-notes'>{data.studentNotes || ""}</div>
+            </>
+          ) : (
+            <>
+              <div className='modal-row'>
+                {data.type}
+                <span className='modal_time'>
+                  {data.time
+                    .split("–")
+                    .map((t) => formatTime(t.trim()))
+                    .join(" – ")}
+                </span>
+              </div>
+              <div className='modal-row'>
+                <span className='label'>Формат:</span> {data.mode}
+              </div>
+              {data.teacher && (
+                <div className='modal-row'>
+                  <span className='label'>Викладач:</span> {data.teacher}
+                </div>
+              )}
+              {data.link && (
+                <div className='modal-row'>
+                  <span className='label'>Посилання:</span>
+                  <a
+                    href={data.link}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    style={{ color: "#fff" }}
+                  >
+                    {data.link}
+                  </a>
+                </div>
+              )}
+              <span>Нотатки від викладача:</span>
+              <div className='teacher-notes'>{data.teacherNotes || ""}</div>
+
+              <span>Мої нотатки:</span>
+              <div className='student-notes'>{data.studentNotes || ""}</div>
+            </>
+          )}
         </div>
       </div>
     </>
