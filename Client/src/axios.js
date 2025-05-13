@@ -7,8 +7,10 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   (config) => {
+
     const token = localStorage.getItem("authToken"); // Отримуємо токен із localStorage
     console.log("Токен перед відправкою:", token);
+
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`; // Додаємо токен до заголовків

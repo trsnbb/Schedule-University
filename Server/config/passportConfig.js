@@ -5,7 +5,6 @@ import dotenv from "dotenv";
 import { linkPredmetToRegisteredTeacher } from "../controllers/teachingsController.js"; 
 
 dotenv.config();
-
 export const configurePassport = () => {
   passport.use(
     new GoogleStrategy(

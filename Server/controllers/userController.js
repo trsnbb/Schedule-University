@@ -65,9 +65,8 @@ export const googleAuthCallback = async (req, res) => {
       expiresIn: "30d",
     }
   );
-  
-  res.json({ token, user: req.user });
-  
+
+  res.json({ token, user: req.user }); // Переконайтеся, що токен повертається
 };
 
 export const updateUserProfile = async (req, res) => {
@@ -91,7 +90,9 @@ export const updateUserProfile = async (req, res) => {
     if (req.body.timeFormat) {
       user.timeFormat = req.body.timeFormat; // Оновлюємо формат часу
     }
-
+    if (req.body.eventVision !== undefined) {
+      user.eventVision = req.body.eventVision;
+    }
     await user.save();
 
     res.json({ success: true, message: "Профіль успішно оновлено" });

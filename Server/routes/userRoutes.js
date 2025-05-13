@@ -15,6 +15,7 @@ import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 
 dotenv.config();
+console.log("JWT_SECRET:", process.env.JWT_SECRET);
 
 const router = express.Router();
 
@@ -46,7 +47,12 @@ router.get(
 );
 router.get("/auth/user", (req, res) => {
   if (req.isAuthenticated()) {
-    res.json(req.user); // Повертає дані авторизованого користувача
+    const token = jwt.sign(
+      { _id: req.user._id, name: req.user.name, email: req.user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "30d" }
+    );
+    res.json({ token, user: req.user }); // Повертаємо токен і дані користувача
   } else {
     res.status(401).json({ message: "Необхідна авторизація" });
   }

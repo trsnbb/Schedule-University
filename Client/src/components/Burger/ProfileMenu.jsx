@@ -12,8 +12,9 @@ import { useAuth } from "../../AuthContext.jsx"; // Імпортуємо кон�
 const ProfileMenu = ({ isOpen, onClose, disableAnimation = false }) => {
   const navigate = useNavigate();
   const [isLogoutModalOpen, setLogoutModalOpen] = useState(false);
-  const { user } = useAuth(); // Отримуємо дані користувача з контексту
-
+  const { user } = useAuth();
+  const userData = user?.user; // Отримуємо вкладений об'єкт user
+  console.log("Дані користувача в ProfileMenu:", user); // Логування даних користувача
   const handleSettingsClick = () => {
     if (window.location.pathname !== "/settings") {
       navigate("/settings");
@@ -47,17 +48,17 @@ const ProfileMenu = ({ isOpen, onClose, disableAnimation = false }) => {
   };
 
   const translateRole = (role) => {
-  switch (role) {
-    case "student":
-      return "Студент";
-    case "teacher":
-      return "Викладач";
-    case "deanery":
-      return "Деканат";
-    default:
-      return "Роль не визначена";
-  }
-};
+    switch (role) {
+      case "student":
+        return "Студент";
+      case "teacher":
+        return "Викладач";
+      case "deanery":
+        return "Деканат";
+      default:
+        return "Роль не визначена";
+    }
+  };
 
   return (
     <>
@@ -74,7 +75,7 @@ const ProfileMenu = ({ isOpen, onClose, disableAnimation = false }) => {
             <img
               className='avatar'
               src={
-                user?.avatarUrl ? `${user.avatarUrl}?sz=200` : avatarPlaceholder
+                userData?.avatarUrl ? `${userData?.avatarUrl}?sz=200` : avatarPlaceholder
               }
               alt='Avatar'
               crossOrigin='anonymous'
@@ -83,16 +84,16 @@ const ProfileMenu = ({ isOpen, onClose, disableAnimation = false }) => {
 
             <div>
               <h3>
-                {user?.name
+                {userData?.name
                   ? (() => {
-                      const nameParts = user.name.split(" ");
+                      const nameParts = userData?.name.split(" ");
                       return nameParts.length > 1
                         ? `${nameParts[0]} ${nameParts[nameParts.length - 1]}` // Беремо перше і останнє слово
                         : nameParts[0];
                     })()
                   : "Анонім"}
               </h3>
-          <p className="role">{translateRole(user?.role)}</p>
+              <p className='role'>{translateRole(userData?.role)}</p>
             </div>
           </div>
           <div className='menu_items'>

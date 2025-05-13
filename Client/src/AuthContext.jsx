@@ -7,38 +7,41 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null); // Додаємо стан для збереження даних користувача
 
- useEffect(() => {
-  const checkAuth = async () => {
-    try {
-      const response = await axios.get("/auth/user");
-      console.log("Користувач авторизований:", response.data);
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await axios.get("/auth/user");
+        console.log("Користувач авторизований:", response.data);
 
-      // Зберігаємо токен у localStorage
-      const token = response.data.token; // Переконайтеся, що сервер повертає токен
-      if (token) {
-        localStorage.setItem("authToken", token);
+        // Зберігаємо токен у localStorage
+        if (response.data.token) {
+          localStorage.setItem("authToken", response.data.token);
+          console.log("Токен збережено в localStorage:", response.data.token);
+        }
+        console.log("Отриманий токен від сервера:", response.data.token);
+
+        setIsAuthenticated(true);
+        setUser(response.data); // Зберігаємо дані користувача
+      } catch (error) {
+        setIsAuthenticated(false);
+        setUser(null); // Очищаємо дані користувача
+        console.error(
+          "Помилка авторизації:",
+          error.response?.data || error.message
+        );
       }
+    };
 
-      setIsAuthenticated(true);
-      setUser(response.data); // Зберігаємо дані користувача
-    } catch (error) {
-      console.error(
-        "Помилка авторизації:",
-        error.response?.data || error.message
-      );
-      setIsAuthenticated(false);
-      setUser(null); // Очищаємо дані користувача
-    }
-  };
-
-  checkAuth();
-}, []);
-
-  return (
-    <AuthContext.Provider value={{ isAuthenticated, user }}>
-      {children}
-    </AuthContext.Provider>
-  );
+    checkAuth();
+  }, []);
+  useEffect(() => {
+    console.log("Оновлений користувач у контексті:", user);
+  }, [user]);
+ return (
+  <AuthContext.Provider value={{ isAuthenticated, user, setUser }}>
+    {children}
+  </AuthContext.Provider>
+);
 };
 
 export const useAuth = () => useContext(AuthContext);
