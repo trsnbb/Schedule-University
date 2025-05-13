@@ -110,3 +110,28 @@ let weeklySchedule = lessons.map((lesson) => {
     res.status(500).json({ message: "Error creating schedule" });
   }
 };
+
+export const getScheduleByGroup = async (req, res) => {
+  try {
+    const { specialization, course, group } = req.query;
+
+    if (!specialization || !course || !group) {
+      return res.status(400).json({ message: "Вкажіть спеціалізацію, курс і групу" });
+    }
+
+    const schedule = await Schedule.find({
+      "lessons.groupInfo.specialization": specialization,
+      "lessons.groupInfo.course": parseInt(course),
+      "lessons.groupInfo.group": parseInt(group),
+    });
+
+    if (!schedule || schedule.length === 0) {
+      return res.status(404).json({ message: "Розклад не знайдено" });
+    }
+
+    res.status(200).json(schedule);
+  } catch (error) {
+    console.error("Помилка отримання розкладу:", error);
+    res.status(500).json({ message: "Помилка сервера" });
+  }
+};

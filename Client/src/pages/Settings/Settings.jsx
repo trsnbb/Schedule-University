@@ -4,13 +4,19 @@ import Sidebar from "./../../components/Side bar/Sidebar.jsx";
 import "./settings.css";
 import { useAuth } from "../../AuthContext.jsx";
 import axios from "./../../axios.js";
+import ExitProfile from "../../components/Modal/ExitProfile/ExitProfile.jsx";
+
 
 const Settings = () => {
   const { user, setUser } = useAuth();
   const [newName, setNewName] = useState(user?.user?.name || "");
   const [isSaving, setIsSaving] = useState(false);
   const [timeFormat, setTimeFormat] = useState(user?.user?.timeFormat || 24);
-  const [eventVision, setEventVision] = useState(user?.user?.eventVision || true);
+  const [eventVision, setEventVision] = useState(
+    user?.user?.eventVision || true
+  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState("");
 
   useEffect(() => {
     if (user?.user) {
@@ -120,22 +126,54 @@ const Settings = () => {
       setIsSaving(false);
     }
   };
+ const handleDeleteAccount = async () => {
+    try {
+      await axios.delete("/deleteUser");
+      alert("Ваш профіль було успішно видалено.");
+      setUser(null);
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Помилка при видаленні профілю:", error.response?.data || error.message);
+      alert("Не вдалося видалити профіль.");
+    }
+  };
+
+  const openModal = (type) => {
+    setModalType(type);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setModalType("");
+  };
+
+  const handleModalConfirm = () => {
+    if (modalType === "delete") {
+      handleDeleteAccount();
+    }
+    closeModal();
+  };
+
+  const handleReportIssue = () => {
+    alert("Функціонал повідомлення про помилку ще не реалізовано.");
+  };
 
   return (
-    <div className="backround">
+    <div className='backround'>
       <Sidebar />
-      <div className="settings_container">
-        <div className="settings_form">
-          <div className="form_inputs">
+      <div className='settings_container'>
+        <div className='settings_form'>
+          <div className='form_inputs'>
             <label>Імʼя</label>
             <input
-              type="text"
+              type='text'
               value={newName}
               onChange={handleNameChange}
               placeholder="Введіть нове ім'я"
             />
             <button
-              className="save_btn"
+              className='save_btn'
               onClick={handleSaveName}
               disabled={
                 isSaving || newName.length < 3 || newName === user?.user?.name
@@ -144,55 +182,66 @@ const Settings = () => {
               {isSaving ? "Збереження..." : "Зберегти"}
             </button>
 
-            <div className="time_format">
+            <div className='time_format'>
               <p>Часовий формат</p>
-              <label className="custom_radio">
+              <label className='custom_radio'>
                 <input
-                  type="radio"
-                  name="time"
+                  type='radio'
+                  name='time'
                   checked={user?.user?.timeFormat === 24}
                   onChange={() => handleTimeFormatChange(24)}
                 />
-                <span className="radio_mark"></span>
+                <span className='radio_mark'></span>
                 24-годинний
               </label>
-              <label className="custom_radio">
+              <label className='custom_radio'>
                 <input
-                  type="radio"
-                  name="time"
+                  type='radio'
+                  name='time'
                   checked={user?.user?.timeFormat === 12}
                   onChange={() => handleTimeFormatChange(12)}
                 />
-                <span className="radio_mark"></span>
+                <span className='radio_mark'></span>
                 12-годинний
               </label>
             </div>
-            <label className="custom_checkbox">
+            <label className='custom_checkbox'>
               <input
-                type="checkbox"
+                type='checkbox'
                 checked={eventVision} // Відображаємо стан
                 onChange={handleEventVisionChange} // Викликаємо обробник
               />
-              <span className="checkmark"></span>
+              <span className='checkmark'></span>
               Відображати події від деканату
             </label>
-
-            <button className="delete_btn">Видалити аккаунт</button>
-            <button className="report_btn">Повідомити про помилку</button>
+           <button
+              className="delete_btn"
+              onClick={() => openModal("delete")}
+            >
+              Видалити аккаунт
+            </button>
+            <button className='report_btn' onClick={handleReportIssue}>
+              Повідомити про помилку
+            </button>
           </div>
-
-          <div className="profile_section">
+            <ExitProfile
+        isOpen={isModalOpen}
+        onConfirm={handleModalConfirm}
+        onCancel={closeModal}
+        modalType={modalType}
+      />
+          <div className='profile_section'>
             <img
-              className="avatar_large"
+              className='avatar_large'
               src={
                 user?.user?.avatarUrl ||
                 require("./../../image/avatarStudent.jpg")
               }
-              alt="Avatar"
-              crossOrigin="anonymous"
-              referrerPolicy="no-referrer"
+              alt='Avatar'
+              crossOrigin='anonymous'
+              referrerPolicy='no-referrer'
             />
-            <div className="user_info_box">
+            <div className='user_info_box'>
               <h3>Особиста інформація</h3>
               <p>Ім’я: {user?.user?.name || "Невідомо"}</p>
               <p>

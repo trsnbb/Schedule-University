@@ -75,7 +75,9 @@ const ProfileMenu = ({ isOpen, onClose, disableAnimation = false }) => {
             <img
               className='avatar'
               src={
-                userData?.avatarUrl ? `${userData?.avatarUrl}?sz=200` : avatarPlaceholder
+                userData?.avatarUrl
+                  ? `${userData?.avatarUrl}?sz=200`
+                  : avatarPlaceholder
               }
               alt='Avatar'
               crossOrigin='anonymous'
@@ -91,11 +93,12 @@ const ProfileMenu = ({ isOpen, onClose, disableAnimation = false }) => {
                         ? `${nameParts[0]} ${nameParts[nameParts.length - 1]}` // Беремо перше і останнє слово
                         : nameParts[0];
                     })()
-                  : "Анонім"}
+                  : "Гість"}
               </h3>
               <p className='role'>{translateRole(userData?.role)}</p>
             </div>
           </div>
+           {userData && (
           <div className='menu_items'>
             <button className='button_menu' onClick={handleFeedbackClick}>
               <img className='imgBurger message' src={message} alt='message' />
@@ -112,8 +115,9 @@ const ProfileMenu = ({ isOpen, onClose, disableAnimation = false }) => {
               Вихід
             </button>
           </div>
-        </div>
+        )}
       </div>
+    </div>
 
       <ExitProfile
         isOpen={isLogoutModalOpen}

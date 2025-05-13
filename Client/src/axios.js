@@ -22,18 +22,23 @@ instance.interceptors.request.use(
   }
 );
 
+
 instance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
-      console.error("Помилка:", error.response.data);
       if (error.response.status === 401) {
         console.error("Необхідна повторна аутентифікація");
+        localStorage.removeItem("authToken"); // Видаляємо токен
+
+        if (window.location.pathname !== "/") {
+          window.location.href = "/"; // Перенаправляємо на головну сторінку
+        }
       }
     }
     return Promise.reject(error);
   }
-);
+);;
 export const logout = async () => {
   try {
     const response = await instance.get("/auth/logout");

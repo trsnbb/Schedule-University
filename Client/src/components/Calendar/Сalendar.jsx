@@ -121,6 +121,56 @@ const Calendar = () => {
   const closeAddPareModal = () => {
     setAddPareModalOpen(false); // Закриваємо модальне вікно AddPare
   };
+  const lessonsSchedule = [
+    { start: "08:00", end: "09:20" },
+    { start: "09:40", end: "11:00" },
+    { start: "11:20", end: "12:40" },
+    { start: "13:00", end: "14:20" },
+    { start: "14:40", end: "16:00" },
+  ];
+  useEffect(() => {
+    const checkLessonTime = () => {
+      const now = new Date().toLocaleTimeString("uk-UA", {
+        timeZone: "Europe/Kyiv",
+        hour12: false,
+      });
+      const [nowHours, nowMinutes] = now.split(":").map(Number);
+      const nowMinutesTotal = nowHours * 60 + nowMinutes;
+
+      let current = null;
+      let next = null;
+
+      for (let i = 0; i < lessonsSchedule.length; i++) {
+        const start = lessonsSchedule[i].start.split(":").map(Number);
+        const end = lessonsSchedule[i].end.split(":").map(Number);
+
+        const startMinutes = start[0] * 60 + start[1];
+        const endMinutes = end[0] * 60 + end[1];
+
+        if (nowMinutesTotal >= startMinutes && nowMinutesTotal <= endMinutes) {
+          current = i;
+          break;
+        }
+
+        if (
+          i < lessonsSchedule.length - 1 &&
+          nowMinutesTotal > endMinutes &&
+          nowMinutesTotal <
+            lessonsSchedule[i + 1].start.split(":").map(Number)[0] * 60 +
+              lessonsSchedule[i + 1].start.split(":").map(Number)[1]
+        ) {
+          next = i + 1;
+          break;
+        }
+      }
+
+      setLessonStatus({ current, next });
+    };
+
+    checkLessonTime();
+    const interval = setInterval(checkLessonTime, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <>
@@ -184,7 +234,7 @@ const Calendar = () => {
                 (text, index) => {
                   let lessonClass = "lesson_number";
                   if (lessonStatus.current === index) {
-                    lessonClass += " active-lesson";
+                    lessonClass += " active_lesson";
                   } else if (lessonStatus.next === index) {
                     lessonClass += " next-lesson";
                   }

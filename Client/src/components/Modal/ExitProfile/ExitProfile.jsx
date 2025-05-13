@@ -1,13 +1,19 @@
 import React from "react";
 import "./exitProfile.css";
 
-const ExitProfile = ({ isOpen, onConfirm, onCancel }) => {
+const ExitProfile = ({ isOpen, onConfirm, onCancel, modalType }) => {
   if (!isOpen) return null; // Якщо модалка неактивна, нічого не рендеримо
+
+  // Визначаємо текст модалки залежно від типу
+  const modalText =
+    modalType === "delete"
+      ? "Ви впевнені, що хочете видалити свій аккаунт?"
+      : "Ви впевнені, що хочете вийти?";
 
   return (
     <div className="logout-modal-overlay">
       <div className="logout-modal-content">
-        <h2>Ви впевнені, що хочете вийти?</h2>
+        <h2>{modalText}</h2>
         <div className="button-group">
           <button className="confirm-button" onClick={onConfirm}>
             Так
