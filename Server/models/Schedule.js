@@ -17,6 +17,11 @@ const ScheduleSchema = new mongoose.Schema(
       ref: "Course",
       required: true,
     },
+    specializationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Specialization",
+      required: true,
+    },
     lessons: [
       {
         predmetId: {
@@ -51,17 +56,12 @@ const ScheduleSchema = new mongoose.Schema(
         auditorium: {
           num: {
             type: Number,
-            enum: [1, 2],
           },
           size: {
             type: Number,
           },
         },
-        groupInfo: {
-          specialization: { type: String }, // Наприклад, "ІПЗ"
-          course: { type: Number }, // Наприклад, 3
-          group: { type: Number }, // Наприклад, 4
-        },
+      
         isEvent: {
           type: Boolean,
         },

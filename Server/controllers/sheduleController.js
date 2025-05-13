@@ -12,11 +12,17 @@ export const createSchedule = async (req, res) => {
       lessons,
     } = req.body;
 
-    let specialization = await Specialization.findOne({ name: specializationName });
+    // Знаходимо або створюємо спеціалізацію
+    let specialization = await Specialization.findOne({
+      name: specializationName,
+    });
     if (!specialization) {
-      specialization = await Specialization.create({ name: specializationName });
+      specialization = await Specialization.create({
+        name: specializationName,
+      });
     }
 
+    // Знаходимо або створюємо курс
     let course = await Course.findOne({
       courseNumber,
       specializationId: specialization._id,
@@ -30,6 +36,7 @@ export const createSchedule = async (req, res) => {
       await specialization.save();
     }
 
+    // Знаходимо або створюємо групу
     let group = await Group.findOne({ groupNumber, courseId: course._id });
     if (!group) {
       group = await Group.create({ groupNumber, courseId: course._id });
@@ -37,6 +44,7 @@ export const createSchedule = async (req, res) => {
       await course.save();
     }
 
+    // Знаходимо або створюємо підгрупу
     let subGroup = await SubGroup.findOne({
       subgroupNumber,
       groupId: group._id,
@@ -47,61 +55,86 @@ export const createSchedule = async (req, res) => {
       await group.save();
     }
 
-let weeklySchedule = lessons.map((lesson) => {
-  const weeksInSemester = 18;
-  let weeklyLectures = Math.floor(lesson.countLec / weeksInSemester);
-  let weeklyPracticals = Math.floor(lesson.countPrac / weeksInSemester);
-  let weeklyLabs = Math.floor(lesson.countLab / weeksInSemester);
+    // Генеруємо розклад
+    const weeksInSemester = 18;
+    const scheduleDays = [1, 2, 3, 4, 5];
+    const occupiedPairs = { 1: [], 2: [], 3: [], 4: [], 5: [] };
 
-  const scheduleDays = [1, 2, 3, 4, 5];
-  const occupiedPairs = { 1: [], 2: [], 3: [], 4: [], 5: [] };
-
-  const getAvailablePair = (day) => {
-    for (let pair = 1; pair <= 4; pair++) {
-      if (!occupiedPairs[day].includes(pair)) {
-        return pair;
+    const getAvailablePair = (day) => {
+      for (let pair = 1; pair <= 4; pair++) {
+        if (!occupiedPairs[day].includes(pair)) {
+          return pair; // Повертаємо першу доступну пару
+        }
       }
+      return null; // Якщо всі пари зайняті, повертаємо null
+    };
+
+    const getRandomDayAndPair = () => {
+      let day, pair, tries = 0;
+
+      do {
+        day = scheduleDays[Math.floor(Math.random() * scheduleDays.length)];
+        pair = getAvailablePair(day);
+        tries++;
+      } while (!pair && tries <= 10);
+
+      if (pair) {
+        occupiedPairs[day].push(pair);
+        console.log("Зайняті пари:", occupiedPairs);
+      }
+
+      return pair ? { day, pair } : null;
+    };
+
+    let weeklySchedule = lessons
+      .map((lesson) => {
+        const weeklyLectures = Math.max(
+          1,
+          Math.floor(lesson.countLec / weeksInSemester)
+        );
+
+        let lessonSchedule = [];
+        for (let i = 0; i < weeklyLectures; i++) {
+          const result = getRandomDayAndPair();
+          if (result) {
+            const { day, pair } = result;
+            lessonSchedule.push({
+              type: "lec",
+              day: [day],
+              pairNumber: [pair],
+              groupInfo: {
+                specialization: specializationName,
+                course: courseNumber,
+                group: groupNumber,
+              },
+            });
+          } else {
+            console.warn("Не вдалося знайти доступну пару для лекції");
+          }
+        }
+        return lessonSchedule;
+      })
+      .flat();
+
+    console.log("Weekly Schedule:", weeklySchedule);
+
+    if (weeklySchedule.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "Немає доступних пар для цього розкладу" });
     }
-    return null;
-  };
-
-  const getRandomDayAndPair = () => {
-    let day, pair, tries = 0;
-    do {
-      day = scheduleDays[Math.floor(Math.random() * scheduleDays.length)];
-      pair = getAvailablePair(day);
-      tries++;
-    } while (!pair && tries <= 10);
-
-    if (pair) occupiedPairs[day].push(pair);
-    return { day, pair };
-  };
-
-  let lessonSchedule = [];
-  for (let i = 0; i < weeklyLectures; i++) {
-    const { day, pair } = getRandomDayAndPair();
-    lessonSchedule.push({
-      type: "lec",
-      day: [day],
-      pairNumber: [pair],
-      groupInfo: {
-        specialization: specializationName,
-        course: courseNumber,
-        group: groupNumber,
-      },
-    });
-  }
-  return lessonSchedule;
-}).flat();
 
     weeklySchedule = weeklySchedule.slice(0, 22);
 
-    const newSchedule = new Schedule({
-      subGroupId: subGroup._id,
-      groupId: group._id,
-      courseId: course._id,
-      lessons: weeklySchedule,
-    });
+    // Створюємо новий розклад
+   // Створюємо новий розклад
+const newSchedule = new Schedule({
+  subGroupId: new mongoose.Types.ObjectId(subGroup._id), // Використовуємо 'new'
+  groupId: new mongoose.Types.ObjectId(group._id), // Використовуємо 'new'
+  courseId: new mongoose.Types.ObjectId(course._id), // Використовуємо 'new'
+  lessons: weeklySchedule,
+  specializationId: new mongoose.Types.ObjectId(specialization._id), // Використовуємо 'new'
+});
 
     await newSchedule.save();
     res.status(200).json(newSchedule);
@@ -113,17 +146,46 @@ let weeklySchedule = lessons.map((lesson) => {
 
 export const getScheduleByGroup = async (req, res) => {
   try {
-    const { specialization, course, group } = req.query;
+    const { specializationId, courseId, groupId } = req.query;
 
-    if (!specialization || !course || !group) {
-      return res.status(400).json({ message: "Вкажіть спеціалізацію, курс і групу" });
+    console.log("Запитані параметри:", { specializationId, courseId, groupId });
+
+    if (!specializationId || !courseId || !groupId) {
+      return res
+        .status(400)
+        .json({ message: "Вкажіть specializationId, courseId і groupId" });
     }
 
-    const schedule = await Schedule.find({
-      "lessons.groupInfo.specialization": specialization,
-      "lessons.groupInfo.course": parseInt(course),
-      "lessons.groupInfo.group": parseInt(group),
+    // Використовуємо specializationId для пошуку
+    const specializationDoc = await Specialization.findById(specializationId);
+    if (!specializationDoc) {
+      return res.status(404).json({ message: "Спеціалізація не знайдена" });
+    }
+
+    // Використовуємо courseId для пошуку
+    const courseDoc = await Course.findOne({
+      _id: courseId,
+      specializationId: specializationDoc._id,
     });
+    if (!courseDoc) {
+      return res.status(404).json({ message: "Курс не знайдено" });
+    }
+
+    // Використовуємо groupId для пошуку
+    const groupDoc = await Group.findOne({
+      _id: groupId,
+      courseId: courseDoc._id,
+    });
+    if (!groupDoc) {
+      return res.status(404).json({ message: "Групу не знайдено" });
+    }
+
+    // Шукаємо розклад
+    const schedule = await Schedule.findOne({
+      groupId: groupDoc._id,
+    });
+
+    console.log("Знайдений розклад:", schedule);
 
     if (!schedule || schedule.length === 0) {
       return res.status(404).json({ message: "Розклад не знайдено" });

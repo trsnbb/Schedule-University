@@ -5,6 +5,7 @@ import LessonBlock from "./../LessonBlock/LessonBlock.jsx";
 import Modal from "../Modal/PareInfo/PareInfo.jsx";
 import CreateSchedule from "../Modal/AddShedule/CreateSchedule.jsx"; // Імпорт компонента AddPareModal
 import { useAuth } from "../../AuthContext.jsx"; // Імпортуємо контекст авторизації
+import { fetchSchedule } from "./../../axios.js";
 
 const getMonday = (date = new Date()) => {
   const currentDay = date.getDay();
@@ -67,7 +68,10 @@ const Calendar = () => {
   const [modalData, setModalData] = useState(null);
   const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
   const [isAddPareModalOpen, setAddPareModalOpen] = useState(false); // Додано стан для відкриття AddPareModal
-
+  const [schedule, setSchedule] = useState([]); // Стан для розкладу
+  useEffect(() => {
+    fetchSchedule(); // Викликаємо функцію для отримання розкладу при завантаженні компонента
+  }, []);
   useEffect(() => {
     setDays(getWeekDays(weekStartDate));
   }, [weekStartDate]);
@@ -172,6 +176,21 @@ const Calendar = () => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const loadSchedule = async () => {
+      try {
+        const scheduleData = await fetchSchedule(); // Отримуємо дані з бекенду
+        setSchedule(scheduleData.lessons); // Зберігаємо лише масив lessons у стані
+      } catch (error) {
+        console.error("Помилка завантаження розкладу:", error);
+      }
+    };
+
+    loadSchedule();
+  }, []);
+
+  console.log("Дані перед фільтрацією:", schedule);
+  console.log("Поточний день:", new Date().getDay());
   return (
     <>
       <div className='header_calendar'>
@@ -249,43 +268,37 @@ const Calendar = () => {
             </div>
             <div className='calendar_grid'>
               <div className='grid'>
-                {Array.from({ length: 30 }).map((_, index) => (
-                  <div key={index} className='cell'>
-                    {index === 0 && (
-                      <LessonBlock
-                        title='Операційні системи'
-                        type='Лекція'
-                        mode='Онлайн'
-                        time={`${formatTime("08:00")} – ${formatTime("09:20")}`}
-                        groupInfo={{
-                          specialization: "ІПЗ",
-                          course: 3,
-                          group: 4,
-                        }}
-                        onClick={(e) =>
-                          handleLessonClick(
-                            e,
-                            {
-                              title: "Операційні системи",
-                              type: "Лекція",
-                              mode: "Онлайн",
-                              time: `${formatTime("08:00")} – ${formatTime(
-                                "09:20"
-                              )}`,
-                              teacher: "Петренко Іван",
-                              link: "https://meet.google.com/example",
-                              teacherNotes:
-                                "Виконати лабораторну 1 - 3. Зробити звіт.",
-                              studentNotes: "",
-                              group: "ІПЗ 3 курс 4 група",
-                            },
-                            0
-                          )
-                        }
-                      />
-                    )}
-                  </div>
-                ))}
+                {Array.from({ length: 30 }).map((_, index) => {
+                  // Визначаємо день тижня для поточної клітинки
+                  const dayOfWeek = (index % 6) + 1; // 1 — понеділок, 5 — п'ятниця
+                  const pairNumber = Math.floor(index / 6) + 1; // Номер пари (1–6)
+
+                  // Знаходимо урок для поточного дня та пари
+                  const lesson = schedule.find(
+                    (lesson) =>
+                      lesson.day?.[0] === dayOfWeek &&
+                      lesson.pairNumber?.[0] === pairNumber
+                  );
+
+                  return (
+                    <div key={index} className='cell'>
+                      {lesson ? (
+                        <LessonBlock
+                          title={lesson.predmetId?.name || "Предмет"}
+                          type={lesson.type}
+                          mode={lesson.format || "Offline"}
+                          time={`Пара ${lesson.pairNumber?.[0] || "N/A"}`}
+                          groupInfo={{
+                            specialization: "ІПЗ",
+                            course: 3,
+                            group: 3,
+                          }}
+                          onClick={(e) => handleLessonClick(e, lesson, index)}
+                        />
+                      ) : null}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>

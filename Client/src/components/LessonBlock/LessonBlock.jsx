@@ -11,7 +11,7 @@ const LessonBlock = ({
   onClick,
 }) => {
   const { user } = useAuth(); // Отримуємо роль користувача
-
+console.log("LessonBlock дані:", { title, type, mode, time, groupInfo });
   const getTypeClass = (type) => {
     switch (type.toLowerCase()) {
       case "лаб":
