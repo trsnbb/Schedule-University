@@ -284,7 +284,7 @@ const Calendar = () => {
                     <div key={index} className='cell'>
                       {lesson ? (
                         <LessonBlock
-                          title={lesson.predmetId?.name || "Предмет"}
+                          title={lesson.predmetId?.predmet || "Предмет"} // Використовуємо поле `predmet` з `Teachings` // Використовуємо назву предмета
                           type={lesson.type}
                           mode={lesson.format || "Offline"}
                           time={`Пара ${lesson.pairNumber?.[0] || "N/A"}`}

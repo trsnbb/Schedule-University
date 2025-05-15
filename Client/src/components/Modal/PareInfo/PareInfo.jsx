@@ -99,84 +99,60 @@ const PareInfo = ({ data, position, onClose }) => {
           className='modal-header'
           style={{ background: getHeaderBackground() }}
         >
-          {data.title}
+          {data?.title || "Без назви"}
         </div>
         <div className='modal-body'>
-          {user?.role === "teacher" ? (
-            // Пустий рендеринг для викладача
-            <>
-              <div className='modal-row'>
-                {data.type}
+          {data?.type && (
+            <div className='modal-row'>
+              {data.type}
+              {data.time && (
                 <span className='modal_time'>
                   {data.time
                     .split("–")
                     .map((t) => formatTime(t.trim()))
                     .join(" – ")}
                 </span>
-              </div>
-              <div className='modal-row'>
-                <span className='label'>Формат:</span> {data.mode}
-              </div>
-                <div className='modal-row'>
-                  <span className='label'>Група:</span> {data.group}
-                  
-                </div>
-              {data.link && (
-                <div className='modal-row'>
-                  <span className='label'>Посилання:</span>
-                  <a
-                    href={data.link}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    style={{ color: "#fff" }}
-                  >
-                    {data.link}
-                  </a>
-                </div>
               )}
-              <span>Нотатки для учнів:</span>
-              <div className='teacher-notes'>{data.teacherNotes || ""}</div>
-
-              <span>Мої нотатки:</span>
-              <div className='student-notes'>{data.studentNotes || ""}</div>
-            </>
-          ) : (
+            </div>
+          )}
+          {data?.mode && (
+            <div className='modal-row'>
+              <span className='label'>Формат:</span> {data.mode}
+            </div>
+          )}
+          {data?.group && (
+            <div className='modal-row'>
+              <span className='label'>Група:</span> {data.group}
+            </div>
+          )}
+          {data?.teacher && (
+            <div className='modal-row'>
+              <span className='label'>Викладач:</span> {data.teacher}
+            </div>
+          )}
+          {data?.link && (
+            <div className='modal-row'>
+              <span className='label'>Посилання:</span>
+              <a
+                href={data.link}
+                target='_blank'
+                rel='noopener noreferrer'
+                style={{ color: "#fff" }}
+              >
+                {data.link}
+              </a>
+            </div>
+          )}
+          {data?.teacherNotes && (
             <>
-              <div className='modal-row'>
-                {data.type}
-                <span className='modal_time'>
-                  {data.time
-                    .split("–")
-                    .map((t) => formatTime(t.trim()))
-                    .join(" – ")}
-                </span>
-              </div>
-              <div className='modal-row'>
-                <span className='label'>Формат:</span> {data.mode}
-              </div>
-              {data.teacher && (
-                <div className='modal-row'>
-                  <span className='label'>Викладач:</span> {data.teacher}
-                </div>
-              )}
-              {data.link && (
-                <div className='modal-row'>
-                  <span className='label'>Посилання:</span>
-                  <a
-                    href={data.link}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    style={{ color: "#fff" }}
-                  >
-                    {data.link}
-                  </a>
-                </div>
-              )}
               <span>Нотатки від викладача:</span>
-              <div className='teacher-notes'>{data.teacherNotes || ""}</div>
-
+              <div className='teacher-notes'>{data.teacherNotes}</div>
+            </>
+          )}
+          {data?.studentNotes && (
+            <>
               <span>Мої нотатки:</span>
-              <div className='student-notes'>{data.studentNotes || ""}</div>
+              <div className='student-notes'>{data.studentNotes}</div>
             </>
           )}
         </div>
