@@ -26,11 +26,11 @@ const ScheduleSchema = new mongoose.Schema(
       {
         predmetId: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "predmet",
+          ref: "Predmet",
         },
         teacherId: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "teacher",
+          ref: "User",
         },
         type: {
           type: String,

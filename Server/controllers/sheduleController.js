@@ -70,7 +70,9 @@ export const createSchedule = async (req, res) => {
     };
 
     const getRandomDayAndPair = () => {
-      let day, pair, tries = 0;
+      let day,
+        pair,
+        tries = 0;
 
       do {
         day = scheduleDays[Math.floor(Math.random() * scheduleDays.length)];
@@ -92,7 +94,7 @@ export const createSchedule = async (req, res) => {
           1,
           Math.floor(lesson.countLec / weeksInSemester)
         );
-
+        console.log("🔎 Lesson input:", lessons);
         let lessonSchedule = [];
         for (let i = 0; i < weeklyLectures; i++) {
           const result = getRandomDayAndPair();
@@ -102,6 +104,10 @@ export const createSchedule = async (req, res) => {
               type: "lec",
               day: [day],
               pairNumber: [pair],
+              format: lesson.format,
+              weekType: lesson.weekType,
+              predmetId: new mongoose.Types.ObjectId(lesson.predmetId),
+              teacherId: new mongoose.Types.ObjectId(lesson.teacherId),
               groupInfo: {
                 specialization: specializationName,
                 course: courseNumber,
@@ -127,14 +133,14 @@ export const createSchedule = async (req, res) => {
     weeklySchedule = weeklySchedule.slice(0, 22);
 
     // Створюємо новий розклад
-   // Створюємо новий розклад
-const newSchedule = new Schedule({
-  subGroupId: new mongoose.Types.ObjectId(subGroup._id), // Використовуємо 'new'
-  groupId: new mongoose.Types.ObjectId(group._id), // Використовуємо 'new'
-  courseId: new mongoose.Types.ObjectId(course._id), // Використовуємо 'new'
-  lessons: weeklySchedule,
-  specializationId: new mongoose.Types.ObjectId(specialization._id), // Використовуємо 'new'
-});
+    // Створюємо новий розклад
+    const newSchedule = new Schedule({
+      subGroupId: new mongoose.Types.ObjectId(subGroup._id), // Використовуємо 'new'
+      groupId: new mongoose.Types.ObjectId(group._id), // Використовуємо 'new'
+      courseId: new mongoose.Types.ObjectId(course._id), // Використовуємо 'new'
+      lessons: weeklySchedule,
+      specializationId: new mongoose.Types.ObjectId(specialization._id), // Використовуємо 'new'
+    });
 
     await newSchedule.save();
     res.status(200).json(newSchedule);
@@ -156,13 +162,11 @@ export const getScheduleByGroup = async (req, res) => {
         .json({ message: "Вкажіть specializationId, courseId і groupId" });
     }
 
-    // Використовуємо specializationId для пошуку
     const specializationDoc = await Specialization.findById(specializationId);
     if (!specializationDoc) {
       return res.status(404).json({ message: "Спеціалізація не знайдена" });
     }
 
-    // Використовуємо courseId для пошуку
     const courseDoc = await Course.findOne({
       _id: courseId,
       specializationId: specializationDoc._id,
@@ -171,7 +175,6 @@ export const getScheduleByGroup = async (req, res) => {
       return res.status(404).json({ message: "Курс не знайдено" });
     }
 
-    // Використовуємо groupId для пошуку
     const groupDoc = await Group.findOne({
       _id: groupId,
       courseId: courseDoc._id,
@@ -180,18 +183,23 @@ export const getScheduleByGroup = async (req, res) => {
       return res.status(404).json({ message: "Групу не знайдено" });
     }
 
-    // Шукаємо розклад
-    const schedule = await Schedule.findOne({
-      groupId: groupDoc._id,
-    });
+    // Важливо: оголошення змінної ПЕРЕД блоком try
+    let schedule;
 
-    console.log("Знайдений розклад:", schedule);
+    try {
+      schedule = await Schedule.findOne({ groupId: groupDoc._id })
+        .populate("lessons.predmetId")
+        .populate("lessons.teacherId");
 
-    if (!schedule || schedule.length === 0) {
-      return res.status(404).json({ message: "Розклад не знайдено" });
+      if (!schedule) {
+        return res.status(404).json({ message: "Розклад не знайдено" });
+      }
+
+      return res.status(200).json(schedule);
+    } catch (err) {
+      console.error("❌ Помилка при отриманні розкладу:", err);
+      return res.status(500).json({ message: "Помилка сервера при популяції" });
     }
-
-    res.status(200).json(schedule);
   } catch (error) {
     console.error("Помилка отримання розкладу:", error);
     res.status(500).json({ message: "Помилка сервера" });

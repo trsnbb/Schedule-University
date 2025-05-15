@@ -1,43 +1,18 @@
+// models/Predmet.js
 import mongoose from "mongoose";
 
-const PredmetSchema = new mongoose.Schema(
-  {
-    predmetId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "predmet",
-      required: true,
-    },
-    teacherId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "teacher",
-    },
-   
-    course: {
-      type: Number,
-      enum: [1, 2, 3, 4],
-    },
-    group: {
-      type: Number,
-      enum: [1, 2, 3, 4],
-    },
-    subgroup: {
-      type: Number,
-      enum: [1, 2],
-    },
-    count: {
-        type: Number,
-    },
-    countLec: {
-        type: Number,
-    },
-    countPrac: {
-        type: Number,
-    },
-    countLab: {
-        type: Number,
-    },
+const Predmet = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
   },
-  {
-    timestamps: true,
-  }
-);
+  teachers: [
+    {
+      teacherId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      teacherEmail: String,
+      teacherName: String,
+    },
+  ],
+});
+
+export default mongoose.model("Predmet", Predmet); // назва має відповідати ref
