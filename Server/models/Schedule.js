@@ -34,7 +34,7 @@ const ScheduleSchema = new mongoose.Schema(
         },
         type: {
           type: String,
-          enum: ["lec", "lab", "pract"],
+          enum: ["lec", "lab", "prac"],
         },
         format: {
           type: String,

@@ -189,8 +189,6 @@ const Calendar = () => {
     loadSchedule();
   }, []);
 
-  console.log("Дані перед фільтрацією:", schedule);
-  console.log("Поточний день:", new Date().getDay());
   return (
     <>
       <div className='header_calendar'>
@@ -271,23 +269,25 @@ const Calendar = () => {
                 {Array.from({ length: 30 }).map((_, index) => {
                   const dayOfWeek = (index % 6) + 1; // 1 — понеділок, 5 — п'ятниця
                   const pairNumber = Math.floor(index / 6) + 1; // Номер пари (1–6)
-
+s
                   const lesson = schedule.find(
                     (lesson) =>
                       lesson.day?.[0] === dayOfWeek &&
                       lesson.pairNumber?.[0] === pairNumber
                   );
-
+                  const pairTime = lessonsSchedule[pairNumber - 1]
+                    ? `${lessonsSchedule[pairNumber - 1].start}–${
+                        lessonsSchedule[pairNumber - 1].end
+                      }`
+                    : "";
                   return (
                     <div key={index} className='cell'>
-                      
                       {lesson ? (
-                        
                         <LessonBlock
                           title={lesson.predmetId?.predmet || "Предмет"}
                           type={lesson.type}
                           mode={lesson.format || "Offline"}
-                          time={`Пара ${lesson.pairNumber?.[0] || "N/A"}`}
+                          time={pairTime}
                           groupInfo={{
                             specialization: "ІПЗ",
                             course: 3,

@@ -2,7 +2,7 @@
 import mongoose from "mongoose";
 
 const Predmet = new mongoose.Schema({
-  name: {
+  predmet: {
     type: String,
     required: true,
   },

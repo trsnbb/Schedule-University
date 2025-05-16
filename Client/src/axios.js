@@ -31,15 +31,17 @@ export const fetchSchedule = async () => {
     });
 
     const scheduleData = response.data;
-    console.log("Розклад:", scheduleData);
+    console.log("Розклад після fetch:", scheduleData);
 
     return scheduleData; // Повертаємо розклад
   } catch (error) {
-    console.error("Помилка отримання розкладу:", error.response?.data || error.message);
+    console.error(
+      "Помилка отримання розкладу:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 };
-
 
 instance.interceptors.response.use(
   (response) => response,

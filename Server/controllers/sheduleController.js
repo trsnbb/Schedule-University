@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Schedule from "../models/Schedule.js";
 import { Course, Group, SubGroup, Specialization } from "../models/Group.js";
+import Predmet from "../models/Predmet.js";
 
 export const createSchedule = async (req, res) => {
   try {
@@ -88,6 +89,7 @@ export const createSchedule = async (req, res) => {
       return pair ? { day, pair } : null;
     };
 
+    // ...existing code...
     let weeklySchedule = lessons
       .map((lesson) => {
         const weeklyLectures = Math.max(
@@ -101,7 +103,7 @@ export const createSchedule = async (req, res) => {
           if (result) {
             const { day, pair } = result;
             lessonSchedule.push({
-              type: "lec",
+              type: lesson.type, // <-- Тепер тип береться з lesson.type, якщо він є
               day: [day],
               pairNumber: [pair],
               format: lesson.format,
@@ -188,12 +190,20 @@ export const getScheduleByGroup = async (req, res) => {
 
     try {
       schedule = await Schedule.findOne({ groupId: groupDoc._id })
-        .populate("lessons.predmetId")
-        .populate("lessons.teacherId");
+        .populate({
+          path: "lessons.predmetId",
+          model: "Predmet",
+        })
+        .populate({
+          path: "lessons.teacherId",
+          model: "User",
+        });
 
       if (!schedule) {
         return res.status(404).json({ message: "Розклад не знайдено" });
       }
+
+      console.log("schedule:", JSON.stringify(schedule, null, 2));
 
       return res.status(200).json(schedule);
     } catch (err) {

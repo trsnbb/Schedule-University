@@ -2,6 +2,21 @@ import React from "react";
 import "./lesson.css";
 import { useAuth } from "../../AuthContext.jsx"; // Імпортуємо контекст авторизації
 
+// Мапа для відображення українських назв
+const typeLabelMap = {
+  lec: "Лекція",
+  lab: "Лабораторна",
+  prac: "Практика",
+  лекція: "Лекція",
+  лабораторна: "Лабораторна",
+  практика: "Практика",
+};
+const getModeClass = (mode) => {
+  if (mode?.toLowerCase() === "офлайн" || mode?.toLowerCase() === "offline") {
+    return "offline";
+  }
+  return "green";
+};
 const LessonBlock = ({
   title,
   type = "Лекція",
@@ -11,21 +26,28 @@ const LessonBlock = ({
   onClick,
 }) => {
   const { user } = useAuth(); // Отримуємо роль користувача
-console.log("LessonBlock дані:", { title, type, mode, time, groupInfo });
+
+  // Визначаємо клас для кольору
   const getTypeClass = (type) => {
-    switch (type.toLowerCase()) {
-      case "лаб":
+    switch (type?.toLowerCase()) {
+      case "lec":
+      case "лекція":
+        return "lec";
+      case "lab":
       case "лабораторна":
+      case "лаб":
         return "lab";
+      case "prac":
       case "практика":
-        return "practice";
+        return "prac";
       default:
-        return "lecture";
+        return "lec";
     }
   };
 
   const typeClass = getTypeClass(type);
-
+  const typeLabel = typeLabelMap[type?.toLowerCase()] || type;
+  const modeClass = getModeClass(mode);
   // Рендеринг для студента
   const renderStudentView = () => (
     <div
@@ -34,8 +56,8 @@ console.log("LessonBlock дані:", { title, type, mode, time, groupInfo });
       style={{ cursor: "pointer" }}
     >
       <div className='lesson_tags'>
-        <div className={`lesson_tag ${typeClass}`}>{type}</div>
-        <div className='lesson_tag green'>{mode}</div>
+        <div className={`lesson_tag ${typeClass}`}>{typeLabel}</div>
+        <div className={`lesson_tag ${modeClass}`}>{mode}</div>
       </div>
       <div className={`lesson_time ${typeClass}`}>{time}</div>
       <div className={`lesson_title ${typeClass}`}>{title}</div>
@@ -54,8 +76,8 @@ console.log("LessonBlock дані:", { title, type, mode, time, groupInfo });
         група
       </div>
       <div className='lesson_tags'>
-        <div className={`lesson_tag ${typeClass}`}>{type}</div>
-        <div className='lesson_tag green'>{mode}</div>
+        <div className={`lesson_tag ${typeClass}`}>{typeLabel}</div>
+        <div className={`lesson_tag ${modeClass}`}>{mode}</div>
       </div>
       <div className={`lesson_time ${typeClass}`}>{time}</div>
       <div className={`lesson_title ${typeClass}`}>{title}</div>

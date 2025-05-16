@@ -22,7 +22,7 @@
   color: white;
 }
 
-.lesson_block.lecture {
+.lesson_block.lec {
   background-color: rgba(14, 165, 233, 0.1);
   border-left: 3px solid #0478b6;
   
@@ -33,12 +33,12 @@
   border-left: 3px solid #10b981;
 }
 
-.lesson_block.practice {
+.lesson_block.prac {
   background-color: rgba(109, 40, 217, 0.1);
   border-left: 3px solid #6d28d9;
 }
 
-.lesson_tag.lecture {
+.lesson_tag.lec {
   background-color: #0478b6;
 }
 
@@ -46,7 +46,7 @@
   background-color: #10b981;
 }
 
-.lesson_tag.practice {
+.lesson_tag.prac {
   background-color: #6d28d9;
 }
 
@@ -54,8 +54,8 @@
   background-color: #1baf23;
 }
 
-.lesson_time.lecture,
-.lesson_title.lecture {
+.lesson_time.lec,
+.lesson_title.lec {
   color: #0478b6;
   font-weight: 500;
   font-size: 13px;
@@ -68,8 +68,8 @@
   font-size: 13px;
 }
 
-.lesson_time.practice,
-.lesson_title.practice {
+.lesson_time.prac,
+.lesson_title.prac {
   color: #6d28d9;
   font-weight: 500;
   font-size: 13px;
@@ -89,7 +89,7 @@
 .teacher_view {
   padding-top: 0px;
 }
-.lesson_group.lecture {
+.lesson_group.lec {
   background-color: #0478b6; /* Колір для лекції */
 }
 
@@ -97,6 +97,10 @@
   background-color: #10b981; /* Колір для лабораторної */
 }
 
-.lesson_group.practice {
+.lesson_group.prac {
   background-color: #6d28d9; /* Колір для практики */
+}
+
+.lesson_tag.offline {
+  background-color: #CF8508;
 }
