@@ -269,7 +269,6 @@ const Calendar = () => {
                 {Array.from({ length: 30 }).map((_, index) => {
                   const dayOfWeek = (index % 6) + 1; // 1 — понеділок, 5 — п'ятниця
                   const pairNumber = Math.floor(index / 6) + 1; // Номер пари (1–6)
-s
                   const lesson = schedule.find(
                     (lesson) =>
                       lesson.day?.[0] === dayOfWeek &&

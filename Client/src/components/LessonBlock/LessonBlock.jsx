@@ -83,10 +83,26 @@ const LessonBlock = ({
       <div className={`lesson_title ${typeClass}`}>{title}</div>
     </div>
   );
+  const renderDeaneryView = () => (
+    <div
+      className={`lesson_block ${typeClass}`}
+      onClick={onClick}
+      style={{ cursor: "pointer" }}
+    >
+      <div className='lesson_tags'>
+        <div className={`lesson_tag ${typeClass}`}>{typeLabel}</div>
+        <div className={`lesson_tag ${modeClass}`}>{mode}</div>
+      </div>
+      <div className={`lesson_time ${typeClass}`}>{time}</div>
+      <div className={`lesson_title ${typeClass}`}>{title}</div>
+    </div>
+  );
 
   // Умовний рендеринг залежно від ролі
   if (user?.role === "teacher") {
     return renderTeacherView();
+  } else if (user?.role === "deanery") {
+    return renderDeaneryView();
   } else {
     return renderStudentView(); // За замовчуванням для студента
   }

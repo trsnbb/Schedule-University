@@ -26,15 +26,22 @@ export const fetchSchedule = async () => {
       params: {
         specializationId: "68235b44a70aeda58ca57e9c", // ID спеціальності
         courseId: "68235b44a70aeda58ca57e9f", // ID курсу
-        groupId: "68235b44a70aeda58ca57ea3", // ID групи
+        groupId: "68235b44a70aeda58ca57eda3", // ID групи
       },
     });
 
     const scheduleData = response.data;
     console.log("Розклад після fetch:", scheduleData);
 
-    return scheduleData; // Повертаємо розклад
+    return scheduleData;
   } catch (error) {
+    if (
+      error.response &&
+      (error.response.status === 404 || error.response.status === 500)
+    ) {
+      // Якщо розклад не знайдено або помилка сервера — повертаємо порожній масив
+      return { lessons: [] };
+    }
     console.error(
       "Помилка отримання розкладу:",
       error.response?.data || error.message
