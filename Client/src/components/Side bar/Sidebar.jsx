@@ -9,30 +9,40 @@ import { useAuth } from "../../AuthContext.jsx"; // Імпортуємо кон�
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth(); // Отримуємо статус авторизації
+  const { isAuthenticated, user } = useAuth(); // Додаємо user до деструктуризації
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    if (location.pathname === "/settings" || location.pathname === "/feedback") {
+    if (
+      location.pathname === "/settings" ||
+      location.pathname === "/feedback"
+    ) {
       setMenuOpen(true);
     }
   }, [location.pathname]);
-  
+
   const handleCloseMenu = (navigateHome = true) => {
     // Не закриваємо меню, якщо ми вже на сторінці settings або feedback і не хочемо редиректу
-    if (!navigateHome && (location.pathname === "/settings" || location.pathname === "/feedback")) {
+    if (
+      !navigateHome &&
+      (location.pathname === "/settings" || location.pathname === "/feedback")
+    ) {
       return;
     }
-  
+
     setMenuOpen(false);
-  
-    if (navigateHome && (location.pathname === "/settings" || location.pathname === "/feedback")) {
+
+    if (
+      navigateHome &&
+      (location.pathname === "/settings" || location.pathname === "/feedback")
+    ) {
       navigate("/");
     }
   };
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
-
+  console.log("Sidebar user:", user);
+  console.log("Sidebar isAuthenticated:", isAuthenticated);
   return (
     <>
       <div className='sidebar_background'>
@@ -47,19 +57,30 @@ const Sidebar = () => {
         <div className='sidebar_mini_kalendar'>
           <MiniCalendar />
         </div>
-
-        {/* Перевірка авторизації для відображення Notes */}
-        {isAuthenticated && (
-          <div className='notes_sidebar'>
-            <Notes />
-          </div>
+        {isAuthenticated && user && (
+          user.user?.role === "deanery" ? (
+            <div className='deanery_buttons'>
+              <button className='deanery_btn'>Редагувати загальний розклад</button>
+              <button className='deanery_btn'>Переглянути розклад викладача</button>
+              <button className='deanery_btn'>Експортувати розклад</button>
+              <button className='deanery_btn'>Створити розклад автоматично</button>
+            </div>
+          ) : (
+            user.user?.role !== "deanery" && (
+              <div className='notes_sidebar'>
+                <Notes />
+              </div>
+            )
+          )
         )}
       </div>
 
       <ProfileMenu
         isOpen={menuOpen}
         onClose={handleCloseMenu}
-        disableAnimation={location.pathname === "/settings" || location.pathname === "/feedback"}
+        disableAnimation={
+          location.pathname === "/settings" || location.pathname === "/feedback"
+        }
       />
     </>
   );

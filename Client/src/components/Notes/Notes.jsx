@@ -22,7 +22,6 @@ const notesFromDatabase = [
     subject: "Основи психології та педагогіки",
     note: "Підготувати презентацію на тему Вплив",
   },
-  
 ];
 
 const getLabel = (dateStr) => {
@@ -72,20 +71,20 @@ const Notes = () => {
   const sortedDates = Object.keys(groupedNotes).sort();
 
   return (
-    <div className="notes_sidebar">
+    <div className='notes_sidebar'>
       {sortedDates.map((date) => (
-        <div key={date} className="notes_day">
-          <div className="day_header">
-            <p className="day_label">{getLabel(date)}</p>
-            <p className="day_date">{formatDateDisplay(date)}</p>
+        <div key={date} className='notes_day'>
+          <div className='day_header'>
+            <p className='day_label'>{getLabel(date)}</p>
+            <p className='day_date'>{formatDateDisplay(date)}</p>
           </div>
-          <div className="notes_day_info">
+          <div className='notes_day_info'>
             {groupedNotes[date].map((item, index) => (
-              <div className="note" key={index}>
-                <div className="circle_note"></div>
-                <div className="note_info">
-                  <div className="subject">{item.subject}</div>
-                  <div className="note">{item.note}</div>
+              <div className='note' key={index}>
+                <div className='circle_note'></div>
+                <div className='note_info'>
+                  <div className='subject'>{item.subject}</div>
+                  <div className='note'>{item.note}</div>
                 </div>
               </div>
             ))}

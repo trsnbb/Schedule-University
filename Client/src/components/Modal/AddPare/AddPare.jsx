@@ -36,9 +36,9 @@ const AddPare = ({ onClose }) => {
   };
 
   return (
-    <div className='add-pare-modal' onClick={handleClickOutside}>
+    <div className='add-schedule-modal' onClick={handleClickOutside}>
       
-      <div className='add-pare-modal-content' ref={modalRef}>
+      <div className='add-schedule-modal-content' ref={modalRef}>
       <button className='close-plus-icon' onClick={onClose}>
           <img src={plus}></img>
         </button>

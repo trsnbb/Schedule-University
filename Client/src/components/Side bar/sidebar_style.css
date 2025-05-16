@@ -70,3 +70,18 @@
   border-radius: 2px;
   cursor: pointer;
 }
+
+.deanery_buttons{
+  display: flex;
+  flex-direction: column;
+  margin-top: 40px;
+  gap: 20px;
+  width: 90%;
+}
+
+.deanery_btn{
+  background: #071508;
+  border-radius: 10px;
+  padding: 13px;
+  color: white;
+}

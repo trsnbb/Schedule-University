@@ -6,6 +6,10 @@ import Modal from "../Modal/PareInfo/PareInfo.jsx";
 import CreateSchedule from "../Modal/AddShedule/CreateSchedule.jsx"; // Імпорт компонента AddPareModal
 import { useAuth } from "../../AuthContext.jsx"; // Імпортуємо контекст авторизації
 import { fetchSchedule } from "./../../axios.js";
+import { useRef } from "react";
+import AddPare from "../Modal/AddPare/AddPare.jsx";
+import ChooseType from "../Modal/AddPare/ChooseType.jsx";
+import AddEvent from "../Modal/AddPare/AddEvent.jsx"; // Додайте цей імпорт
 
 const getMonday = (date = new Date()) => {
   const currentDay = date.getDay();
@@ -59,6 +63,7 @@ const lessonsSchedule = [
 
 const Calendar = () => {
   const { user } = useAuth(); // Отримуємо дані користувача з контексту
+  const [hoveredCell, setHoveredCell] = useState(null); // Додаємо стан для наведеної клітинки
   const [lessonStatus, setLessonStatus] = useState({
     current: null,
     next: null,
@@ -67,7 +72,11 @@ const Calendar = () => {
   const [days, setDays] = useState(getWeekDays(getMonday()));
   const [modalData, setModalData] = useState(null);
   const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
+
   const [isAddPareModalOpen, setAddPareModalOpen] = useState(false); // Додано стан для відкриття AddPareModal
+  const [isChooseTypeOpen, setChooseTypeOpen] = useState(false);
+  const [isAddEventModalOpen, setAddEventModalOpen] = useState(false); // Додаємо стан для модалки події
+
   const [schedule, setSchedule] = useState([]); // Стан для розкладу
   useEffect(() => {
     fetchSchedule(); // Викликаємо функцію для отримання розкладу при завантаженні компонента
@@ -100,31 +109,11 @@ const Calendar = () => {
     return time; // Якщо формат 24-годинний, повертаємо час без змін
   };
 
-  const handleLessonClick = (e, data, index) => {
-    if (index === 5) {
-      setAddPareModalOpen(true); // Відкриваємо модальне вікно AddPare
-    } else {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const modalWidth = 320;
-      const screenWidth = window.innerWidth;
-
-      let left = rect.right + 10;
-      if (rect.right + modalWidth > screenWidth) {
-        left = rect.left - modalWidth - 10;
-      }
-
-      setModalPosition({
-        top: rect.top + rect.height / 2,
-        left,
-      });
-
-      setModalData(data);
-    }
-  };
-
   const closeAddPareModal = () => {
     setAddPareModalOpen(false); // Закриваємо модальне вікно AddPare
   };
+  const closeAddEventModal = () => setAddEventModalOpen(false);
+
   const lessonsSchedule = [
     { start: "08:00", end: "09:20" },
     { start: "09:40", end: "11:00" },
@@ -132,6 +121,17 @@ const Calendar = () => {
     { start: "13:00", end: "14:20" },
     { start: "14:40", end: "16:00" },
   ];
+
+  const handleChooseType = (type) => {
+    setChooseTypeOpen(false);
+    if (type === "lesson") {
+      setAddPareModalOpen(true);
+    }
+    if (type === "event") {
+      setAddEventModalOpen(true);
+    }
+  };
+
   useEffect(() => {
     const checkLessonTime = () => {
       const now = new Date().toLocaleTimeString("uk-UA", {
@@ -267,8 +267,8 @@ const Calendar = () => {
             <div className='calendar_grid'>
               <div className='grid'>
                 {Array.from({ length: 30 }).map((_, index) => {
-                  const dayOfWeek = (index % 6) + 1; // 1 — понеділок, 5 — п'ятниця
-                  const pairNumber = Math.floor(index / 6) + 1; // Номер пари (1–6)
+                  const dayOfWeek = (index % 6) + 1;
+                  const pairNumber = Math.floor(index / 6) + 1;
                   const lesson = schedule.find(
                     (lesson) =>
                       lesson.day?.[0] === dayOfWeek &&
@@ -279,8 +279,14 @@ const Calendar = () => {
                         lessonsSchedule[pairNumber - 1].end
                       }`
                     : "";
+
                   return (
-                    <div key={index} className='cell'>
+                    <div
+                      key={index}
+                      className='cell'
+                      onMouseEnter={() => setHoveredCell(index)}
+                      onMouseLeave={() => setHoveredCell(null)}
+                    >
                       {lesson ? (
                         <LessonBlock
                           title={lesson.predmetId?.predmet || "Предмет"}
@@ -294,8 +300,17 @@ const Calendar = () => {
                           }}
                           onClick={(e) => handleLessonClick(e, lesson, index)}
                         />
+                      ) : user.user?.role === "deanery" &&
+                        hoveredCell === index ? (
+                        <button
+                          className='add-lesson-btn'
+                          onClick={() => setChooseTypeOpen(true)}
+                          title='Додати пару'
+                        >
+                          +
+                        </button>
                       ) : (
-                        <div className='empty-cell'></div> // Порожня клітинка
+                        <div className='empty-cell'></div>
                       )}
                     </div>
                   );
@@ -314,7 +329,15 @@ const Calendar = () => {
         />
       )}
 
-      {isAddPareModalOpen && <CreateSchedule onClose={closeAddPareModal} />}
+       {isChooseTypeOpen && (
+        <ChooseType
+          isOpen={isChooseTypeOpen}
+          onChoose={handleChooseType}
+          onCancel={() => setChooseTypeOpen(false)}
+        />
+      )}
+      {isAddPareModalOpen && <AddPare onClose={closeAddPareModal} />}
+      {isAddEventModalOpen && <AddEvent onClose={closeAddEventModal} />}
     </>
   );
 };

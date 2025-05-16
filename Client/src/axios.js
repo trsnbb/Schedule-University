@@ -26,7 +26,7 @@ export const fetchSchedule = async () => {
       params: {
         specializationId: "68235b44a70aeda58ca57e9c", // ID спеціальності
         courseId: "68235b44a70aeda58ca57e9f", // ID курсу
-        groupId: "68235b44a70aeda58ca57eda3", // ID групи
+        groupId: "68235b44a70aeda58ca57ea3d", // ID групи
       },
     });
 
