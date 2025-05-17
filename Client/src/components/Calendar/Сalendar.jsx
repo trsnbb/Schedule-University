@@ -200,7 +200,6 @@ const Calendar = () => {
               <p className='style_group'>ІПЗ</p>
               <p className='style_group'>3 курс</p>
               <p className='style_group'>4 група</p>
-              <p className='style_group'>2 підгрупа</p>
             </>
           )}
         </div>

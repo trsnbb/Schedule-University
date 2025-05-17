@@ -5,13 +5,14 @@ import MiniCalendar from "./../Mini Calendar/MiniCalendar.jsx";
 import Notes from "./../Notes/Notes.jsx";
 import ProfileMenu from "./../Burger/ProfileMenu.jsx";
 import { useAuth } from "../../AuthContext.jsx"; // Імпортуємо контекст авторизації
+import CreateSchedule from "../Modal/AddShedule/CreateSchedule.jsx";
 
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth(); // Додаємо user до деструктуризації
   const [menuOpen, setMenuOpen] = useState(false);
-
+  const [isCreateScheduleOpen, setIsCreateScheduleOpen] = useState(false);
   useEffect(() => {
     if (
       location.pathname === "/settings" ||
@@ -57,13 +58,23 @@ const Sidebar = () => {
         <div className='sidebar_mini_kalendar'>
           <MiniCalendar />
         </div>
-        {isAuthenticated && user && (
-          user.user?.role === "deanery" ? (
+        {isAuthenticated &&
+          user &&
+          (user.user?.role === "deanery" ? (
             <div className='deanery_buttons'>
-              <button className='deanery_btn'>Редагувати загальний розклад</button>
-              <button className='deanery_btn'>Переглянути розклад викладача</button>
+              <button className='deanery_btn'>
+                Редагувати загальний розклад
+              </button>
+              <button className='deanery_btn'>
+                Переглянути розклад викладача
+              </button>
               <button className='deanery_btn'>Експортувати розклад</button>
-              <button className='deanery_btn'>Створити розклад автоматично</button>
+              <button
+                className='deanery_btn'
+                onClick={() => setIsCreateScheduleOpen(true)}
+              >
+                Створити розклад автоматично
+              </button>
             </div>
           ) : (
             user.user?.role !== "deanery" && (
@@ -71,9 +82,13 @@ const Sidebar = () => {
                 <Notes />
               </div>
             )
-          )
-        )}
+          ))}
       </div>
+
+      {/* Додаємо модалку */}
+      {isCreateScheduleOpen && (
+        <CreateSchedule onClose={() => setIsCreateScheduleOpen(false)} />
+      )}
 
       <ProfileMenu
         isOpen={menuOpen}

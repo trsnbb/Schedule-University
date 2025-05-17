@@ -1,7 +1,7 @@
 // models/Predmet.js
 import mongoose from "mongoose";
 
-const Predmet = new mongoose.Schema({
+const PredmetSchema = new mongoose.Schema({
   predmet: {
     type: String,
     required: true,
@@ -13,6 +13,8 @@ const Predmet = new mongoose.Schema({
       teacherName: String,
     },
   ],
+}, {
+  timestamps: true
 });
 
-export default mongoose.model("Predmet", Predmet); // назва має відповідати ref
+export default mongoose.model("Predmet", PredmetSchema);

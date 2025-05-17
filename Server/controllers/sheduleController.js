@@ -207,7 +207,7 @@ export const getScheduleByGroup = async (req, res) => {
 
       return res.status(200).json(schedule);
     } catch (err) {
-      console.error("❌ Помилка при отриманні розкладу:", err);
+      console.error("Помилка при отриманні розкладу:", err);
       return res.status(500).json({ message: "Помилка сервера при популяції" });
     }
   } catch (error) {

@@ -8,8 +8,8 @@ import userRoutes from "./routes/userRoutes.js";
 import teachingsRoutes from "./routes/teachingsRoutes.js";
 import auditoriumRoutes from "./routes/auditoriumRoutes.js";
 import scheduleRoutes from "./routes/scheduleRoutes.js";
+import predmetRoutes from "./routes/predmetRoutes.js";
 import cors from "cors";
-
 dotenv.config();
 
 const app = express();
@@ -38,6 +38,8 @@ app.use("/", userRoutes);
 app.use("/", teachingsRoutes);
 app.use("/", auditoriumRoutes);
 app.use("/", scheduleRoutes);
+app.use("/predmet", predmetRoutes);
+
 
 app.get("/", (req, res) => {
   res.send("Hello world!");
