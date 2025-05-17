@@ -5,6 +5,7 @@ import plus from "./../../../image/plus.svg";
 import ScheduleModal from "./ScheduleModal";
 import axios from "axios";
 import axiosInstance from "../../../axios";
+import Fuse from "fuse.js";
 
 const CreateSchedule = ({ onClose }) => {
   const [isScheduleModalOpen, setScheduleModalOpen] = useState(false);
@@ -20,21 +21,21 @@ const CreateSchedule = ({ onClose }) => {
   const [selectedSubjects, setSelectedSubjects] = useState([]);
   const [showAllSubjects, setShowAllSubjects] = useState(false);
   const modalRef = useRef();
+  const [searchTerm, setSearchTerm] = useState("");
 
-  
-useEffect(() => {
-  const fetchSubjects = async () => {
-    try {
-      const response = await axiosInstance.get("/predmet");
-      setSubjects(response.data);
-    } catch (err) {
-      setError("Не вдалося завантажити список предметів");
-      console.error("Error fetching subjects:", err);
-    }
-  };
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      try {
+        const response = await axiosInstance.get("/predmet");
+        setSubjects(response.data);
+      } catch (err) {
+        setError("Не вдалося завантажити список предметів");
+        console.error("Error fetching subjects:", err);
+      }
+    };
 
-  fetchSubjects();
-}, []);
+    fetchSubjects();
+  }, []);
 
   const handleClickOutside = (e) => {
     if (
@@ -110,9 +111,24 @@ useEffect(() => {
       setIsLoading(false);
     }
   };
+   const fuse = new Fuse(subjects, {
+    keys: ["name"],
+    threshold: 0.4, // 0.3-0.5 — оптимально для "розумного" пошуку
+  });
 
-  // Determine which subjects to display (all or limited)
-  const displayedSubjects = showAllSubjects ? subjects : subjects.slice(0, 4);
+  const fuzzyResults = searchTerm
+    ? fuse.search(searchTerm).map(result => result.item)
+    : subjects;
+
+  // Піднімаємо знайдені предмети наверх
+  const filteredSubjects = fuzzyResults.concat(
+    subjects.filter(subject => !fuzzyResults.includes(subject))
+  );
+
+  const displayedSubjects = showAllSubjects
+    ? filteredSubjects
+    : filteredSubjects.slice(0, 4);
+
 
   return (
     <>
@@ -169,7 +185,12 @@ useEffect(() => {
 
               <div className='form-group'>
                 <label>Предмети</label>
-                <input type='text' placeholder='Пошук предметів...' />
+                <input
+                  type='text'
+                  placeholder='Пошук предметів...'
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
                 <div className='checkbox-group'>
                   {displayedSubjects.map((subject) => (
                     <label key={subject._id} className='custom-checkbox'>
@@ -179,10 +200,9 @@ useEffect(() => {
                         onChange={() => handleSubjectToggle(subject._id)}
                       />
                       <span className='checkmark'></span>
-                      {subject.name} {/* Буде показувати "Інформатика" */}
+                      {subject.name}
                     </label>
                   ))}
-
                   {subjects.length > 4 && (
                     <span
                       className='more-subjects'
