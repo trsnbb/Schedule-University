@@ -1,57 +1,8 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import "./AddPare.css";
 import "../../CustomRadio.css";
 import plus from "./../../../image/plus.svg";
-
-// Додаємо кастомний дропдаун прямо тут
-const CustomDropdown = ({
-  name,
-  value,
-  options,
-  onChange,
-  placeholder,
-  minWidth = 120,
-}) => {
-  const [open, setOpen] = useState(false);
-  const ref = useRef();
-
-  React.useEffect(() => {
-    const handleClick = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
-    };
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
-
-  return (
-    <div className='custom-dropdown' ref={ref} style={{ minWidth }}>
-      <div className='dropdown-selected' onClick={() => setOpen((o) => !o)}>
-        {options.find((opt) => opt.value === value)?.label || placeholder}
-        <span className='dropdown-arrow'>{open ? "▲" : "▼"}</span>
-      </div>
-      {open && (
-        <div className='dropdown-list'>
-          {options.map((opt, idx) => (
-            <div
-              className='dropdown-item'
-              key={opt.value}
-              onClick={() => {
-                onChange({ target: { name, value: opt.value } });
-                setOpen(false);
-              }}
-              style={{
-                borderBottom:
-                  idx !== options.length - 1 ? "1px solid #353835" : "none",
-              }}
-            >
-              {opt.label}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
+import CustomDropdown from "./../../CustomDropdown/CustomDropdown.jsx";
 
 const AddEvent = ({ onClose }) => {
   const modalRef = useRef();
@@ -85,7 +36,7 @@ const AddEvent = ({ onClose }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onClose();
+    onClose(); // Тут можна викликати API або зберегти подію
   };
 
   const handleClickOutside = (e) => {
@@ -94,14 +45,13 @@ const AddEvent = ({ onClose }) => {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
-  // Варіанти для списків
   const specializationOptions = [
     { value: "", label: "Всі" },
     { value: "ІПЗ", label: "ІПЗ" },
@@ -134,11 +84,9 @@ const AddEvent = ({ onClose }) => {
         </button>
         <h2>Додати подію</h2>
         <form onSubmit={handleSubmit}>
-          <div
-            className='form-group row-inputs'
-          >
+          <div className='form-group row-inputs'>
             <div>
-              <label style={{ display: "block" }}>Спеціальність</label>
+              <label>Спеціальність</label>
               <CustomDropdown
                 name='specialization'
                 value={eventData.specialization}
@@ -149,7 +97,7 @@ const AddEvent = ({ onClose }) => {
               />
             </div>
             <div>
-              <label style={{ display: "block" }}>Курс</label>
+              <label>Курс</label>
               <CustomDropdown
                 name='course'
                 value={eventData.course}
@@ -160,7 +108,7 @@ const AddEvent = ({ onClose }) => {
               />
             </div>
             <div>
-              <label style={{ display: "block" }}>Група</label>
+              <label>Група</label>
               <CustomDropdown
                 name='group'
                 value={eventData.group}
@@ -191,7 +139,6 @@ const AddEvent = ({ onClose }) => {
               onChange={handleInputChange}
               placeholder="(Необов'язково)"
               rows={4}
-              
             />
           </div>
           <div className='form-group'>
@@ -278,4 +225,5 @@ const AddEvent = ({ onClose }) => {
     </div>
   );
 };
+
 export default AddEvent;

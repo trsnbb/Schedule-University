@@ -15,6 +15,16 @@ instance.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
+export const fetchAllTeachers = async () => {
+  try {
+    const response = await instance.get("/getAllTeachers");
+    return response.data.teachers; 
+  } catch (error) {
+    console.error("Помилка отримання всіх викладачів:", error);
+    return [];
+  }
+};
+
 
 export const fetchSchedule = async () => {
   try {

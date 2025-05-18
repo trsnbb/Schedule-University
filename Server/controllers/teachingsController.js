@@ -132,3 +132,31 @@ export const getTeachersByPredmet = async (req, res) => {
     res.status(500).json({ message: "Помилка при отриманні викладачів по предмету" });
   }
 };
+
+// ✅ Отримати всіх викладачів
+export const getAllTeachers = async (req, res) => {
+  try {
+    const allSubjects = await Predmet.find({}, { teachers: 1 });
+
+    // Об'єднуємо всіх викладачів з усіх предметів в один масив
+    const allTeachers = allSubjects.flatMap(subject => subject.teachers);
+
+    // Прибираємо дублі (за email)
+    const uniqueTeachersMap = new Map();
+    for (const teacher of allTeachers) {
+      if (!uniqueTeachersMap.has(teacher.teacherEmail)) {
+        uniqueTeachersMap.set(teacher.teacherEmail, teacher);
+      }
+    }
+
+    const uniqueTeachers = Array.from(uniqueTeachersMap.values());
+
+    res.status(200).json({
+      message: "Унікальні викладачі успішно отримані",
+      teachers: uniqueTeachers,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Помилка при отриманні списку викладачів" });
+  }
+};

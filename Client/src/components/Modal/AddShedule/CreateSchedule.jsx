@@ -1,3 +1,5 @@
+// CreateSchedule.jsx
+
 import React, { useState, useRef, useEffect } from "react";
 import "./createSchedule.css";
 import "./../../CustomRadio.css";
@@ -57,78 +59,22 @@ const CreateSchedule = ({ onClose }) => {
     });
   };
 
-  const handleConfirmClick = async () => {
-    if (
-      !specializationName ||
-      !courseNumber ||
-      !groupNumber ||
-      !format ||
-      !weekType ||
-      !shift
-    ) {
-      setError("Будь ласка, заповніть всі обов'язкові поля");
-      return;
-    }
-
-    if (selectedSubjects.length === 0) {
-      setError("Будь ласка, виберіть хоча б один предмет");
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      // Prepare lessons array based on selected subjects
-      const lessons = selectedSubjects.map((subjectId) => {
-        const subject = subjects.find((s) => s._id === subjectId);
-        return {
-          predmetId: subject._id,
-          teacherId: subject.teacherId || "6823556179a4eb71e88619d1", // Fallback to default teacher if none
-          type: "prac", // Default type, can be adjusted
-          countLec: weekType === "1" ? 8 : 0,
-          countPrac: weekType === "2" ? 8 : 0,
-          countLab: 0,
-          format,
-          weekType: parseInt(weekType),
-        };
-      });
-
-      const requestData = {
-        specializationName,
-        courseNumber: parseInt(courseNumber),
-        groupNumber: parseInt(groupNumber),
-        subgroupNumber: 1,
-        lessons,
-      };
-
-      const response = await axios.post("/api/schedule/create", requestData);
-      setScheduleModalOpen(true);
-    } catch (err) {
-      console.error("Error creating schedule:", err);
-      setError("Помилка при створенні розкладу. Спробуйте ще раз.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-   const fuse = new Fuse(subjects, {
+  const fuse = new Fuse(subjects, {
     keys: ["name"],
-    threshold: 0.4, // 0.3-0.5 — оптимально для "розумного" пошуку
+    threshold: 0.4,
   });
 
   const fuzzyResults = searchTerm
-    ? fuse.search(searchTerm).map(result => result.item)
+    ? fuse.search(searchTerm).map((result) => result.item)
     : subjects;
 
-  // Піднімаємо знайдені предмети наверх
   const filteredSubjects = fuzzyResults.concat(
-    subjects.filter(subject => !fuzzyResults.includes(subject))
+    subjects.filter((subject) => !fuzzyResults.includes(subject))
   );
 
   const displayedSubjects = showAllSubjects
     ? filteredSubjects
     : filteredSubjects.slice(0, 4);
-
 
   return (
     <>
@@ -139,6 +85,9 @@ const CreateSchedule = ({ onClose }) => {
             onClose();
           }}
           onBack={() => setScheduleModalOpen(false)}
+          selectedSubjects={subjects.filter((s) =>
+            selectedSubjects.includes(s._id)
+          )}
         />
       ) : (
         <div className='add-schedule-modal' onClick={handleClickOutside}>
@@ -308,10 +257,11 @@ const CreateSchedule = ({ onClose }) => {
                   </label>
                 </div>
               </div>
+
               <div className='button_from_modal button_create'>
                 <button
                   type='button'
-                  onClick={handleConfirmClick}
+                  onClick={() => setScheduleModalOpen(true)}
                   disabled={isLoading}
                 >
                   {isLoading ? "Обробка..." : "Підтвердити"}
