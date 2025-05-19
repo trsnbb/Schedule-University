@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import Schedule from "../models/Schedule.js";
-import { Course, Group, SubGroup, Specialization } from "../models/Group.js";
+import { Course, Group,  Specialization } from "../models/Group.js";
 import Predmet from "../models/Predmet.js";
 
 export const createSchedule = async (req, res) => {
@@ -9,7 +9,6 @@ export const createSchedule = async (req, res) => {
       specializationName,
       courseNumber,
       groupNumber,
-      subgroupNumber,
       lessons,
     } = req.body;
 
@@ -46,48 +45,36 @@ export const createSchedule = async (req, res) => {
     }
 
     // Знаходимо або створюємо підгрупу
-    let subGroup = await SubGroup.findOne({
-      subgroupNumber,
-      groupId: group._id,
-    });
-    if (!subGroup) {
-      subGroup = await SubGroup.create({ subgroupNumber, groupId: group._id });
-      group.subgroups.push(subGroup._id);
-      await group.save();
-    }
+
 
     // Генеруємо розклад
     const weeksInSemester = 18;
     const scheduleDays = [1, 2, 3, 4, 5];
     const occupiedPairs = { 1: [], 2: [], 3: [], 4: [], 5: [] };
 
-    const getAvailablePair = (day) => {
-      for (let pair = 1; pair <= 4; pair++) {
-        if (!occupiedPairs[day].includes(pair)) {
-          return pair; // Повертаємо першу доступну пару
-        }
-      }
-      return null; // Якщо всі пари зайняті, повертаємо null
-    };
+   const getAvailablePair = (day) => {
+  for (let pair = 1; pair <= 6; pair++) { // Раніше було 4
+    if (!occupiedPairs[day].includes(pair)) {
+      return pair;
+    }
+  }
+  return null;
+};
 
-    const getRandomDayAndPair = () => {
-      let day,
-        pair,
-        tries = 0;
+const getRandomDayAndPair = () => {
+  let tries = 0;
+  while (tries < 50) { // Було 10
+    const day = scheduleDays[Math.floor(Math.random() * scheduleDays.length)];
+    const pair = getAvailablePair(day);
+    if (pair !== null) {
+      occupiedPairs[day].push(pair);
+      return { day, pair };
+    }
+    tries++;
+  }
+  return null;
+};
 
-      do {
-        day = scheduleDays[Math.floor(Math.random() * scheduleDays.length)];
-        pair = getAvailablePair(day);
-        tries++;
-      } while (!pair && tries <= 10);
-
-      if (pair) {
-        occupiedPairs[day].push(pair);
-        console.log("Зайняті пари:", occupiedPairs);
-      }
-
-      return pair ? { day, pair } : null;
-    };
 
     // ...existing code...
     let weeklySchedule = lessons
@@ -117,7 +104,8 @@ export const createSchedule = async (req, res) => {
               },
             });
           } else {
-            console.warn("Не вдалося знайти доступну пару для лекції");
+           console.warn(`❌ Не вдалося призначити заняття: ${lesson.predmetId} - ${lesson.teacherId}`);
+
           }
         }
         return lessonSchedule;
@@ -137,7 +125,7 @@ export const createSchedule = async (req, res) => {
     // Створюємо новий розклад
     // Створюємо новий розклад
     const newSchedule = new Schedule({
-      subGroupId: new mongoose.Types.ObjectId(subGroup._id), // Використовуємо 'new'
+     
       groupId: new mongoose.Types.ObjectId(group._id), // Використовуємо 'new'
       courseId: new mongoose.Types.ObjectId(course._id), // Використовуємо 'new'
       lessons: weeklySchedule,

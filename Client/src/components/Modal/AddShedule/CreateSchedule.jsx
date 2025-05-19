@@ -88,6 +88,12 @@ const CreateSchedule = ({ onClose }) => {
           selectedSubjects={subjects.filter((s) =>
             selectedSubjects.includes(s._id)
           )}
+          specializationName={specializationName}
+          courseNumber={courseNumber}
+          groupNumber={groupNumber}
+          format={format}
+          weekType={weekType}
+          shift={shift}
         />
       ) : (
         <div className='add-schedule-modal' onClick={handleClickOutside}>

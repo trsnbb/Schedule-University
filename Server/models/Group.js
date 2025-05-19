@@ -38,10 +38,7 @@ const GroupSchema = new mongoose.Schema({
     enum: [1, 2, 3, 4], 
     required: true,
   },
-  subgroups: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'SubGroup',
-  }],
+
   courseId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Course',
@@ -51,19 +48,7 @@ const GroupSchema = new mongoose.Schema({
 
 const Group = mongoose.model('Group', GroupSchema);
 
-const SubGroupSchema = new mongoose.Schema({
-  subgroupNumber: {
-    type: Number,
-    enum: [1, 2], 
-    required: true,
-  },
-  groupId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Group',
-    required: true,
-  },
-});
 
-const SubGroup = mongoose.model('SubGroup', SubGroupSchema);
 
-export { Specialization, Course, Group, SubGroup };
+
+export { Specialization, Course, Group };

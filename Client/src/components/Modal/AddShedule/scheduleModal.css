@@ -114,10 +114,12 @@
   flex-direction: column;
   align-items: center;
   font-size: 12px;
+  margin-bottom: 15px;
+  margin-right: 15px;
 }
 
 .accordion-body_name input {
-  width: 80%;
+  width: 100%;
   padding: 10px;
   margin: 15px 0;
   border-radius: 10px;
@@ -132,7 +134,7 @@
 }
 
 .accordion-body_name .input_group_accordion {
-  width: 100%;
+  width: 80%;
   align-items: flex-start;
   margin-left: 30px;
 

@@ -4,16 +4,77 @@ import "./../../CustomRadio.css";
 import close from "./../../../image/close.svg";
 import dzyobik from "./../../../image/dzyobik.svg";
 import back from "./../../../image/Vector.svg";
-import axios from "axios"; // додай axios, якщо ще не використовується
-import { fetchAllTeachers } from "../../../axios"; 
-import CustomDropdown from "./../AddPare/AddEvent.jsx"; // Імпортуй кастомний дропдаун, якщо він у тебе є
+import axios from "axios";
+import { fetchAllTeachers } from "../../../axios";
+import CustomDropdown from "./../../CustomDropdown/CustomDropdown.jsx";
+import { postSchedule } from "../../../axios";
 
-const ScheduleModal = ({ onClose, onBack, selectedSubjects }) => {
+const ScheduleModal = ({
+  onClose,
+  onBack,
+  selectedSubjects,
+  specializationName,
+  courseNumber,
+  groupNumber,
+  format,
+  weekType,
+  shift,
+}) => {
   const modalRef = useRef();
   const accordionRef = useRef();
   const [openAccordionIndex, setOpenAccordionIndex] = useState(null);
   const [teachers, setTeachers] = useState([]);
-  
+  const [subjectCounts, setSubjectCounts] = useState({});
+  const [subjectTeacherLinks, setSubjectTeacherLinks] = useState({});
+  const handleSubmit = async () => {
+    const weeksInSemester = 18;
+
+    const selectedLessons = subjects.flatMap((subject) => {
+      const counts = subjectCounts[subject._id] || {};
+      const teacherEmail = subjectTeacherLinks[subject._id];
+
+      const lessonTypes = [
+        { type: "lecture", count: counts.lectures },
+        { type: "lab", count: counts.labs },
+        { type: "practice", count: counts.practices },
+      ];
+
+      return lessonTypes.flatMap(({ type, count }) => {
+        if (!count || !teacherEmail) return [];
+
+        const weeklyCount = Math.max(1, Math.floor(count / weeksInSemester));
+
+        return Array(weeklyCount)
+          .fill()
+          .map(() => ({
+            predmetId: subject._id,
+            teacherId: teacherEmail,
+            type,
+            format,
+            weekType,
+          }));
+      });
+    });
+
+    const payload = {
+      specializationName,
+      courseNumber,
+      groupNumber,
+      format,
+      weekType,
+      shift,
+      lessons: selectedLessons,
+    };
+console.log("📤 Payload для створення:", payload);
+
+    try {
+      const result = await postSchedule(payload);
+      console.log("✅ Розклад створено:", result);
+      onClose(); // Закриваємо модалку після успіху
+    } catch (error) {
+      console.error("❌ Помилка при створенні розкладу:", error);
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -31,24 +92,68 @@ const ScheduleModal = ({ onClose, onBack, selectedSubjects }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [onClose]);
-console.log("teachers:", teachers);
-console.log("тип teachers:", typeof teachers, Array.isArray(teachers));
 
-  // ✅ Отримання викладачів
- useEffect(() => {
-  const fetchTeachers = async () => {
-    try {
-      const data = await fetchAllTeachers();
-      console.log("Викладачі:", data);
-      setTeachers(data); // якщо треба в стейт
-    } catch (error) {
-      console.error("Помилка при завантаженні викладачів:", error);
+  useEffect(() => {
+    const fetchTeachers = async () => {
+      try {
+        const data = await fetchAllTeachers();
+        setTeachers(data);
+      } catch (error) {
+        console.error("Помилка при завантаженні викладачів:", error);
+      }
+    };
+    fetchTeachers();
+  }, []);
+
+  const handleCountChange = (subjectId, type) => (e) => {
+    const value = e.target.value;
+
+    // Дозволити лише цифри або порожнє значення
+    if (/^\d*$/.test(value)) {
+      setSubjectCounts((prev) => ({
+        ...prev,
+        [subjectId]: {
+          ...prev[subjectId],
+          [type]: value === "" ? "" : parseInt(value),
+        },
+      }));
     }
   };
 
-  fetchTeachers();
-}, []);
+  const weeksInSemester = 18;
 
+  const totalWeeklyLessons = Object.values(subjectCounts).reduce(
+    (acc, curr) => {
+      const lecPerWeek = curr.lectures
+        ? Math.max(1, Math.floor(curr.lectures / weeksInSemester))
+        : 0;
+      const labPerWeek = curr.labs
+        ? Math.max(1, Math.floor(curr.labs / weeksInSemester))
+        : 0;
+      const pracPerWeek = curr.practices
+        ? Math.max(1, Math.floor(curr.practices / weeksInSemester))
+        : 0;
+      return acc + lecPerWeek + labPerWeek + pracPerWeek;
+    },
+    0
+  );
+
+  const totalCounts = Object.values(subjectCounts).reduce(
+    (acc, curr) => {
+      const lec = curr.lectures || 0;
+      const labs = curr.labs || 0;
+      const prac = curr.practices || 0;
+
+      acc.lectures +=
+        lec > 0 ? Math.max(1, Math.floor(lec / weeksInSemester)) : 0;
+      acc.labs +=
+        labs > 0 ? Math.max(1, Math.floor(labs / weeksInSemester)) : 0;
+      acc.practices +=
+        prac > 0 ? Math.max(1, Math.floor(prac / weeksInSemester)) : 0;
+      return acc;
+    },
+    { lectures: 0, labs: 0, practices: 0 }
+  );
 
   const toggleAccordion = (index) => (e) => {
     e.stopPropagation();
@@ -56,7 +161,20 @@ console.log("тип teachers:", typeof teachers, Array.isArray(teachers));
     setOpenAccordionIndex((prevIndex) => (prevIndex === index ? null : index));
   };
 
+  const handleTeacherChange = (subjectId) => (e) => {
+    const { value } = e.target;
+    setSubjectTeacherLinks((prev) => ({
+      ...prev,
+      [subjectId]: value,
+    }));
+  };
+
   const subjects = selectedSubjects || [];
+
+  const teacherOptions = teachers.map((teacher) => ({
+    value: teacher.teacherEmail,
+    label: `${teacher.teacherName} (${teacher.teacherEmail})`,
+  }));
 
   return (
     <div className='create_schedule-modal'>
@@ -96,27 +214,46 @@ console.log("тип teachers:", typeof teachers, Array.isArray(teachers));
                       <div className='accordion-body_count'>
                         <div className='input_group_accordion'>
                           <label>Кількість лекцій</label>
-                          <input type='text' />
+                          <input
+                            type='text'
+                            value={subjectCounts[subject._id]?.lectures || ""}
+                            onChange={handleCountChange(
+                              subject._id,
+                              "lectures"
+                            )}
+                          />
                         </div>
                         <div className='input_group_accordion'>
                           <label>Кількість практик</label>
-                          <input type='text' />
+                          <input
+                            type='text'
+                            value={subjectCounts[subject._id]?.practices || ""}
+                            onChange={handleCountChange(
+                              subject._id,
+                              "practices"
+                            )}
+                          />
                         </div>
                         <div className='input_group_accordion'>
                           <label>Кількість лабораторних</label>
-                          <input type='text' />
+                          <input
+                            type='text'
+                            value={subjectCounts[subject._id]?.labs || ""}
+                            onChange={handleCountChange(subject._id, "labs")}
+                          />
                         </div>
                       </div>
                       <div className='accordion-body_name'>
                         <div className='input_group_accordion'>
                           <label>Оберіть викладача</label>
-                          <select>
-                            {teachers.map((teacher, i) => (
-                              <option key={i} value={teacher.teacherEmail}>
-                                {teacher.teacherName} ({teacher.teacherEmail})
-                              </option>
-                            ))}
-                          </select>
+                          <CustomDropdown
+                            name='teacher'
+                            value={subjectTeacherLinks[subject._id] || ""}
+                            options={teacherOptions}
+                            onChange={handleTeacherChange(subject._id)}
+                            placeholder='Оберіть викладача'
+                            minWidth={200}
+                          />
                         </div>
                         <div className='input_group_accordion'>
                           <label>Введіть посилання</label>
@@ -132,36 +269,38 @@ console.log("тип teachers:", typeof teachers, Array.isArray(teachers));
 
           <div className='input_count_content'>
             <div className='input_count_schedule'>
-              <label>
-                Загальна кількість пар на тиждень для однієї групи
-              </label>
-              <input type='text' disabled />
+              <label>Загальна кількість пар на тиждень для однієї групи</label>
+              <input type='text' value={totalWeeklyLessons} disabled />
             </div>
+
             <div className='input_count_schedule'>
               <label>Загальна кількість предметів</label>
-              <input type='text' disabled />
+              <input type='text' value={subjects.length} disabled />
             </div>
+
             <div className='input_count_schedule'>
               <label>Всього в тиждень:</label>
               <div className='input_count_type'>
                 <div className='input_group_accordion'>
                   <label>Лекцій</label>
-                  <input type='text' disabled />
+                  <input type='text' value={totalCounts.lectures} disabled />
                 </div>
                 <div className='input_group_accordion'>
                   <label>Лабораторних</label>
-                  <input type='text' disabled />
+                  <input type='text' value={totalCounts.labs} disabled />
                 </div>
                 <div className='input_group_accordion'>
                   <label>Практик</label>
-                  <input type='text' disabled />
+                  <input type='text' value={totalCounts.practices} disabled />
                 </div>
               </div>
             </div>
           </div>
 
           <div className='button_from_modal'>
-            <button type='button'>Підтвердити</button>
+            <button type='button' onClick={handleSubmit}>
+              Підтвердити
+            </button>
           </div>
         </form>
       </div>

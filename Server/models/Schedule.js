@@ -2,11 +2,7 @@ import mongoose from "mongoose";
 
 const ScheduleSchema = new mongoose.Schema(
   {
-    subGroupId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "SubGroup",
-      required: true,
-    },
+  
     groupId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Group",

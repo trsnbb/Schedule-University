@@ -18,13 +18,24 @@ instance.interceptors.request.use(
 export const fetchAllTeachers = async () => {
   try {
     const response = await instance.get("/getAllTeachers");
-    return response.data.teachers; 
+    return response.data.teachers;
   } catch (error) {
     console.error("Помилка отримання всіх викладачів:", error);
     return [];
   }
 };
-
+export const postSchedule = async (scheduleData) => {
+  try {
+    const response = await instance.post("/createSchedule", scheduleData);
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Помилка створення розкладу:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
 
 export const fetchSchedule = async () => {
   try {
