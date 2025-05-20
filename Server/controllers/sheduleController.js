@@ -1,16 +1,11 @@
 import mongoose from "mongoose";
 import Schedule from "../models/Schedule.js";
-import { Course, Group,  Specialization } from "../models/Group.js";
+import { Course, Group, Specialization } from "../models/Group.js";
 import Predmet from "../models/Predmet.js";
 
 export const createSchedule = async (req, res) => {
   try {
-    const {
-      specializationName,
-      courseNumber,
-      groupNumber,
-      lessons,
-    } = req.body;
+    const { specializationName, courseNumber, groupNumber, lessons } = req.body;
 
     // Знаходимо або створюємо спеціалізацію
     let specialization = await Specialization.findOne({
@@ -46,51 +41,62 @@ export const createSchedule = async (req, res) => {
 
     // Знаходимо або створюємо підгрупу
 
-
     // Генеруємо розклад
     const weeksInSemester = 18;
     const scheduleDays = [1, 2, 3, 4, 5];
     const occupiedPairs = { 1: [], 2: [], 3: [], 4: [], 5: [] };
 
-   const getAvailablePair = (day) => {
-  for (let pair = 1; pair <= 6; pair++) { // Раніше було 4
-    if (!occupiedPairs[day].includes(pair)) {
-      return pair;
-    }
-  }
-  return null;
-};
+    const getAvailablePair = (day) => {
+      for (let pair = 1; pair <= 6; pair++) {
+        // Раніше було 4
+        if (!occupiedPairs[day].includes(pair)) {
+          return pair;
+        }
+      }
+      return null;
+    };
 
-const getRandomDayAndPair = () => {
-  let tries = 0;
-  while (tries < 50) { // Було 10
-    const day = scheduleDays[Math.floor(Math.random() * scheduleDays.length)];
-    const pair = getAvailablePair(day);
-    if (pair !== null) {
-      occupiedPairs[day].push(pair);
-      return { day, pair };
-    }
-    tries++;
-  }
-  return null;
-};
+    const getRandomDayAndPair = () => {
+      let tries = 0;
+      while (tries < 50) {
+        // Було 10
+        const day =
+          scheduleDays[Math.floor(Math.random() * scheduleDays.length)];
+        const pair = getAvailablePair(day);
+        if (pair !== null) {
+          occupiedPairs[day].push(pair);
+          return { day, pair };
+        }
+        tries++;
+      }
+      return null;
+    };
 
+    console.log("Отриманий payload:", req.body);
+    console.log(
+      "Генерація розкладу для:",
+      specializationName,
+      courseNumber,
+      groupNumber
+    );
+   let weeklySchedule = [];
 
-    // ...existing code...
-    let weeklySchedule = lessons
-      .map((lesson) => {
-        const weeklyLectures = Math.max(
-          1,
-          Math.floor(lesson.countLec / weeksInSemester)
-        );
-        console.log("🔎 Lesson input:", lessons);
-        let lessonSchedule = [];
-        for (let i = 0; i < weeklyLectures; i++) {
+    for (const lesson of lessons) {
+      const lessonTypes = [
+        { type: "lec", count: lesson.countLec || 0 },
+        { type: "prac", count: lesson.countPrac || 0 },
+        { type: "lab", count: lesson.countLab || 0 },
+      ];
+
+      for (const lt of lessonTypes) {
+        const weeklyCount = Math.max(1, Math.floor(lt.count / weeksInSemester));
+
+        for (let i = 0; i < weeklyCount; i++) {
           const result = getRandomDayAndPair();
           if (result) {
             const { day, pair } = result;
-            lessonSchedule.push({
-              type: lesson.type, // <-- Тепер тип береться з lesson.type, якщо він є
+            weeklySchedule.push({
+              type: lt.type,
               day: [day],
               pairNumber: [pair],
               format: lesson.format,
@@ -104,13 +110,11 @@ const getRandomDayAndPair = () => {
               },
             });
           } else {
-           console.warn(`❌ Не вдалося призначити заняття: ${lesson.predmetId} - ${lesson.teacherId}`);
-
+            console.warn(`❌ Не вдалося призначити заняття типу ${lt.type}: ${lesson.predmetId} - ${lesson.teacherId}`);
           }
         }
-        return lessonSchedule;
-      })
-      .flat();
+      }
+    }
 
     console.log("Weekly Schedule:", weeklySchedule);
 
@@ -122,10 +126,8 @@ const getRandomDayAndPair = () => {
 
     weeklySchedule = weeklySchedule.slice(0, 22);
 
-    // Створюємо новий розклад
-    // Створюємо новий розклад
+
     const newSchedule = new Schedule({
-     
       groupId: new mongoose.Types.ObjectId(group._id), // Використовуємо 'new'
       courseId: new mongoose.Types.ObjectId(course._id), // Використовуємо 'new'
       lessons: weeklySchedule,

@@ -12,13 +12,12 @@ import { postSchedule } from "../../../axios";
 const ScheduleModal = ({
   onClose,
   onBack,
-  selectedSubjects,
+  selectedSubjectObjects,
   specializationName,
   courseNumber,
   groupNumber,
   format,
   weekType,
-  shift,
 }) => {
   const modalRef = useRef();
   const accordionRef = useRef();
@@ -29,32 +28,41 @@ const ScheduleModal = ({
   const handleSubmit = async () => {
     const weeksInSemester = 18;
 
-    const selectedLessons = subjects.flatMap((subject) => {
+    // Групуємо предмети, щоб вони містили окремі поля countLec, countLab, countPrac
+    const groupedLessons = subjects.reduce((acc, subject) => {
       const counts = subjectCounts[subject._id] || {};
-      const teacherEmail = subjectTeacherLinks[subject._id];
+      const teacherId = subjectTeacherLinks[subject._id];
 
-      const lessonTypes = [
-        { type: "lecture", count: counts.lectures },
-        { type: "lab", count: counts.labs },
-        { type: "practice", count: counts.practices },
-      ];
+      if (!teacherId) return acc;
 
-      return lessonTypes.flatMap(({ type, count }) => {
-        if (!count || !teacherEmail) return [];
+      // Якщо предмет уже є в acc, оновлюємо його значення
+      const existingLesson = acc.find(
+        (lesson) =>
+          lesson.predmetId === subject._id && lesson.teacherId === teacherId
+      );
 
-        const weeklyCount = Math.max(1, Math.floor(count / weeksInSemester));
+      const lessonCounts = {
+        countLec: counts.lectures || 0,
+        countLab: counts.labs || 0,
+        countPrac: counts.practices || 0,
+      };
 
-        return Array(weeklyCount)
-          .fill()
-          .map(() => ({
-            predmetId: subject._id,
-            teacherId: teacherEmail,
-            type,
-            format,
-            weekType,
-          }));
-      });
-    });
+      if (existingLesson) {
+        existingLesson.countLec += lessonCounts.countLec;
+        existingLesson.countLab += lessonCounts.countLab;
+        existingLesson.countPrac += lessonCounts.countPrac;
+      } else {
+        acc.push({
+          predmetId: subject._id,
+          teacherId: teacherId,
+          format,
+          weekType,
+          ...lessonCounts,
+        });
+      }
+
+      return acc;
+    }, []);
 
     const payload = {
       specializationName,
@@ -62,10 +70,11 @@ const ScheduleModal = ({
       groupNumber,
       format,
       weekType,
-      shift,
-      lessons: selectedLessons,
+      lessons: groupedLessons,
     };
-console.log("📤 Payload для створення:", payload);
+
+    console.log("📤 Payload для створення:", payload);
+    console.log("📤 Відправляється JSON:", JSON.stringify(payload, null, 2));
 
     try {
       const result = await postSchedule(payload);
@@ -169,11 +178,11 @@ console.log("📤 Payload для створення:", payload);
     }));
   };
 
-  const subjects = selectedSubjects || [];
+  const subjects = selectedSubjectObjects || [];
 
   const teacherOptions = teachers.map((teacher) => ({
-    value: teacher.teacherEmail,
-    label: `${teacher.teacherName} (${teacher.teacherEmail})`,
+    value: teacher._id, // тепер відправляється ID
+    label: `${teacher.teacherName} (${teacher.teacherId})`,
   }));
 
   return (
