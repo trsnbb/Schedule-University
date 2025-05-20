@@ -11,14 +11,11 @@ export const AuthProvider = ({ children }) => {
     const checkAuth = async () => {
       try {
         const response = await axios.get("/auth/user");
-        console.log("Користувач авторизований:", response.data);
 
         // Зберігаємо токен у localStorage
         if (response.data.token) {
           localStorage.setItem("authToken", response.data.token);
-          console.log("Токен збережено в localStorage:", response.data.token);
         }
-        console.log("Отриманий токен від сервера:", response.data.token);
 
         setIsAuthenticated(true);
         setUser(response.data); // Зберігаємо дані користувача
@@ -35,7 +32,6 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
   useEffect(() => {
-    console.log("Оновлений користувач у контексті:", user);
   }, [user]);
  return (
   <AuthContext.Provider value={{ isAuthenticated, user, setUser }}>

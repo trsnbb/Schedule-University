@@ -105,7 +105,6 @@ export const linkPredmetToRegisteredTeacher = async (userId, teacherEmail, predm
     if (teacherIndex !== -1) {
       subject.teachers[teacherIndex].teacherId = userId;
       await subject.save();
-      console.log("Викладач успішно прив'язаний до предмета");
     }
   } catch (error) {
     console.error("Помилка при прив'язці викладача до предмета:", error);

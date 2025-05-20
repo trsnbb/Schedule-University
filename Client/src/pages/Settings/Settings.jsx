@@ -38,7 +38,6 @@ const Settings = () => {
         { withCredentials: true }
       );
 
-      console.log("Формат часу оновлено:", response.data);
 
       if (response.data.success) {
         setUser((prevUser) => ({
@@ -68,7 +67,6 @@ const Settings = () => {
         { withCredentials: true }
       );
 
-      console.log("Відображення подій оновлено:", response.data);
 
       if (response.data.success) {
         setUser((prevUser) => ({
@@ -90,7 +88,6 @@ const Settings = () => {
 
   const handleSaveName = async () => {
     try {
-      console.log("Відправка запиту:", { name: newName });
       setIsSaving(true);
       const response = await axios.patch(
         "/updateUserProfile",
@@ -98,7 +95,6 @@ const Settings = () => {
         { withCredentials: true }
       );
 
-      console.log("Відповідь сервера:", response.data);
 
       if (response.data.success) {
         setUser((prevUser) => ({

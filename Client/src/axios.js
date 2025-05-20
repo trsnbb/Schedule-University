@@ -37,13 +37,13 @@ export const postSchedule = async (scheduleData) => {
   }
 };
 
-export const fetchSchedule = async () => {
+export const fetchSchedule = async ({ specializationId, courseId, groupId }) => {
   try {
     const response = await instance.get("/getScheduleByGroup", {
       params: {
-        specializationId: "68235b44a70aeda58ca57e9c",
-        courseId: "68235b44a70aeda58ca57e9f",
-        groupId: "68235b44a70aeda58ca57ea3d",
+        specializationId,
+        courseId,
+        groupId,
       },
     });
     return response.data;
@@ -62,6 +62,27 @@ export const fetchSchedule = async () => {
   }
 };
 
+
+export const fetchAllSpecializations = async () => {
+  const response = await instance.get("/specializations");
+  return response.data;
+};
+
+export const fetchCoursesBySpecialization = async (specializationId) => {
+  const response = await instance.get("/courses", {
+    params: { specializationId },
+  });
+  return response.data;
+};
+
+export const fetchGroupsByCourse = async (courseId) => {
+  const response = await instance.get("/groups", {
+    params: { courseId },
+  });
+  return response.data;
+};
+
+
 instance.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -79,7 +100,6 @@ instance.interceptors.response.use(
 export const logout = async () => {
   try {
     const response = await instance.get("/auth/logout");
-    console.log(response.data.message);
   } catch (error) {
     console.error("Помилка при виході:", error.response?.data || error.message);
   }

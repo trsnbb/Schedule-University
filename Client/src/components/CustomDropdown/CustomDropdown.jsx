@@ -25,7 +25,7 @@ const CustomDropdown = ({
   }, []);
 
   return (
-    <div className='custom-dropdown' ref={ref} style={{ minWidth }}>
+    <div className='custom-dropdown' ref={ref} >
       <div className='dropdown-selected' onClick={() => setOpen((o) => !o)}>
         {options.find((opt) => opt.value === value)?.label || placeholder}
         <span className='dropdown-arrow'>{open ? "▲" : "▼"}</span>

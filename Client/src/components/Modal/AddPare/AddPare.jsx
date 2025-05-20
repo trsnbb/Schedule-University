@@ -24,7 +24,6 @@ const AddPare = ({ onClose }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("New Lesson Added:", lessonData);
     // Додаємо нову пару в систему
     onClose(); // Закриваємо модальне вікно після додавання
   };

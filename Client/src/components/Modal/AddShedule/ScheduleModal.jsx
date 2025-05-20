@@ -73,12 +73,9 @@ const ScheduleModal = ({
       lessons: groupedLessons,
     };
 
-    console.log("📤 Payload для створення:", payload);
-    console.log("📤 Відправляється JSON:", JSON.stringify(payload, null, 2));
 
     try {
       const result = await postSchedule(payload);
-      console.log("✅ Розклад створено:", result);
       onClose(); // Закриваємо модалку після успіху
     } catch (error) {
       console.error("❌ Помилка при створенні розкладу:", error);

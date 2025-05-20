@@ -10,6 +10,7 @@ import { useRef } from "react";
 import AddPare from "../Modal/AddPare/AddPare.jsx";
 import ChooseType from "../Modal/AddPare/ChooseType.jsx";
 import AddEvent from "../Modal/AddPare/AddEvent.jsx"; // Додайте цей імпорт
+import SelectGroupForm from "./SelectGroupForm.jsx";
 
 const getMonday = (date = new Date()) => {
   const currentDay = date.getDay();
@@ -77,10 +78,19 @@ const Calendar = () => {
   const [isChooseTypeOpen, setChooseTypeOpen] = useState(false);
   const [isAddEventModalOpen, setAddEventModalOpen] = useState(false); // Додаємо стан для модалки події
 
-  const [schedule, setSchedule] = useState([]); // Стан для розкладу
+  const [selectedGroup, setSelectedGroup] = useState(null);
+
+ const handleGroupChange = (groupData) => {
+  console.log("Нова група обрана:", groupData); // ➤ має вивестись після вибору групи
+  setSelectedGroup(groupData);
+};
+;
   useEffect(() => {
-    fetchSchedule(); // Викликаємо функцію для отримання розкладу при завантаженні компонента
-  }, []);
+    loadSchedule();
+  }, [selectedGroup]);
+
+  const [schedule, setSchedule] = useState([]); // Стан для розкладу
+
   useEffect(() => {
     setDays(getWeekDays(weekStartDate));
   }, [weekStartDate]);
@@ -175,19 +185,23 @@ const Calendar = () => {
     const interval = setInterval(checkLessonTime, 30000);
     return () => clearInterval(interval);
   }, []);
+  const loadSchedule = async () => {
+    if (!selectedGroup) return;
 
-  useEffect(() => {
-    const loadSchedule = async () => {
-      try {
-        const scheduleData = await fetchSchedule(); // Отримуємо дані з бекенду
-        setSchedule(scheduleData.lessons); // Зберігаємо лише масив lessons у стані
-      } catch (error) {
-        console.error("Помилка завантаження розкладу:", error);
-      }
-    };
+    console.log("Обрана група:", selectedGroup); // ➤ перевірити структуру
 
-    loadSchedule();
-  }, []);
+    try {
+      const scheduleData = await fetchSchedule({
+        specializationId: selectedGroup.specializationId,
+        courseId: selectedGroup.courseId,
+        groupId: selectedGroup.groupId,
+      });
+      console.log("Отриманий розклад:", scheduleData); // ➤ перевірити відповідь
+      setSchedule(scheduleData.lessons);
+    } catch (error) {
+      console.error("Помилка завантаження розкладу:", error);
+    }
+  };
 
   return (
     <>
@@ -197,9 +211,7 @@ const Calendar = () => {
             <p className='style_group'>{user?.name || "Ім'я викладача"}</p>
           ) : (
             <>
-              <p className='style_group'>ІПЗ</p>
-              <p className='style_group'>3 курс</p>
-              <p className='style_group'>4 група</p>
+              <SelectGroupForm onChange={handleGroupChange} />
             </>
           )}
         </div>
@@ -328,7 +340,7 @@ const Calendar = () => {
         />
       )}
 
-       {isChooseTypeOpen && (
+      {isChooseTypeOpen && (
         <ChooseType
           isOpen={isChooseTypeOpen}
           onChoose={handleChooseType}

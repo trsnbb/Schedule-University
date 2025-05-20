@@ -72,13 +72,7 @@ export const createSchedule = async (req, res) => {
       return null;
     };
 
-    console.log("Отриманий payload:", req.body);
-    console.log(
-      "Генерація розкладу для:",
-      specializationName,
-      courseNumber,
-      groupNumber
-    );
+   
    let weeklySchedule = [];
 
     for (const lesson of lessons) {
@@ -116,7 +110,6 @@ export const createSchedule = async (req, res) => {
       }
     }
 
-    console.log("Weekly Schedule:", weeklySchedule);
 
     if (weeklySchedule.length === 0) {
       return res
@@ -193,7 +186,6 @@ export const getScheduleByGroup = async (req, res) => {
         return res.status(404).json({ message: "Розклад не знайдено" });
       }
 
-      console.log("schedule:", JSON.stringify(schedule, null, 2));
 
       return res.status(200).json(schedule);
     } catch (err) {
@@ -203,5 +195,36 @@ export const getScheduleByGroup = async (req, res) => {
   } catch (error) {
     console.error("Помилка отримання розкладу:", error);
     res.status(500).json({ message: "Помилка сервера" });
+  }
+};
+
+// GET /api/specializations
+export const getAllSpecializations = async (req, res) => {
+  try {
+    const specs = await Specialization.find();
+    res.json(specs);
+  } catch (err) {
+    res.status(500).json({ message: "Помилка отримання спеціальностей" });
+  }
+};
+
+// GET /api/courses?specializationId=...
+export const getCoursesBySpecialization = async (req, res) => {
+  try {
+    const { specializationId } = req.query;
+    const courses = await Course.find({ specializationId });
+    res.json(courses);
+  } catch (err) {
+    res.status(500).json({ message: "Помилка отримання курсів" });
+  }
+};
+// GET /api/groups?courseId=...
+export const getGroupsByCourse = async (req, res) => {
+  try {
+    const { courseId } = req.query;
+    const groups = await Group.find({ courseId });
+    res.json(groups);
+  } catch (err) {
+    res.status(500).json({ message: "Помилка отримання груп" });
   }
 };

@@ -14,7 +14,6 @@ const ProfileMenu = ({ isOpen, onClose, disableAnimation = false }) => {
   const [isLogoutModalOpen, setLogoutModalOpen] = useState(false);
   const { user } = useAuth();
   const userData = user?.user; // Отримуємо вкладений об'єкт user
-  console.log("Дані користувача в ProfileMenu:", user); // Логування даних користувача
   const handleSettingsClick = () => {
     if (window.location.pathname !== "/settings") {
       navigate("/settings");

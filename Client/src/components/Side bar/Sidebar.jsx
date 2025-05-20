@@ -42,8 +42,7 @@ const Sidebar = () => {
   };
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
-  console.log("Sidebar user:", user);
-  console.log("Sidebar isAuthenticated:", isAuthenticated);
+ 
   return (
     <>
       <div className='sidebar_background'>

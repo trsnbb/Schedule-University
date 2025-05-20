@@ -15,7 +15,6 @@ const HomePage = () => {
     const fetchUser = async () => {
       try {
         const response = await axios.get("/auth/user");
-        console.log("Дані користувача:", response.data);
         setUser(response.data);
       } catch (error) {
         console.error(
