@@ -6,6 +6,7 @@ import plus from "./../../../image/plus.svg";
 import { fetchAllTeachers } from "../../../axios";
 import CustomDropdown from "./../../CustomDropdown/CustomDropdown.jsx";
 import axiosInstance from "../../../axios";
+// ... імпорти залишаються ті самі
 
 const AddPare = ({
   onClose,
@@ -16,7 +17,6 @@ const AddPare = ({
 }) => {
   const modalRef = useRef();
 
-  const [day, setDay] = useState(dayOfWeek);
   const [pair, setPair] = useState(pairNumber);
   const [teachers, setTeachers] = useState([]);
   const [subjects, setSubjects] = useState([]);
@@ -38,9 +38,8 @@ const AddPare = ({
   }));
 
   useEffect(() => {
-    setDay(dayOfWeek);
     setPair(pairNumber);
-  }, [dayOfWeek, pairNumber]);
+  }, [pairNumber]);
 
   useEffect(() => {
     const fetchSubjects = async () => {
@@ -96,8 +95,8 @@ const AddPare = ({
     try {
       await axios.post("http://localhost:5000/addLesson", {
         groupId,
-        day,
-        pairNumber: pair, // <- назва має бути 'pairNumber'
+        day: dayOfWeek,
+        pairNumber: pair,
         lesson: newLesson,
       });
       onClose();
@@ -215,6 +214,7 @@ const AddPare = ({
               ))}
             </div>
           </div>
+
           {lessonData.lessonType === "single" && (
             <div className='form-group'>
               <label>Оберіть дату</label>
@@ -227,31 +227,22 @@ const AddPare = ({
               />
             </div>
           )}
-          <div>
-            <label>День тижня:</label>
-            <select
-              value={dayOfWeek}
-              onChange={(e) => setDayOfWeek(Number(e.target.value))}
-            >
-              <option value={1}>Понеділок</option>
-              <option value={2}>Вівторок</option>
-              <option value={3}>Середа</option>
-              <option value={4}>Четвер</option>
-              <option value={5}>П’ятниця</option>
-              <option value={6}>Субота</option>
-            </select>
 
-            <label>Номер пари:</label>
-            <select
-              value={pairNumber}
-              onChange={(e) => setPairNumber(Number(e.target.value))}
-            >
-              <option value={1}>1 пара</option>
-              <option value={2}>2 пара</option>
-              <option value={3}>3 пара</option>
-              <option value={4}>4 пара</option>
-              <option value={5}>5 пара</option>
-            </select>
+          <div className='form-group pair'>
+            <label>Номер пари</label>
+            <CustomDropdown
+              name='pair'
+              value={pair}
+              options={[
+                { label: "1 пара", value: 1 },
+                { label: "2 пара", value: 2 },
+                { label: "3 пара", value: 3 },
+                { label: "4 пара", value: 4 },
+                { label: "5 пара", value: 5 },
+              ]}
+              onChange={(e) => setPair(Number(e.target.value))}
+              placeholder='Оберіть номер пари'
+            />
           </div>
 
           <div className='button_from_modal'>

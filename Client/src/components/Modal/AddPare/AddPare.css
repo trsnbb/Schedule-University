@@ -130,3 +130,7 @@ label {
 .teacher_input{
   margin-top: 15px;
 }
+
+.pair .custom-dropdown{
+  width: 20%;
+}
