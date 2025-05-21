@@ -60,7 +60,9 @@ const LessonBlock = ({
         <div className={`lesson_tag ${modeClass}`}>{mode}</div>
       </div>
       <div className={`lesson_time ${typeClass}`}>{time}</div>
-      <div className={`lesson_title ${typeClass}`}>{title}</div>
+      <div className={`lesson_title ${typeClass}`}>
+        {title.length > 35 ? title.slice(0, 35) + "..." : title}
+      </div>
     </div>
   );
 
@@ -80,7 +82,9 @@ const LessonBlock = ({
         <div className={`lesson_tag ${modeClass}`}>{mode}</div>
       </div>
       <div className={`lesson_time ${typeClass}`}>{time}</div>
-      <div className={`lesson_title ${typeClass}`}>{title}</div>
+      <div className={`lesson_title ${typeClass}`}>
+        {title.length > 35 ? title.slice(0, 35) + "..." : title}
+      </div>
     </div>
   );
   const renderDeaneryView = () => (
@@ -94,7 +98,9 @@ const LessonBlock = ({
         <div className={`lesson_tag ${modeClass}`}>{mode}</div>
       </div>
       <div className={`lesson_time ${typeClass}`}>{time}</div>
-      <div className={`lesson_title ${typeClass}`}>{title}</div>
+      <div className={`lesson_title ${typeClass}`}>
+        {title.length > 35 ? title.slice(0, 35) + "..." : title}
+      </div>
     </div>
   );
 

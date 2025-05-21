@@ -188,17 +188,28 @@ const Calendar = () => {
   const loadSchedule = async () => {
     if (!selectedGroup) return;
 
-    console.log("Обрана група:", selectedGroup); // ➤ перевірити структуру
-
     try {
       const scheduleData = await fetchSchedule({
         specializationId: selectedGroup.specializationId,
         courseId: selectedGroup.courseId,
         groupId: selectedGroup.groupId,
-        weekStart: weekStartDate.toISOString(),
+        // weekStart нам більше не потрібен на беку, але можна лишити
       });
-      console.log("Отриманий розклад:", scheduleData); // ➤ перевірити відповідь
-      setSchedule(scheduleData.lessons);
+
+      const monday = new Date(weekStartDate);
+      const sunday = new Date(weekStartDate);
+      sunday.setDate(monday.getDate() + 6);
+
+     
+      const filteredLessons = scheduleData.lessons.filter((lesson) => {
+        if (lesson.date) {
+          const d = new Date(lesson.date);
+          return d >= monday && d <= sunday;
+        }
+        return true;
+      });
+
+      setSchedule(filteredLessons);
     } catch (error) {
       console.error("Помилка завантаження розкладу:", error);
     }
@@ -287,11 +298,24 @@ const Calendar = () => {
                     selectedDate.getDay() === 0 ? 7 : selectedDate.getDay(); // Пн=1, ..., Нд=7
                   const pairNumber = row + 1;
 
-                  const lesson = schedule.find(
-                    (lesson) =>
+                  const lesson = schedule.find((lesson) => {
+                    const isCorrectDay =
                       lesson.day?.[0] === dayOfWeek &&
-                      lesson.pairNumber?.[0] === pairNumber
-                  );
+                      lesson.pairNumber?.[0] === pairNumber;
+
+                    if (!isCorrectDay) return false;
+
+                    if (!lesson.week || lesson.week === "") {
+                      return true;
+                    }
+
+                    const lessonWeekStart = new Date(lesson.week);
+                    return (
+                      lessonWeekStart.toDateString() ===
+                      weekStartDate.toDateString()
+                    );
+                  });
+
                   const pairTime = lessonsSchedule[pairNumber - 1]
                     ? `${lessonsSchedule[pairNumber - 1].start}–${
                         lessonsSchedule[pairNumber - 1].end
