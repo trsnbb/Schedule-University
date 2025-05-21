@@ -137,9 +137,7 @@ export const createSchedule = async (req, res) => {
 
 export const getScheduleByGroup = async (req, res) => {
   try {
-    const { specializationId, courseId, groupId } = req.query;
-
-    console.log("Запитані параметри:", { specializationId, courseId, groupId });
+    const { specializationId, courseId, groupId, date } = req.query;
 
     if (!specializationId || !courseId || !groupId) {
       return res
@@ -148,50 +146,42 @@ export const getScheduleByGroup = async (req, res) => {
     }
 
     const specializationDoc = await Specialization.findById(specializationId);
-    if (!specializationDoc) {
-      return res.status(404).json({ message: "Спеціалізація не знайдена" });
-    }
-
     const courseDoc = await Course.findOne({
       _id: courseId,
       specializationId: specializationDoc._id,
     });
-    if (!courseDoc) {
-      return res.status(404).json({ message: "Курс не знайдено" });
-    }
-
     const groupDoc = await Group.findOne({
       _id: groupId,
       courseId: courseDoc._id,
     });
-    if (!groupDoc) {
-      return res.status(404).json({ message: "Групу не знайдено" });
+
+    if (!specializationDoc || !courseDoc || !groupDoc) {
+      return res.status(404).json({ message: "Група або курс не знайдено" });
     }
 
-    // Важливо: оголошення змінної ПЕРЕД блоком try
-    let schedule;
+    const schedule = await Schedule.findOne({ groupId: groupDoc._id })
+      .populate("lessons.predmetId")
+      .populate("lessons.teacherId");
 
-    try {
-      schedule = await Schedule.findOne({ groupId: groupDoc._id })
-        .populate({
-          path: "lessons.predmetId",
-          model: "Predmet",
-        })
-        .populate({
-          path: "lessons.teacherId",
-          model: "User",
-        });
+    if (!schedule) {
+      return res.status(404).json({ message: "Розклад не знайдено" });
+    }
 
-      if (!schedule) {
-        return res.status(404).json({ message: "Розклад не знайдено" });
+    let lessons = schedule.lessons.filter((lesson) => {
+      // Постійна пара: включаємо завжди
+      if (!lesson.temporary) return true;
+
+      // Тимчасова пара: включаємо тільки якщо співпадає дата
+      if (lesson.temporary && date) {
+        const lessonDate = new Date(lesson.date).toISOString().split("T")[0];
+        const requestDate = new Date(date).toISOString().split("T")[0];
+        return lessonDate === requestDate;
       }
 
+      return false;
+    });
 
-      return res.status(200).json(schedule);
-    } catch (err) {
-      console.error("Помилка при отриманні розкладу:", err);
-      return res.status(500).json({ message: "Помилка сервера при популяції" });
-    }
+    res.status(200).json({ ...schedule.toObject(), lessons });
   } catch (error) {
     console.error("Помилка отримання розкладу:", error);
     res.status(500).json({ message: "Помилка сервера" });
@@ -226,5 +216,52 @@ export const getGroupsByCourse = async (req, res) => {
     res.json(groups);
   } catch (err) {
     res.status(500).json({ message: "Помилка отримання груп" });
+  }
+};
+
+export const addLesson = async (req, res) => {
+  try {
+    const { groupId, day, pairNumber, lesson } = req.body;
+    const allowedTypes = ["lec", "lab", "prac"];
+
+    if (!allowedTypes.includes(lesson.type)) {
+      return res.status(400).json({ error: `Невірний тип заняття: ${lesson.type}` });
+    }
+
+    const schedule = await Schedule.findOne({ groupId });
+    if (!schedule) {
+      return res.status(404).json({ error: "Schedule not found" });
+    }
+
+    // 🔍 Перевірка на зайнятість тільки для постійної пари
+    if (!lesson.temporary) {
+      const isOccupied = schedule.lessons.some((l) =>
+        l.day.includes(day) && l.pairNumber.includes(pairNumber)
+      );
+
+      if (isOccupied) {
+        return res.status(409).json({ error: `Пара вже зайнята на день ${day}, пара №${pairNumber}` });
+      }
+    }
+
+    // 🧠 Створення нового уроку
+    const newLesson = {
+      ...lesson,
+      day: lesson.temporary ? [] : [day],
+      pairNumber: [pairNumber],
+    };
+
+    // Додаємо дату тільки для разової пари
+    if (lesson.temporary && lesson.date) {
+      newLesson.date = lesson.date;
+    }
+
+    schedule.lessons.push(newLesson);
+
+    await schedule.save();
+    res.json({ success: true, schedule });
+  } catch (error) {
+    console.error("Error adding lesson:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };

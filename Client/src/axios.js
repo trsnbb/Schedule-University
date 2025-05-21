@@ -37,13 +37,14 @@ export const postSchedule = async (scheduleData) => {
   }
 };
 
-export const fetchSchedule = async ({ specializationId, courseId, groupId }) => {
+export const fetchSchedule = async ({ specializationId, courseId, groupId, date }) => {
   try {
     const response = await instance.get("/getScheduleByGroup", {
       params: {
         specializationId,
         courseId,
         groupId,
+        ...(date ? { date } : {}), // додаємо тільки якщо є
       },
     });
     return response.data;
@@ -61,6 +62,7 @@ export const fetchSchedule = async ({ specializationId, courseId, groupId }) => 
     throw error;
   }
 };
+
 
 
 export const fetchAllSpecializations = async () => {

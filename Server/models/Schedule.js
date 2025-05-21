@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 
 const ScheduleSchema = new mongoose.Schema(
   {
-  
     groupId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Group",
@@ -34,7 +33,6 @@ const ScheduleSchema = new mongoose.Schema(
         },
         format: {
           type: String,
-          enum: ["Online", "Offline"],
         },
         weekType: {
           type: Number,
@@ -57,11 +55,14 @@ const ScheduleSchema = new mongoose.Schema(
             type: Number,
           },
         },
-      
+
         isEvent: {
           type: Boolean,
         },
         eventTitle: {
+          type: String,
+        },
+        date: {
           type: String,
         },
         Note: [

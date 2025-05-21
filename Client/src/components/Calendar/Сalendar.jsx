@@ -77,17 +77,17 @@ const Calendar = () => {
   const [isAddPareModalOpen, setAddPareModalOpen] = useState(false); // Додано стан для відкриття AddPareModal
   const [isChooseTypeOpen, setChooseTypeOpen] = useState(false);
   const [isAddEventModalOpen, setAddEventModalOpen] = useState(false); // Додаємо стан для модалки події
+  const [selectedCell, setSelectedCell] = useState(null);
 
   const [selectedGroup, setSelectedGroup] = useState(null);
 
- const handleGroupChange = (groupData) => {
-  console.log("Нова група обрана:", groupData); // ➤ має вивестись після вибору групи
-  setSelectedGroup(groupData);
-};
-;
+  const handleGroupChange = (groupData) => {
+    console.log("Нова група обрана:", groupData); // ➤ має вивестись після вибору групи
+    setSelectedGroup(groupData);
+  };
   useEffect(() => {
     loadSchedule();
-  }, [selectedGroup]);
+  }, [selectedGroup, weekStartDate]);
 
   const [schedule, setSchedule] = useState([]); // Стан для розкладу
 
@@ -195,6 +195,7 @@ const Calendar = () => {
         specializationId: selectedGroup.specializationId,
         courseId: selectedGroup.courseId,
         groupId: selectedGroup.groupId,
+        weekStart: weekStartDate.toISOString(),
       });
       console.log("Отриманий розклад:", scheduleData); // ➤ перевірити відповідь
       setSchedule(scheduleData.lessons);
@@ -278,8 +279,14 @@ const Calendar = () => {
             <div className='calendar_grid'>
               <div className='grid'>
                 {Array.from({ length: 30 }).map((_, index) => {
-                  const dayOfWeek = (index % 6) + 1;
-                  const pairNumber = Math.floor(index / 6) + 1;
+                  const column = index % 6;
+                  const row = Math.floor(index / 6);
+                  const selectedDate = new Date(weekStartDate);
+                  selectedDate.setDate(weekStartDate.getDate() + column);
+                  const dayOfWeek =
+                    selectedDate.getDay() === 0 ? 7 : selectedDate.getDay(); // Пн=1, ..., Нд=7
+                  const pairNumber = row + 1;
+
                   const lesson = schedule.find(
                     (lesson) =>
                       lesson.day?.[0] === dayOfWeek &&
@@ -315,7 +322,20 @@ const Calendar = () => {
                         hoveredCell === index ? (
                         <button
                           className='add-lesson-btn'
-                          onClick={() => setChooseTypeOpen(true)}
+                          onClick={() => {
+                            const column = index % 6;
+                            const row = Math.floor(index / 6);
+                            const selectedDate = new Date(weekStartDate);
+                            selectedDate.setDate(
+                              weekStartDate.getDate() + column
+                            );
+                            const dayOfWeek =
+                              selectedDate.getDay() === 0
+                                ? 7
+                                : selectedDate.getDay(); // Пн=1, ..., Нд=7
+                            setSelectedCell({ dayOfWeek, pairNumber: row + 1 });
+                            setChooseTypeOpen(true);
+                          }}
                           title='Додати пару'
                         >
                           +
@@ -347,7 +367,15 @@ const Calendar = () => {
           onCancel={() => setChooseTypeOpen(false)}
         />
       )}
-      {isAddPareModalOpen && <AddPare onClose={closeAddPareModal} />}
+      {isAddPareModalOpen && (
+        <AddPare
+          onClose={closeAddPareModal}
+          groupId={selectedGroup?.groupId}
+          specializationId={selectedGroup?.specializationId}
+          dayOfWeek={selectedCell?.dayOfWeek}
+          pairNumber={selectedCell?.pairNumber}
+        />
+      )}
       {isAddEventModalOpen && <AddEvent onClose={closeAddEventModal} />}
     </>
   );
