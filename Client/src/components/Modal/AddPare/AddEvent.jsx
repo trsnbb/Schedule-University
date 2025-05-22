@@ -3,9 +3,22 @@ import "./AddPare.css";
 import "../../CustomRadio.css";
 import plus from "./../../../image/plus.svg";
 import CustomDropdown from "./../../CustomDropdown/CustomDropdown.jsx";
+import axiosInstance from "../../../axios.js";
+import {
+  fetchAllSpecializations,
+  fetchCoursesBySpecialization,
+  fetchGroupsByCourse,
+} from "./../../../axios.js";
 
-const AddEvent = ({ onClose }) => {
+const AddEvent = ({
+  onClose,
+  groupId,
+  dayOfWeek = 1,
+  pairNumber = 1,
+  specializationId = null,
+}) => {
   const modalRef = useRef();
+  const textareaRef = useRef(null);
 
   const [eventData, setEventData] = useState({
     title: "",
@@ -16,9 +29,42 @@ const AddEvent = ({ onClose }) => {
     specialization: "",
     course: "",
     group: "",
+    isEvent: true,
   });
 
-  const textareaRef = useRef(null);
+  const [specializations, setSpecializations] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [groups, setGroups] = useState([]);
+
+  useEffect(() => {
+    fetchAllSpecializations().then(setSpecializations);
+  }, []);
+
+  useEffect(() => {
+    if (eventData.specialization) {
+      fetchCoursesBySpecialization(eventData.specialization).then((data) => {
+        setCourses(data);
+        setEventData((prev) => ({
+          ...prev,
+          course: "",
+          group: "",
+        }));
+        setGroups([]);
+      });
+    }
+  }, [eventData.specialization]);
+
+  useEffect(() => {
+    if (eventData.course) {
+      fetchGroupsByCourse(eventData.course).then((data) => {
+        setGroups(data);
+        setEventData((prev) => ({
+          ...prev,
+          group: "",
+        }));
+      });
+    }
+  }, [eventData.course]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -34,11 +80,6 @@ const AddEvent = ({ onClose }) => {
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onClose(); // Тут можна викликати API або зберегти подію
-  };
-
   const handleClickOutside = (e) => {
     if (modalRef.current && !modalRef.current.contains(e.target)) {
       onClose();
@@ -52,26 +93,31 @@ const AddEvent = ({ onClose }) => {
     };
   }, []);
 
-  const specializationOptions = [
-    { value: "", label: "Всі" },
-    { value: "ІПЗ", label: "ІПЗ" },
-    { value: "КН", label: "КН" },
-    { value: "ФІЗ", label: "ФІЗ" },
-  ];
-  const courseOptions = [
-    { value: "", label: "Всі" },
-    { value: "1", label: "1 курс" },
-    { value: "2", label: "2 курс" },
-    { value: "3", label: "3 курс" },
-    { value: "4", label: "4 курс" },
-  ];
-  const groupOptions = [
-    { value: "", label: "Всі" },
-    { value: "1", label: "1 група" },
-    { value: "2", label: "2 група" },
-    { value: "3", label: "3 група" },
-    { value: "4", label: "4 група" },
-  ];
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const newEvent = {
+      isEvent: true,
+      eventTitle: eventData.title,
+      descriptionEvent: eventData.description,
+      time: eventData.time,
+      priority: eventData.priority,
+      format: eventData.mode,
+    };
+
+    try {
+      await axiosInstance.post("http://localhost:5000/addLesson", {
+        groupId: eventData.group || groupId,
+        day: dayOfWeek,
+        pairNumber: pairNumber,
+        lesson: newEvent,
+      });
+
+      onClose();
+    } catch (error) {
+      console.error("Не вдалося додати подію:", error);
+    }
+  };
 
   return (
     <div className='add-schedule-modal'>
@@ -90,10 +136,13 @@ const AddEvent = ({ onClose }) => {
               <CustomDropdown
                 name='specialization'
                 value={eventData.specialization}
-                options={specializationOptions}
                 onChange={handleInputChange}
                 placeholder='Всі'
                 minWidth={120}
+                options={specializations.map((s) => ({
+                  value: s._id,
+                  label: s.name,
+                }))}
               />
             </div>
             <div>
@@ -101,10 +150,13 @@ const AddEvent = ({ onClose }) => {
               <CustomDropdown
                 name='course'
                 value={eventData.course}
-                options={courseOptions}
                 onChange={handleInputChange}
                 placeholder='Всі'
                 minWidth={80}
+                options={courses.map((c) => ({
+                  value: c._id,
+                  label: `${c.courseNumber} курс`,
+                }))}
               />
             </div>
             <div>
@@ -112,10 +164,13 @@ const AddEvent = ({ onClose }) => {
               <CustomDropdown
                 name='group'
                 value={eventData.group}
-                options={groupOptions}
                 onChange={handleInputChange}
                 placeholder='Всі'
                 minWidth={80}
+                options={groups.map((g) => ({
+                  value: g._id,
+                  label: `${g.groupNumber} група`,
+                }))}
               />
             </div>
           </div>

@@ -200,7 +200,6 @@ const Calendar = () => {
       const sunday = new Date(weekStartDate);
       sunday.setDate(monday.getDate() + 6);
 
-     
       const filteredLessons = scheduleData.lessons.filter((lesson) => {
         if (lesson.date) {
           const d = new Date(lesson.date);
@@ -400,7 +399,15 @@ const Calendar = () => {
           pairNumber={selectedCell?.pairNumber}
         />
       )}
-      {isAddEventModalOpen && <AddEvent onClose={closeAddEventModal} />}
+      {isAddEventModalOpen && (
+        <AddEvent
+          onClose={closeAddEventModal}
+          groupId={selectedGroup?.groupId}
+          specializationId={selectedGroup?.specializationId}
+          dayOfWeek={selectedCell?.dayOfWeek}
+          pairNumber={selectedCell?.pairNumber}
+        />
+      )}
     </>
   );
 };

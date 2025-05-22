@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
+
 import "./AddPare.css";
 import "./../../CustomRadio.css";
 import plus from "./../../../image/plus.svg";
@@ -77,7 +78,7 @@ const AddPare = ({
     setLessonData((prev) => ({
       ...prev,
       [name]: value,
-    }));
+    }));  
   };
 
   const handleSubmit = async (e) => {

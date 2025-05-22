@@ -62,6 +62,13 @@ const ScheduleSchema = new mongoose.Schema(
         eventTitle: {
           type: String,
         },
+        descriptionEvent: {
+          type: String,
+        },
+        priorityEvent: {
+          type: String,
+          enum: ["normal", "high", "low"],
+        },
         date: {
           type: String,
         },

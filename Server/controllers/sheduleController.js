@@ -222,18 +222,38 @@ export const getGroupsByCourse = async (req, res) => {
 export const addLesson = async (req, res) => {
   try {
     const { groupId, day, pairNumber, lesson } = req.body;
-    const allowedTypes = ["lec", "lab", "prac"];
-
-    if (!allowedTypes.includes(lesson.type)) {
-      return res.status(400).json({ error: `Невірний тип заняття: ${lesson.type}` });
-    }
 
     const schedule = await Schedule.findOne({ groupId });
     if (!schedule) {
       return res.status(404).json({ error: "Schedule not found" });
     }
 
-    // 🔍 Перевірка на зайнятість тільки для постійної пари
+    if (lesson.isEvent) {
+      // Додаємо подію
+      const newEvent = {
+        isEvent: true,
+        eventTitle: lesson.eventTitle || "Подія",
+        descriptionEvent: lesson.descriptionEvent || "",
+        day: [day],
+        pairNumber: [pairNumber],
+        temporary: lesson.temporary || false,
+      };
+
+      if (lesson.temporary && lesson.date) {
+        newEvent.date = lesson.date;
+      }
+
+      schedule.lessons.push(newEvent);
+      await schedule.save();
+      return res.json({ success: true, schedule });
+    }
+
+    // Якщо це не подія — звичайна пара
+    const allowedTypes = ["lec", "lab", "prac"];
+    if (!allowedTypes.includes(lesson.type)) {
+      return res.status(400).json({ error: `Невірний тип заняття: ${lesson.type}` });
+    }
+
     if (!lesson.temporary) {
       const isOccupied = schedule.lessons.some((l) =>
         l.day.includes(day) && l.pairNumber.includes(pairNumber)
@@ -244,24 +264,23 @@ export const addLesson = async (req, res) => {
       }
     }
 
-    // 🧠 Створення нового уроку
     const newLesson = {
       ...lesson,
       day: lesson.temporary ? [] : [day],
       pairNumber: [pairNumber],
     };
 
-    // Додаємо дату тільки для разової пари
     if (lesson.temporary && lesson.date) {
       newLesson.date = lesson.date;
     }
 
     schedule.lessons.push(newLesson);
-
     await schedule.save();
     res.json({ success: true, schedule });
+
   } catch (error) {
-    console.error("Error adding lesson:", error);
+    console.error("Error adding lesson or event:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
