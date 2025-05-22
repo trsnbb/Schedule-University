@@ -10,6 +10,7 @@ const typeLabelMap = {
   лекція: "Лекція",
   лабораторна: "Лабораторна",
   практика: "Практика",
+  event: "Подія",
 };
 const getModeClass = (mode) => {
   if (mode?.toLowerCase() === "офлайн" || mode?.toLowerCase() === "offline") {
@@ -24,11 +25,12 @@ const LessonBlock = ({
   time = "08.00 – 09.20",
   groupInfo,
   onClick,
+  isEvent = false,
 }) => {
   const { user } = useAuth(); // Отримуємо роль користувача
-
   // Визначаємо клас для кольору
-  const getTypeClass = (type) => {
+  const getTypeClass = (type, isEvent) => {
+    if(isEvent)return "event";
     switch (type?.toLowerCase()) {
       case "lec":
       case "лекція":
@@ -41,11 +43,11 @@ const LessonBlock = ({
       case "практика":
         return "prac";
       default:
-        return "lec";
+        return "lab";
     }
   };
 
-  const typeClass = getTypeClass(type);
+  const typeClass = getTypeClass(type, isEvent);
   const typeLabel = typeLabelMap[type?.toLowerCase()] || type;
   const modeClass = getModeClass(mode);
   // Рендеринг для студента

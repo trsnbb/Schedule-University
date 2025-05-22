@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from "react";
 import "./PareInfo.css";
-import { useAuth } from "../../../AuthContext.jsx"; // Імпортуємо контекст авторизації
+import { useAuth } from "../../../AuthContext.jsx";
 
-const PareInfo = ({ data, position, onClose }) => {
+const PareInfo = ({ lesson, position, onClose }) => {
   const modalRef = useRef(null);
-  const { user } = useAuth(); // Отримуємо дані користувача з контексту
+  const { user } = useAuth();
 
   useEffect(() => {
     if (modalRef.current) {
@@ -14,7 +14,6 @@ const PareInfo = ({ data, position, onClose }) => {
       const viewportWidth = window.innerWidth;
 
       const clickedElementHeight = 30;
-
       let top = position.top;
       let left = position.left;
 
@@ -59,102 +58,105 @@ const PareInfo = ({ data, position, onClose }) => {
   }, [onClose]);
 
   const formatTime = (time) => {
+    if (!time) return "—";
     if (user?.timeFormat === 12) {
       const [hours, minutes] = time.split(":").map(Number);
       const period = hours >= 12 ? "PM" : "AM";
-      const formattedHours = hours % 12 || 12; // Перетворюємо 0 на 12
-      return `${formattedHours}:${minutes
-        .toString()
-        .padStart(2, "0")} ${period}`;
+      const formattedHours = hours % 12 || 12;
+      return `${formattedHours}:${minutes.toString().padStart(2, "0")} ${period}`;
     }
-    return time; // Якщо формат 24-годинний, повертаємо час без змін
+    return time;
   };
 
-  const getModalBackground = () => {
-    const type = data?.type?.toLowerCase();
+  const getModalBackground = (type) => {
     if (type === "лекція") return "rgba(3, 105, 161, 0.4)";
     if (type === "практика") return "rgba(109, 40, 217, 0.4)";
-    return "rgba(16, 185, 129, 0.4)"; // дефолтний варіант
+    return "rgba(16, 185, 129, 0.4)";
   };
 
-  const getHeaderBackground = () => {
-    const type = data?.type?.toLowerCase();
-    if (type === "лекція") return "#0369A1"; // для лекції
-    if (type === "практика") return "#6D28D9"; // для практики
-    return "#1BAF23"; // дефолтний варіант
+  const getHeaderBackground = (type) => {
+    if (type === "лекція") return "#0369A1";
+    if (type === "практика") return "#6D28D9";
+    return "#1BAF23";
+  };
+
+  const normalizedLesson = {
+    title: lesson?.predmetId?.predmet || "Без назви",
+    type:
+      lesson?.type === "prac"
+        ? "практика"
+        : lesson?.type === "lec"
+        ? "лекція"
+        : "інше",
+    mode: lesson?.format || "—",
+    teacher: lesson?.teacherId?.name || "—",
+    group: lesson?.group || "—",
+    link: lesson?.link || null,
+    time: lesson?.time || null,
+    teacherNotes: lesson?.teacherNotes || "Немає нотаток від викладача",
+    studentNotes: lesson?.studentNotes || "Немає особистих нотаток",
   };
 
   return (
     <>
-      <div className='modal-overlay' onClick={onClose} />
+      <div className="modal-overlay" onClick={onClose} />
       <div
         ref={modalRef}
-        className='modal-content'
+        className="modal-content-pareinfo"
         style={{
           position: "fixed",
-          background: getModalBackground(),
+          background: getModalBackground(normalizedLesson.type),
         }}
       >
         <div
-          className='modal-header'
-          style={{ background: getHeaderBackground() }}
+          className="modal-header"
+          style={{ background: getHeaderBackground(normalizedLesson.type) }}
         >
-          {data?.title || "Без назви"}
+          {normalizedLesson.title}
         </div>
-        <div className='modal-body'>
-          {data?.type && (
-            <div className='modal-row'>
-              {data.type}
-              {data.time && (
-                <span className='modal_time'>
-                  {data.time
-                    .split("–")
-                    .map((t) => formatTime(t.trim()))
-                    .join(" – ")}
-                </span>
-              )}
-            </div>
-          )}
-          {data?.mode && (
-            <div className='modal-row'>
-              <span className='label'>Формат:</span> {data.mode}
-            </div>
-          )}
-          {data?.group && (
-            <div className='modal-row'>
-              <span className='label'>Група:</span> {data.group}
-            </div>
-          )}
-          {data?.teacher && (
-            <div className='modal-row'>
-              <span className='label'>Викладач:</span> {data.teacher}
-            </div>
-          )}
-          {data?.link && (
-            <div className='modal-row'>
-              <span className='label'>Посилання:</span>
+        <div className="modal-body">
+          <div className="modal-row">
+            {normalizedLesson.type}
+            {normalizedLesson.time && (
+              <span className="modal_time">
+                {normalizedLesson.time
+                  .split("–")
+                  .map((t) => formatTime(t.trim()))
+                  .join(" – ")}
+              </span>
+            )}
+          </div>
+
+          <div className="modal-row">
+            <span className="label">Формат:</span> {normalizedLesson.mode}
+          </div>
+          
+          <div className="modal-row">
+            <span className="label">Викладач:</span> {normalizedLesson.teacher}
+          </div>
+          <div className="modal-row">
+            <span className="label">Посилання:</span>{" "}
+            {normalizedLesson.link ? (
               <a
-                href={data.link}
-                target='_blank'
-                rel='noopener noreferrer'
+                href={normalizedLesson.link}
+                target="_blank"
+                rel="noopener noreferrer"
                 style={{ color: "#fff" }}
               >
-                {data.link}
+                {normalizedLesson.link}
               </a>
-            </div>
-          )}
-          {data?.teacherNotes && (
-            <>
-              <span>Нотатки від викладача:</span>
-              <div className='teacher-notes'>{data.teacherNotes}</div>
-            </>
-          )}
-          {data?.studentNotes && (
-            <>
-              <span>Мої нотатки:</span>
-              <div className='student-notes'>{data.studentNotes}</div>
-            </>
-          )}
+            ) : (
+              "—"
+            )}
+          </div>
+          <div className="modal-row">
+            <span>Нотатки від викладача:</span>
+            <div className="teacher-notes">{normalizedLesson.teacherNotes}</div>
+          </div>
+          <div className="modal-row">
+            <span>Мої нотатки:</span>
+            <div className="student-notes">{normalizedLesson.studentNotes}</div>
+          </div>
         </div>
       </div>
     </>

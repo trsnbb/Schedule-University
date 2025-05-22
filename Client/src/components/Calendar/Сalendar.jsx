@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./calendar.css";
 import dzyobik from "./../../image/dzyobik.svg";
 import LessonBlock from "./../LessonBlock/LessonBlock.jsx";
-import Modal from "../Modal/PareInfo/PareInfo.jsx";
+import PareInfo from "../Modal/PareInfo/PareInfo.jsx";
 import CreateSchedule from "../Modal/AddShedule/CreateSchedule.jsx"; // Імпорт компонента AddPareModal
 import { useAuth } from "../../AuthContext.jsx"; // Імпортуємо контекст авторизації
 import { fetchSchedule } from "./../../axios.js";
@@ -124,6 +124,23 @@ const Calendar = () => {
   };
   const closeAddEventModal = () => setAddEventModalOpen(false);
 
+  const handleLessonClick = (e, lesson) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const modalWidth = 320;
+    const screenWidth = window.innerWidth;
+
+    let left = rect.right + 10;
+    if (rect.right + modalWidth > screenWidth) {
+      left = rect.left - modalWidth - 10;
+    }
+
+    setModalPosition({
+      top: rect.top + rect.height / 2,
+      left,
+    });
+
+    setModalData(lesson);
+  };
   const lessonsSchedule = [
     { start: "08:00", end: "09:20" },
     { start: "09:40", end: "11:00" },
@@ -330,8 +347,8 @@ const Calendar = () => {
                     >
                       {lesson ? (
                         <LessonBlock
-                          title={lesson.predmetId?.predmet || "Предмет"}
-                          type={lesson.type}
+                          title={lesson.predmetId?.predmet || lesson.eventTitle}
+                          type={lesson.type || "event"}
                           mode={lesson.format || "Offline"}
                           time={pairTime}
                           groupInfo={{
@@ -339,7 +356,8 @@ const Calendar = () => {
                             course: 3,
                             group: 3,
                           }}
-                          onClick={(e) => handleLessonClick(e, lesson, index)}
+                          onClick={(e) => handleLessonClick(e, lesson)}
+                          isEvent={lesson.isEvent}
                         />
                       ) : user.user?.role === "deanery" &&
                         hoveredCell === index ? (
@@ -376,8 +394,8 @@ const Calendar = () => {
       </div>
 
       {modalData && (
-        <Modal
-          data={modalData}
+        <PareInfo
+          lesson={modalData}
           position={modalPosition}
           onClose={() => setModalData(null)}
         />

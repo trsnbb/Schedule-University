@@ -8,7 +8,7 @@
   z-index: 999;
 }
 
-.modal-content {
+.modal-content-pareinfo {
   backdrop-filter: blur(3px);
   padding: 30px 30px 20px 30px;
   border-radius: 20px;
@@ -61,7 +61,7 @@
   border-radius: 15px;
   padding: 12px;
   font-size: 14px;
-  margin-top: -15px;
+  margin-top: 12px;
   white-space: pre-line;
   min-height: 35px; /* Мінімальна висота */
   width: 100%; /* Або max-width, якщо потрібно */
