@@ -25,6 +25,8 @@ const ScheduleModal = ({
   const [teachers, setTeachers] = useState([]);
   const [subjectCounts, setSubjectCounts] = useState({});
   const [subjectTeacherLinks, setSubjectTeacherLinks] = useState({});
+  const [subjectLinks, setSubjectLinks] = useState({});
+
   const handleSubmit = async () => {
     const weeksInSemester = 18;
 
@@ -57,6 +59,8 @@ const ScheduleModal = ({
           teacherId: teacherId,
           format,
           weekType,
+          link: subjectLinks[subject._id] || "",
+          
           ...lessonCounts,
         });
       }
@@ -72,7 +76,6 @@ const ScheduleModal = ({
       weekType,
       lessons: groupedLessons,
     };
-
 
     try {
       const result = await postSchedule(payload);
@@ -110,7 +113,13 @@ const ScheduleModal = ({
     };
     fetchTeachers();
   }, []);
-
+  const handleLinkChange = (subjectId) => (e) => {
+    const { value } = e.target;
+    setSubjectLinks((prev) => ({
+      ...prev,
+      [subjectId]: value,
+    }));
+  };
   const handleCountChange = (subjectId, type) => (e) => {
     const value = e.target.value;
 
@@ -263,7 +272,11 @@ const ScheduleModal = ({
                         </div>
                         <div className='input_group_accordion'>
                           <label>Введіть посилання</label>
-                          <input type='text' />
+                          <input
+                            type='text'
+                            value={subjectLinks[subject._id] || ""}
+                            onChange={handleLinkChange(subject._id)}
+                          />
                         </div>
                       </div>
                     </>

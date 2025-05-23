@@ -47,6 +47,15 @@ const ScheduleSchema = new mongoose.Schema(
         link: {
           type: String,
         },
+        countLec: {
+          type: Number,
+        },
+        countPrac: {
+          type: Number,
+        },
+        countLab: {
+          type: Number,
+        },
         auditorium: {
           num: {
             type: Number,
@@ -72,6 +81,7 @@ const ScheduleSchema = new mongoose.Schema(
         date: {
           type: String,
         },
+
         Note: [
           {
             lessonsId: {

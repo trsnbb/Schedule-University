@@ -46,7 +46,9 @@ export const fetchSchedule = async ({ specializationId, courseId, groupId, date 
         groupId,
         ...(date ? { date } : {}), 
       },
+      
     });
+    console.log("Отримане розклад:", response.data);
     return response.data;
   } catch (error) {
     if (

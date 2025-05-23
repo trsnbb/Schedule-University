@@ -63,7 +63,9 @@ const PareInfo = ({ lesson, position, onClose }) => {
       const [hours, minutes] = time.split(":").map(Number);
       const period = hours >= 12 ? "PM" : "AM";
       const formattedHours = hours % 12 || 12;
-      return `${formattedHours}:${minutes.toString().padStart(2, "0")} ${period}`;
+      return `${formattedHours}:${minutes
+        .toString()
+        .padStart(2, "0")} ${period}`;
     }
     return time;
   };
@@ -110,12 +112,18 @@ const PareInfo = ({ lesson, position, onClose }) => {
             : "Інше",
         time: getTimeFromPairNumber(pairNum),
         mode: lesson?.format || "—",
-        teacher: lesson?.teacherId?.name || "—",
+        teacher:
+          lesson?.teacherId?.name ||
+          lesson?.predmetId?.teachers?.[0]?.teacherName ||
+          "—",
+
         group: lesson?.group || "—",
         link: lesson?.link || null,
         teacherNotes: lesson?.teacherNotes || "Немає нотаток від викладача",
         studentNotes: lesson?.studentNotes || "Немає особистих нотаток",
       };
+  console.log("lesson", lesson);
+  console.log("teacherId", lesson?.teacherId);
 
   const getModalBackground = (type) => {
     if (type === "Лекція") return "rgba(3, 105, 161, 0.4)";
@@ -177,20 +185,27 @@ const PareInfo = ({ lesson, position, onClose }) => {
           {lesson?.isEvent ? (
             <div className='modal-row'>
               <span>Опис:</span>
-              <div className='teacher-notes'>{normalizedLesson.descriptionEvent}</div>
+              <div className='teacher-notes'>
+                {normalizedLesson.descriptionEvent}
+              </div>
             </div>
           ) : (
             <>
               <div className='modal-row'>
-                <span className='label'>Викладач:</span> {normalizedLesson.teacher}
+                <span className='label'>Викладач:</span>{" "}
+                {normalizedLesson.teacher}
               </div>
               <div className='modal-row'>
                 <span>Нотатки від викладача:</span>
-                <div className='teacher-notes'>{normalizedLesson.teacherNotes}</div>
+                <div className='teacher-notes'>
+                  {normalizedLesson.teacherNotes}
+                </div>
               </div>
               <div className='modal-row'>
                 <span>Мої нотатки:</span>
-                <div className='student-notes'>{normalizedLesson.studentNotes}</div>
+                <div className='student-notes'>
+                  {normalizedLesson.studentNotes}
+                </div>
               </div>
             </>
           )}

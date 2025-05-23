@@ -72,8 +72,7 @@ export const createSchedule = async (req, res) => {
       return null;
     };
 
-   
-   let weeklySchedule = [];
+    let weeklySchedule = [];
 
     for (const lesson of lessons) {
       const lessonTypes = [
@@ -97,19 +96,24 @@ export const createSchedule = async (req, res) => {
               weekType: lesson.weekType,
               predmetId: new mongoose.Types.ObjectId(lesson.predmetId),
               teacherId: new mongoose.Types.ObjectId(lesson.teacherId),
+              link: lesson.link || "",
               groupInfo: {
                 specialization: specializationName,
                 course: courseNumber,
                 group: groupNumber,
               },
+              countLec: lesson.countLec || 0,
+              countPrac: lesson.countPrac || 0,
+              countLab: lesson.countLab || 0,
             });
           } else {
-            console.warn(`❌ Не вдалося призначити заняття типу ${lt.type}: ${lesson.predmetId} - ${lesson.teacherId}`);
+            console.warn(
+              `❌ Не вдалося призначити заняття типу ${lt.type}: ${lesson.predmetId} - ${lesson.teacherId}`
+            );
           }
         }
       }
     }
-
 
     if (weeklySchedule.length === 0) {
       return res
@@ -118,7 +122,6 @@ export const createSchedule = async (req, res) => {
     }
 
     weeklySchedule = weeklySchedule.slice(0, 22);
-
 
     const newSchedule = new Schedule({
       groupId: new mongoose.Types.ObjectId(group._id), // Використовуємо 'new'
@@ -159,9 +162,12 @@ export const getScheduleByGroup = async (req, res) => {
       return res.status(404).json({ message: "Група або курс не знайдено" });
     }
 
-    const schedule = await Schedule.findOne({ groupId: groupDoc._id })
-      .populate("lessons.predmetId")
-      .populate("lessons.teacherId");
+    const schedule = await Schedule.findOne({ groupId: groupDoc._id }).populate(
+      {
+        path: "lessons",
+        populate: [{ path: "teacherId" }, { path: "predmetId" }],
+      }
+    );
 
     if (!schedule) {
       return res.status(404).json({ message: "Розклад не знайдено" });
@@ -251,16 +257,20 @@ export const addLesson = async (req, res) => {
     // Якщо це не подія — звичайна пара
     const allowedTypes = ["lec", "lab", "prac"];
     if (!allowedTypes.includes(lesson.type)) {
-      return res.status(400).json({ error: `Невірний тип заняття: ${lesson.type}` });
+      return res
+        .status(400)
+        .json({ error: `Невірний тип заняття: ${lesson.type}` });
     }
 
     if (!lesson.temporary) {
-      const isOccupied = schedule.lessons.some((l) =>
-        l.day.includes(day) && l.pairNumber.includes(pairNumber)
+      const isOccupied = schedule.lessons.some(
+        (l) => l.day.includes(day) && l.pairNumber.includes(pairNumber)
       );
 
       if (isOccupied) {
-        return res.status(409).json({ error: `Пара вже зайнята на день ${day}, пара №${pairNumber}` });
+        return res.status(409).json({
+          error: `Пара вже зайнята на день ${day}, пара №${pairNumber}`,
+        });
       }
     }
 
@@ -277,10 +287,8 @@ export const addLesson = async (req, res) => {
     schedule.lessons.push(newLesson);
     await schedule.save();
     res.json({ success: true, schedule });
-
   } catch (error) {
     console.error("Error adding lesson or event:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-

@@ -24,6 +24,7 @@ const CreateSchedule = ({ onClose }) => {
   const [showAllSubjects, setShowAllSubjects] = useState(false);
   const modalRef = useRef();
   const [searchTerm, setSearchTerm] = useState("");
+  
 
   useEffect(() => {
     const fetchSubjects = async () => {
@@ -85,7 +86,7 @@ const CreateSchedule = ({ onClose }) => {
             onClose();
           }}
           onBack={() => setScheduleModalOpen(false)}
-          selectedSubjects={subjects.filter((s) =>
+          selectedSubjectObjects={subjects.filter((s) =>
             selectedSubjects.includes(s._id)
           )}
           specializationName={specializationName}
