@@ -68,79 +68,103 @@ const PareInfo = ({ lesson, position, onClose }) => {
     return time;
   };
 
+  const pairTimes = {
+    1: "08:30 – 09:50",
+    2: "10:00 – 11:20",
+    3: "11:40 – 13:00",
+    4: "13:30 – 14:50",
+    5: "15:00 – 16:20",
+    6: "16:30 – 17:50",
+    7: "18:00 – 19:20",
+  };
+
+  const getTimeFromPairNumber = (number) => {
+    const timeRange = pairTimes[number];
+    if (!timeRange) return "—";
+    const [start, end] = timeRange.split("–").map((t) => t.trim());
+    return `${formatTime(start)} – ${formatTime(end)}`;
+  };
+
+  const pairNum = Array.isArray(lesson?.pairNumber)
+    ? lesson.pairNumber[0]
+    : lesson?.pairNumber;
+
+  const normalizedLesson = lesson?.isEvent
+    ? {
+        title: lesson.eventTitle || "Подія",
+        type: "Подія",
+        time: getTimeFromPairNumber(pairNum),
+        mode: lesson.format || "—",
+        link: lesson.link || null,
+        descriptionEvent: lesson.descriptionEvent || "Опис відсутній",
+      }
+    : {
+        title: lesson?.predmetId?.predmet || "Без назви",
+        type:
+          lesson?.type === "prac"
+            ? "Практика"
+            : lesson?.type === "lec"
+            ? "Лекція"
+            : lesson?.type === "lab"
+            ? "Лабораторна"
+            : "Інше",
+        time: getTimeFromPairNumber(pairNum),
+        mode: lesson?.format || "—",
+        teacher: lesson?.teacherId?.name || "—",
+        group: lesson?.group || "—",
+        link: lesson?.link || null,
+        teacherNotes: lesson?.teacherNotes || "Немає нотаток від викладача",
+        studentNotes: lesson?.studentNotes || "Немає особистих нотаток",
+      };
+
   const getModalBackground = (type) => {
-    if (type === "лекція") return "rgba(3, 105, 161, 0.4)";
-    if (type === "практика") return "rgba(109, 40, 217, 0.4)";
+    if (type === "Лекція") return "rgba(3, 105, 161, 0.4)";
+    if (type === "Практика") return "rgba(109, 40, 217, 0.4)";
+    if (type === "Подія") return "rgba(191, 189, 41, 0.4)";
     return "rgba(16, 185, 129, 0.4)";
   };
 
   const getHeaderBackground = (type) => {
-    if (type === "лекція") return "#0369A1";
-    if (type === "практика") return "#6D28D9";
+    if (type === "Лекція") return "#0369A1";
+    if (type === "Практика") return "#6D28D9";
+    if (type === "Подія") return "#BFBD29";
     return "#1BAF23";
-  };
-
-  const normalizedLesson = {
-    title: lesson?.predmetId?.predmet || "Без назви",
-    type:
-      lesson?.type === "prac"
-        ? "практика"
-        : lesson?.type === "lec"
-        ? "лекція"
-        : "інше",
-    mode: lesson?.format || "—",
-    teacher: lesson?.teacherId?.name || "—",
-    group: lesson?.group || "—",
-    link: lesson?.link || null,
-    time: lesson?.time || null,
-    teacherNotes: lesson?.teacherNotes || "Немає нотаток від викладача",
-    studentNotes: lesson?.studentNotes || "Немає особистих нотаток",
   };
 
   return (
     <>
-      <div className="modal-overlay" onClick={onClose} />
+      <div className='modal-overlay' onClick={onClose} />
       <div
         ref={modalRef}
-        className="modal-content-pareinfo"
+        className='modal-content-pareinfo'
         style={{
           position: "fixed",
           background: getModalBackground(normalizedLesson.type),
         }}
       >
         <div
-          className="modal-header"
+          className='modal-header'
           style={{ background: getHeaderBackground(normalizedLesson.type) }}
         >
           {normalizedLesson.title}
         </div>
-        <div className="modal-body">
-          <div className="modal-row">
+        <div className='modal-body'>
+          <div className='modal-row'>
             {normalizedLesson.type}
-            {normalizedLesson.time && (
-              <span className="modal_time">
-                {normalizedLesson.time
-                  .split("–")
-                  .map((t) => formatTime(t.trim()))
-                  .join(" – ")}
-              </span>
-            )}
+            <span className='modal_time'>{normalizedLesson.time}</span>
           </div>
 
-          <div className="modal-row">
-            <span className="label">Формат:</span> {normalizedLesson.mode}
+          <div className='modal-row'>
+            <span className='label'>Формат:</span> {normalizedLesson.mode}
           </div>
-          
-          <div className="modal-row">
-            <span className="label">Викладач:</span> {normalizedLesson.teacher}
-          </div>
-          <div className="modal-row">
-            <span className="label">Посилання:</span>{" "}
+
+          <div className='modal-row'>
+            <span className='label'>Посилання:</span>{" "}
             {normalizedLesson.link ? (
               <a
                 href={normalizedLesson.link}
-                target="_blank"
-                rel="noopener noreferrer"
+                target='_blank'
+                rel='noopener noreferrer'
                 style={{ color: "#fff" }}
               >
                 {normalizedLesson.link}
@@ -149,14 +173,27 @@ const PareInfo = ({ lesson, position, onClose }) => {
               "—"
             )}
           </div>
-          <div className="modal-row">
-            <span>Нотатки від викладача:</span>
-            <div className="teacher-notes">{normalizedLesson.teacherNotes}</div>
-          </div>
-          <div className="modal-row">
-            <span>Мої нотатки:</span>
-            <div className="student-notes">{normalizedLesson.studentNotes}</div>
-          </div>
+
+          {lesson?.isEvent ? (
+            <div className='modal-row'>
+              <span>Опис:</span>
+              <div className='teacher-notes'>{normalizedLesson.descriptionEvent}</div>
+            </div>
+          ) : (
+            <>
+              <div className='modal-row'>
+                <span className='label'>Викладач:</span> {normalizedLesson.teacher}
+              </div>
+              <div className='modal-row'>
+                <span>Нотатки від викладача:</span>
+                <div className='teacher-notes'>{normalizedLesson.teacherNotes}</div>
+              </div>
+              <div className='modal-row'>
+                <span>Мої нотатки:</span>
+                <div className='student-notes'>{normalizedLesson.studentNotes}</div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </>
