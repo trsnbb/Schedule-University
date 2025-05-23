@@ -39,16 +39,12 @@ export const createSchedule = async (req, res) => {
       await course.save();
     }
 
-    // Знаходимо або створюємо підгрупу
-
-    // Генеруємо розклад
     const weeksInSemester = 18;
     const scheduleDays = [1, 2, 3, 4, 5];
     const occupiedPairs = { 1: [], 2: [], 3: [], 4: [], 5: [] };
 
     const getAvailablePair = (day) => {
       for (let pair = 1; pair <= 6; pair++) {
-        // Раніше було 4
         if (!occupiedPairs[day].includes(pair)) {
           return pair;
         }
@@ -59,7 +55,6 @@ export const createSchedule = async (req, res) => {
     const getRandomDayAndPair = () => {
       let tries = 0;
       while (tries < 50) {
-        // Було 10
         const day =
           scheduleDays[Math.floor(Math.random() * scheduleDays.length)];
         const pair = getAvailablePair(day);
@@ -88,6 +83,21 @@ export const createSchedule = async (req, res) => {
           const result = getRandomDayAndPair();
           if (result) {
             const { day, pair } = result;
+
+            // 🔧 Знаходимо предмет і викладача з userId
+            const predmet = await Predmet.findById(lesson.predmetId);
+            const foundTeacher = predmet?.teachers.find(
+              (t) => t._id.toString() === lesson.teacherId
+            );
+            const teacherUserId = foundTeacher?.teacherId;
+
+            if (!teacherUserId) {
+              console.warn(
+                `❌ Викладач не знайдений у предметі ${lesson.predmetId}`
+              );
+              continue;
+            }
+
             weeklySchedule.push({
               type: lt.type,
               day: [day],
@@ -95,7 +105,7 @@ export const createSchedule = async (req, res) => {
               format: lesson.format,
               weekType: lesson.weekType,
               predmetId: new mongoose.Types.ObjectId(lesson.predmetId),
-              teacherId: new mongoose.Types.ObjectId(lesson.teacherId),
+              teacherId: new mongoose.Types.ObjectId(teacherUserId), // ✅ правильний userId
               link: lesson.link || "",
               groupInfo: {
                 specialization: specializationName,
@@ -124,10 +134,10 @@ export const createSchedule = async (req, res) => {
     weeklySchedule = weeklySchedule.slice(0, 22);
 
     const newSchedule = new Schedule({
-      groupId: new mongoose.Types.ObjectId(group._id), // Використовуємо 'new'
-      courseId: new mongoose.Types.ObjectId(course._id), // Використовуємо 'new'
+      groupId: new mongoose.Types.ObjectId(group._id),
+      courseId: new mongoose.Types.ObjectId(course._id),
+      specializationId: new mongoose.Types.ObjectId(specialization._id),
       lessons: weeklySchedule,
-      specializationId: new mongoose.Types.ObjectId(specialization._id), // Використовуємо 'new'
     });
 
     await newSchedule.save();
@@ -165,7 +175,7 @@ export const getScheduleByGroup = async (req, res) => {
     const schedule = await Schedule.findOne({ groupId: groupDoc._id }).populate(
       {
         path: "lessons",
-        populate: [{ path: "teacherId" }, { path: "predmetId" }],
+        populate: [{ path: "teacherId", model: "User" }, { path: "predmetId" }],
       }
     );
 

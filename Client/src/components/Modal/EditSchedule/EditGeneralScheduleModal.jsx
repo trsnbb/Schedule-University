@@ -6,6 +6,7 @@ import SelectGroupForm from "../../Calendar/SelectGroupForm.jsx";
 import Fuse from "fuse.js";
 import "./../AddShedule/createSchedule.css";
 import "./../../CustomRadio.css";
+import EditScheduleModal from "./EditScheduleModal.jsx";
 
 const EditGeneralScheduleModal = ({ onClose }) => {
   const [groupData, setGroupData] = useState(null);
@@ -16,6 +17,9 @@ const EditGeneralScheduleModal = ({ onClose }) => {
   const [isScheduleModalOpen, setScheduleModalOpen] = useState(false);
   const [error, setError] = useState(null);
   const modalRef = useRef();
+
+  const [lessons, setLessons] = useState([]);
+
   const extractUniqueSubjects = (lessons) => {
     const subjects = lessons
       .map((lesson) => lesson.predmetId?._id || lesson.predmetId)
@@ -52,8 +56,7 @@ const EditGeneralScheduleModal = ({ onClose }) => {
         const allSubjects = predmetRes.data;
         const lessons = scheduleRes.data.lessons || [];
 
-        console.log("Отримані предмети:", allSubjects);
-        console.log("Отримані пари:", lessons);
+        
 
         const usedSubjectIds = extractUniqueSubjects(lessons);
 
@@ -61,6 +64,7 @@ const EditGeneralScheduleModal = ({ onClose }) => {
 
         setSubjects(allSubjects);
         setSelectedSubjects(usedSubjectIds);
+        setLessons(lessons); // <-- додано
       } catch (err) {
         console.error("Помилка при завантаженні:", err);
         setError("Не вдалося завантажити дані");
@@ -117,15 +121,36 @@ const EditGeneralScheduleModal = ({ onClose }) => {
   return (
     <>
       {isScheduleModalOpen ? (
-        <ScheduleModal
+        <EditScheduleModal
           onClose={() => {
             setScheduleModalOpen(false);
             onClose();
           }}
           onBack={() => setScheduleModalOpen(false)}
-          selectedSubjectObjects={subjects.filter((s) =>
-            selectedSubjects.includes(String(s._id))
-          )}
+          initialSubjectsData={subjects
+            .filter((subj) => selectedSubjects.includes(String(subj._id)))
+            .map((subj) => {
+              const matchingLesson = lessons.find(
+                (lesson) =>
+                  String(lesson.predmetId?._id || lesson.predmetId) ===
+                  String(subj._id)
+              );
+              console.log(
+                "lesson with teacherId:",
+                lessons.find((l) => l.teacherId)
+              );
+              console.log("lessons", lessons);
+              console.log("matchingLesson", matchingLesson);
+
+              return {
+                ...subj,
+                countLec: matchingLesson?.countLec || 0,
+                countPrac: matchingLesson?.countPrac || 0,
+                countLab: matchingLesson?.countLab || 0,
+                teacherId: matchingLesson?.teacherId || "",
+                link: matchingLesson?.link || "",
+              };
+            })}
           specializationId={groupData.specializationId}
           courseId={groupData.courseId}
           groupId={groupData.groupId}
