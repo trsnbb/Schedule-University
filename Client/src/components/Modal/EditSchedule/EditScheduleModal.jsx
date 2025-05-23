@@ -30,7 +30,7 @@ const EditScheduleModal = ({
   useEffect(() => {
     const counts = {};
     const links = {};
-    const teachersMap = {};
+    const teacherLinks = {};
 
     initialSubjectsData.forEach((subject) => {
       counts[subject._id] = {
@@ -39,25 +39,44 @@ const EditScheduleModal = ({
         practices: subject.countPrac || 0,
       };
       links[subject._id] = subject.link || "";
-      teachersMap[subject._id] = subject.teacherId || "";
+      teacherLinks[subject._id] =
+        subject.teacherId?._id || subject.teacherId || "";
+
+      console.log("▶️ Предмет:", subject.name);
+      console.log("   ↪ Викладач з бази:", subject.teacherId);
+      console.log(
+        "   ↪ Лекцій:",
+        subject.countLec,
+        "Лаб:",
+        subject.countLab,
+        "Прак:",
+        subject.countPrac
+      );
+      console.log("   ↪ Посилання:", subject.link);
     });
 
     setSubjectCounts(counts);
     setSubjectLinks(links);
-    setSubjectTeacherLinks(teachersMap);
+    setSubjectTeacherLinks(teacherLinks);
   }, [initialSubjectsData]);
 
   useEffect(() => {
     const fetchTeachers = async () => {
       try {
         const data = await fetchAllTeachers();
+        console.log("✅ Викладачі з бекенда:", data);
         setTeachers(data);
       } catch (error) {
-        console.error("Помилка при завантаженні викладачів:", error);
+        console.error("❌ Помилка при завантаженні викладачів:", error);
       }
     };
     fetchTeachers();
   }, []);
+
+  const teacherOptions = teachers.map((teacher) => ({
+    value: teacher._id,
+    label: `${teacher.teacherName} (${teacher.teacherEmail})`,
+  }));
 
   const handleCountChange = (subjectId, type) => (e) => {
     const value = e.target.value;
@@ -139,8 +158,11 @@ const EditScheduleModal = ({
       lessons: groupedLessons,
     };
 
+    console.log("📤 Payload до пост-запиту:", payload);
+
     try {
       await postSchedule(payload);
+      console.log("✅ Розклад успішно оновлено.");
       onClose();
     } catch (error) {
       console.error("❌ Помилка при оновленні розкладу:", error);
@@ -148,7 +170,7 @@ const EditScheduleModal = ({
   };
 
   const weeksInSemester = 18;
-  console.log("initialSubjectsData", initialSubjectsData);
+  console.log("📦 Вхідні предмети (initialSubjectsData):", initialSubjectsData);
 
   const totalWeeklyLessons = Object.values(subjectCounts).reduce(
     (acc, curr) => {
@@ -175,11 +197,6 @@ const EditScheduleModal = ({
     },
     { lectures: 0, labs: 0, practices: 0 }
   );
-
-  const teacherOptions = teachers.map((t) => ({
-    value: t._id,
-    label: `${t.teacherName} (${t.teacherEmail})`,
-  }));
 
   return (
     <div className='create_schedule-modal'>
@@ -242,17 +259,14 @@ const EditScheduleModal = ({
                     <div className='accordion-body_name'>
                       <div className='input_group_accordion'>
                         <label>Оберіть викладача</label>
+
                         <CustomDropdown
                           name='teacher'
-                          value={
-                            teacherOptions.find(
-                              (opt) =>
-                                opt.value ===
-                                (subjectTeacherLinks[subject._id]?._id ||
-                                  subjectTeacherLinks[subject._id])
-                            ) || null
-                          }
-                          options={teacherOptions}
+                          options={teachers.map((t) => ({
+                            label: t.teacherName,
+                            value: t.teacherId, // string: '6823556179a4eb71e88619d1'
+                          }))}
+                          value={subject.teacherId?._id}
                           onChange={handleTeacherChange(subject._id)}
                           placeholder='Оберіть викладача'
                           minWidth={200}

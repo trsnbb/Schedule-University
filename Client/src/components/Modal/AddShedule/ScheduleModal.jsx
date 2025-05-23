@@ -60,7 +60,7 @@ const ScheduleModal = ({
           format,
           weekType,
           link: subjectLinks[subject._id] || "",
-          
+
           ...lessonCounts,
         });
       }
