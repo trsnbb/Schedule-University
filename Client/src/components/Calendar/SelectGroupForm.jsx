@@ -11,14 +11,26 @@ const SelectGroupForm = ({ onChange }) => {
   const [courses, setCourses] = useState([]);
   const [groups, setGroups] = useState([]);
 
-  const [selectedSpec, setSelectedSpec] = useState(localStorage.getItem("selectedSpec") || null);
-  const [selectedCourse, setSelectedCourse] = useState(localStorage.getItem("selectedCourse") || null);
-  const [selectedGroup, setSelectedGroup] = useState(localStorage.getItem("selectedGroup") || null);
+  const [selectedSpec, setSelectedSpec] = useState(
+    localStorage.getItem("selectedSpec") || null
+  );
+  const [selectedCourse, setSelectedCourse] = useState(
+    localStorage.getItem("selectedCourse") || null
+  );
+  const [selectedGroup, setSelectedGroup] = useState(
+    localStorage.getItem("selectedGroup") || null
+  );
 
   useEffect(() => {
     const loadSpecializations = async () => {
       const specs = await fetchAllSpecializations();
       setSpecializations(specs);
+
+      const storedSpec = localStorage.getItem("selectedSpec");
+      if (storedSpec && !specs.some((s) => s._id === storedSpec)) {
+        setSelectedSpec(null);
+        localStorage.removeItem("selectedSpec");
+      }
     };
     loadSpecializations();
   }, []);
@@ -28,7 +40,6 @@ const SelectGroupForm = ({ onChange }) => {
       fetchCoursesBySpecialization(selectedSpec).then((courses) => {
         setCourses(courses);
 
-        // якщо є збережений курс, перевірити чи він належить до цієї спеціальності
         const storedCourse = localStorage.getItem("selectedCourse");
         if (storedCourse && courses.some((c) => c._id === storedCourse)) {
           setSelectedCourse(storedCourse);
@@ -36,7 +47,11 @@ const SelectGroupForm = ({ onChange }) => {
           setSelectedCourse(null);
           localStorage.removeItem("selectedCourse");
         }
+
+        // Скинути групи при зміні спеціальності
         setGroups([]);
+        setSelectedGroup(null);
+        localStorage.removeItem("selectedGroup");
       });
     }
   }, [selectedSpec]);
@@ -54,6 +69,10 @@ const SelectGroupForm = ({ onChange }) => {
           localStorage.removeItem("selectedGroup");
         }
       });
+    } else {
+      setGroups([]); 
+      setSelectedGroup(null);
+      localStorage.removeItem("selectedGroup");
     }
   }, [selectedCourse]);
 
@@ -71,50 +90,77 @@ const SelectGroupForm = ({ onChange }) => {
   return (
     <>
       <CustomDropdown
-        name="specialization"
+        name='specialization'
         value={selectedSpec}
-        options={specializations.map((spec) => ({
-          value: spec._id,
-          label: spec.name,
-        }))}
+        options={[
+          { value: "", label: "Не вибрано" },
+          ...specializations.map((spec) => ({
+            value: spec._id,
+            label: spec.name,
+          })),
+        ]}
         onChange={(e) => {
-          const value = e.target.value;
-          setSelectedSpec(value);
-          localStorage.setItem("selectedSpec", value);
+          const value = e.target.value || null;
+          if (!value) {
+            localStorage.removeItem("selectedSpec");
+            localStorage.removeItem("selectedCourse");
+            localStorage.removeItem("selectedGroup");
+            window.location.reload(); // Перезавантажити сторінку
+          } else {
+            setSelectedSpec(value);
+            localStorage.setItem("selectedSpec", value);
+          }
         }}
-        placeholder="Виберіть спеціальність"
+        placeholder='Виберіть спеціальність'
         minWidth={250}
       />
 
       <CustomDropdown
-        name="course"
+        name='course'
         value={selectedCourse}
-        options={courses.map((course) => ({
-          value: course._id,
-          label: `${course.courseNumber} курс`,
-        }))}
+        options={[
+          { value: "", label: "Не вибрано" },
+          ...courses.map((course) => ({
+            value: course._id,
+            label: `${course.courseNumber} курс`,
+          })),
+        ]}
         onChange={(e) => {
-          const value = e.target.value;
-          setSelectedCourse(value);
-          localStorage.setItem("selectedCourse", value);
+          const value = e.target.value || null;
+          if (!value) {
+            localStorage.removeItem("selectedCourse");
+            localStorage.removeItem("selectedGroup");
+            window.location.reload();
+          } else {
+            setSelectedCourse(value);
+            localStorage.setItem("selectedCourse", value);
+          }
         }}
-        placeholder="Виберіть курс"
+        placeholder='Виберіть курс'
         minWidth={250}
       />
 
       <CustomDropdown
-        name="group"
+        name='group'
         value={selectedGroup}
-        options={groups.map((group) => ({
-          value: group._id,
-          label: `${group.groupNumber} група`,
-        }))}
+        options={[
+          { value: "", label: "Не вибрано" },
+          ...groups.map((group) => ({
+            value: group._id,
+            label: `${group.groupNumber} група`,
+          })),
+        ]}
         onChange={(e) => {
-          const value = e.target.value;
-          setSelectedGroup(value);
-          localStorage.setItem("selectedGroup", value);
+          const value = e.target.value || null;
+          if (!value) {
+            localStorage.removeItem("selectedGroup");
+            window.location.reload();
+          } else {
+            setSelectedGroup(value);
+            localStorage.setItem("selectedGroup", value);
+          }
         }}
-        placeholder="Виберіть групу"
+        placeholder='Виберіть групу'
         minWidth={250}
       />
     </>

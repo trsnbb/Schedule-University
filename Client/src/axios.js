@@ -44,7 +44,7 @@ export const fetchSchedule = async ({ specializationId, courseId, groupId, date 
         specializationId,
         courseId,
         groupId,
-        ...(date ? { date } : {}), // додаємо тільки якщо є
+        ...(date ? { date } : {}), 
       },
     });
     return response.data;

@@ -1,3 +1,5 @@
+// CreateSchedule.jsx
+
 import React, { useState, useRef, useEffect } from "react";
 import "./createSchedule.css";
 import "./../../CustomRadio.css";
@@ -6,7 +8,6 @@ import ScheduleModal from "./ScheduleModal";
 import axios from "axios";
 import axiosInstance from "../../../axios";
 import Fuse from "fuse.js";
-
 
 const CreateSchedule = ({ onClose }) => {
   const [isScheduleModalOpen, setScheduleModalOpen] = useState(false);
@@ -84,7 +85,7 @@ const CreateSchedule = ({ onClose }) => {
             onClose();
           }}
           onBack={() => setScheduleModalOpen(false)}
-          selectedSubjectObjects={subjects.filter((s) =>
+          selectedSubjects={subjects.filter((s) =>
             selectedSubjects.includes(s._id)
           )}
           specializationName={specializationName}
