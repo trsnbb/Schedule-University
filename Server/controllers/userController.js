@@ -37,6 +37,7 @@ export const getProfile = async (req, res) => {
         name: req.user.name,
         email: req.user.email,
         avatarUrl: req.user.avatarUrl,
+        
       });
     }
 

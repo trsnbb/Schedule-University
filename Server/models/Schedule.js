@@ -86,7 +86,7 @@ const ScheduleSchema = new mongoose.Schema(
         date: {
           type: String,
         },
-
+        time: String,
         Note: [
           {
             lessonsId: {

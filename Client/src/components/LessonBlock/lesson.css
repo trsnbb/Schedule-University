@@ -61,6 +61,7 @@
 
 .lesson_tag.green {
   background-color: #1baf23;
+  font-size: 10px;
 }
 
 .lesson_tag.event {
@@ -128,6 +129,5 @@
 .lesson_tag.offline {
   background-color: #CF8508;
 }
-
 
 

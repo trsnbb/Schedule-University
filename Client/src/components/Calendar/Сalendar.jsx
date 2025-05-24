@@ -12,6 +12,14 @@ import ChooseType from "../Modal/AddPare/ChooseType.jsx";
 import AddEvent from "../Modal/AddPare/AddEvent.jsx"; // Додайте цей імпорт
 import SelectGroupForm from "./SelectGroupForm.jsx";
 
+const defaultLessonsSchedule = [
+  { start: "08:00", end: "09:20" },
+  { start: "09:40", end: "11:00" },
+  { start: "11:20", end: "12:40" },
+  { start: "13:00", end: "14:20" },
+  { start: "14:40", end: "16:00" },
+];
+
 const getMonday = (date = new Date()) => {
   const currentDay = date.getDay();
   const diffToMonday = (currentDay + 6) % 7;
@@ -53,14 +61,6 @@ const getWeekRangeText = (monday) => {
 
   return `${format(start)}–${format(end)}`;
 };
-
-const lessonsSchedule = [
-  { start: "08:00", end: "09:20" },
-  { start: "09:40", end: "11:00" },
-  { start: "11:20", end: "12:40" },
-  { start: "13:00", end: "14:20" },
-  { start: "14:40", end: "16:00" },
-];
 
 const Calendar = () => {
   const { user } = useAuth(); // Отримуємо дані користувача з контексту
@@ -106,16 +106,16 @@ const Calendar = () => {
     setWeekStartDate(next);
   };
 
-  const formatTime = (time) => {
-    if (user?.timeFormat === 12) {
-      const [hours, minutes] = time.split(":").map(Number);
-      const period = hours >= 12 ? "PM" : "AM";
-      const formattedHours = hours % 12 || 12; // Перетворюємо 0 на 12
-      return `${formattedHours}:${minutes
-        .toString()
-        .padStart(2, "0")} ${period}`;
-    }
-    return time; // Якщо формат 24-годинний, повертаємо час без змін
+  const formatTime = (timeStr, format) => {
+    if (format === 24) return timeStr;
+
+    const [hourStr, minute] = timeStr.split(":");
+    let hour = parseInt(hourStr, 10);
+    const ampm = hour >= 12 ? "PM " : "AM ";
+
+    hour = hour % 12 || 12;
+
+    return `${hour}:${minute} ${ampm}`;
   };
 
   const closeAddPareModal = () => {
@@ -140,13 +140,7 @@ const Calendar = () => {
 
     setModalData(lesson);
   };
-  const lessonsSchedule = [
-    { start: "08:00", end: "09:20" },
-    { start: "09:40", end: "11:00" },
-    { start: "11:20", end: "12:40" },
-    { start: "13:00", end: "14:20" },
-    { start: "14:40", end: "16:00" },
-  ];
+  const lessonsSchedule = defaultLessonsSchedule;
 
   const handleChooseType = (type) => {
     setChooseTypeOpen(false);
@@ -331,9 +325,13 @@ const Calendar = () => {
                   });
 
                   const pairTime = lessonsSchedule[pairNumber - 1]
-                    ? `${lessonsSchedule[pairNumber - 1].start}–${
-                        lessonsSchedule[pairNumber - 1].end
-                      }`
+                    ? `${formatTime(
+                        lessonsSchedule[pairNumber - 1].start,
+                         user?.user?.timeFormat
+                      )}–${formatTime(
+                        lessonsSchedule[pairNumber - 1].end,
+                         user?.user?.timeFormat
+                      )}`
                     : "";
 
                   return (
@@ -349,6 +347,7 @@ const Calendar = () => {
                           type={lesson.type || "event"}
                           mode={lesson.format || "Offline"}
                           time={pairTime}
+                          eventTime={lesson.time}
                           groupInfo={{
                             specialization: "ІПЗ",
                             course: 3,

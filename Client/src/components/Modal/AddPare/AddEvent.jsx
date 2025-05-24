@@ -29,6 +29,7 @@ const AddEvent = ({
     specialization: "",
     course: "",
     group: "",
+    date: "",
     isEvent: true,
   });
 
@@ -103,6 +104,7 @@ const AddEvent = ({
       time: eventData.time,
       priority: eventData.priority,
       format: eventData.mode,
+      date: eventData.date,
     };
 
     try {
@@ -111,6 +113,7 @@ const AddEvent = ({
         day: dayOfWeek,
         pairNumber: pairNumber,
         lesson: newEvent,
+    
       });
 
       onClose();
@@ -196,6 +199,17 @@ const AddEvent = ({
               rows={4}
             />
           </div>
+          <div className='form-group'>
+            <label>Оберіть дату</label>
+            <input
+              type='date'
+              name='date'
+              value={eventData.date}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+
           <div className='form-group'>
             <label>Напишіть години</label>
             <input

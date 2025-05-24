@@ -366,27 +366,66 @@ export const getGroupsByCourse = async (req, res) => {
 
 export const addLesson = async (req, res) => {
   try {
-    const { groupId, day, pairNumber, lesson } = req.body;
+    const { groupId, pairNumber, lesson } = req.body;
 
     const schedule = await Schedule.findOne({ groupId });
     if (!schedule) {
       return res.status(404).json({ error: "Schedule not found" });
     }
 
-    if (lesson.isEvent) {
-      // Додаємо подію
-      const newEvent = {
-        isEvent: true,
-        eventTitle: lesson.eventTitle || "Подія",
-        descriptionEvent: lesson.descriptionEvent || "",
-        day: [day],
-        pairNumber: [pairNumber],
-        temporary: lesson.temporary || false,
-      };
+    const lessonsSchedule = [
+      { start: "08:00", end: "09:20" },
+      { start: "09:40", end: "11:00" },
+      { start: "11:20", end: "12:40" },
+      { start: "13:00", end: "14:20" },
+      { start: "14:40", end: "16:00" },
+    ];
 
-      if (lesson.temporary && lesson.date) {
-        newEvent.date = lesson.date;
+    if (lesson.isEvent) {
+      if (!lesson.date) {
+        return res.status(400).json({ error: "Для події обов'язкова дата" });
       }
+
+      // Визначаємо день з дати
+      const dayFromDate = new Date(lesson.date).getDay();
+
+      // Визначаємо номер пари з часу
+      let determinedPairNumber = pairNumber;
+
+      if (lesson.time) {
+        const [startTime] = lesson.time.split("-");
+        const matchedIndex = lessonsSchedule.findIndex((pair) => {
+          const lessonStart = startTime.trim();
+          return lessonStart >= pair.start && lessonStart < pair.end;
+        });
+
+        if (matchedIndex === -1) {
+          return res.status(400).json({
+            error: `Не вдалося визначити номер пари за часом: ${lesson.time}`,
+          });
+        }
+
+        determinedPairNumber = matchedIndex + 1;
+      }
+
+      if (!determinedPairNumber) {
+        return res
+          .status(400)
+          .json({ error: "Не вказано номер пари або час для визначення пари" });
+      }
+
+      const newEvent = {
+  isEvent: true,
+  eventTitle: lesson.eventTitle || "Подія",
+  descriptionEvent: lesson.descriptionEvent || "",
+  date: lesson.date,
+  time: lesson.time || "",
+  format: lesson.format || "—",
+  pairNumber: [determinedPairNumber],
+  day: [dayFromDate],
+  temporary: lesson.temporary || false,
+};
+
 
       schedule.lessons.push(newEvent);
       await schedule.save();
@@ -400,6 +439,8 @@ export const addLesson = async (req, res) => {
         .status(400)
         .json({ error: `Невірний тип заняття: ${lesson.type}` });
     }
+
+    const day = lesson.temporary ? null : new Date().getDay();
 
     if (!lesson.temporary) {
       const isOccupied = schedule.lessons.some(

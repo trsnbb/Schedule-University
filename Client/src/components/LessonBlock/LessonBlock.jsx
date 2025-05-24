@@ -18,6 +18,14 @@ const getModeClass = (mode) => {
   }
   return "green";
 };
+
+const getModeLabel = (mode) => {
+  const lower = mode?.toLowerCase();
+  if (lower === "online" || lower === "онлайн") return "Онлайн";
+  if (lower === "offline" || lower === "офлайн") return "Офлайн";
+  return mode;
+};
+
 const LessonBlock = ({
   title,
   type = "Лекція",
@@ -26,11 +34,32 @@ const LessonBlock = ({
   groupInfo,
   onClick,
   isEvent = false,
+  eventTime = "",
 }) => {
   const { user } = useAuth(); // Отримуємо роль користувача
-  // Визначаємо клас для кольору
+
+  const formatTime = (timeStr, format) => {
+    console.log("⌛ Вхідний час:", timeStr);
+    if (!timeStr || String(format) == "24") return timeStr;
+
+    const parts = timeStr.split(/–|-/).map((part) => part.trim());
+
+    const to12Hour = (time) => {
+      const [hourStr, minute] = time.split(":");
+      let hour = parseInt(hourStr, 10);
+      const ampm = hour >= 12 ? "PM" : "AM";
+      hour = hour % 12 || 12;
+      return `${hour}:${minute} ${ampm}`;
+    };
+
+    if (parts.length === 2) {
+      return `${to12Hour(parts[0])} – ${to12Hour(parts[1])}`;
+    }
+
+    return to12Hour(timeStr);
+  };
   const getTypeClass = (type, isEvent) => {
-    if(isEvent)return "event";
+    if (isEvent) return "event";
     switch (type?.toLowerCase()) {
       case "lec":
       case "лекція":
@@ -50,6 +79,10 @@ const LessonBlock = ({
   const typeClass = getTypeClass(type, isEvent);
   const typeLabel = typeLabelMap[type?.toLowerCase()] || type;
   const modeClass = getModeClass(mode);
+
+  const displayTime =
+    isEvent && eventTime ? formatTime(eventTime, user?.user?.timeFormat) : time;
+
   // Рендеринг для студента
   const renderStudentView = () => (
     <div
@@ -59,9 +92,10 @@ const LessonBlock = ({
     >
       <div className='lesson_tags'>
         <div className={`lesson_tag ${typeClass}`}>{typeLabel}</div>
-        <div className={`lesson_tag ${modeClass}`}>{mode}</div>
+        <div className={`lesson_tag ${modeClass}`}>{getModeLabel(mode)}</div>
       </div>
-      <div className={`lesson_time ${typeClass}`}>{time}</div>
+      <div className={`lesson_time ${typeClass}`}>{displayTime}</div>
+
       <div className={`lesson_title ${typeClass}`}>
         {title.length > 35 ? title.slice(0, 35) + "..." : title}
       </div>
@@ -83,7 +117,8 @@ const LessonBlock = ({
         <div className={`lesson_tag ${typeClass}`}>{typeLabel}</div>
         <div className={`lesson_tag ${modeClass}`}>{mode}</div>
       </div>
-      <div className={`lesson_time ${typeClass}`}>{time}</div>
+      <div className={`lesson_time ${typeClass}`}>{displayTime}</div>
+
       <div className={`lesson_title ${typeClass}`}>
         {title.length > 35 ? title.slice(0, 35) + "..." : title}
       </div>
@@ -99,7 +134,8 @@ const LessonBlock = ({
         <div className={`lesson_tag ${typeClass}`}>{typeLabel}</div>
         <div className={`lesson_tag ${modeClass}`}>{mode}</div>
       </div>
-      <div className={`lesson_time ${typeClass}`}>{time}</div>
+      <div className={`lesson_time ${typeClass}`}>{displayTime}</div>
+
       <div className={`lesson_title ${typeClass}`}>
         {title.length > 35 ? title.slice(0, 35) + "..." : title}
       </div>
