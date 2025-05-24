@@ -38,6 +38,9 @@ const LessonBlock = ({
 }) => {
   const { user } = useAuth(); // Отримуємо роль користувача
 
+ if (isEvent && user?.user?.eventVision === false) {
+    return null;
+  }
   const formatTime = (timeStr, format) => {
     console.log("⌛ Вхідний час:", timeStr);
     if (!timeStr || String(format) == "24") return timeStr;

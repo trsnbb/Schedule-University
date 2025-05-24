@@ -6,7 +6,6 @@ import { useAuth } from "../../AuthContext.jsx";
 import axios from "./../../axios.js";
 import ExitProfile from "../../components/Modal/ExitProfile/ExitProfile.jsx";
 
-
 const Settings = () => {
   const { user, setUser } = useAuth();
   const [newName, setNewName] = useState(user?.user?.name || "");
@@ -38,7 +37,6 @@ const Settings = () => {
         { withCredentials: true }
       );
 
-
       if (response.data.success) {
         setUser((prevUser) => ({
           ...prevUser,
@@ -67,7 +65,6 @@ const Settings = () => {
         { withCredentials: true }
       );
 
-
       if (response.data.success) {
         setUser((prevUser) => ({
           ...prevUser,
@@ -95,7 +92,6 @@ const Settings = () => {
         { withCredentials: true }
       );
 
-
       if (response.data.success) {
         setUser((prevUser) => ({
           ...prevUser,
@@ -122,14 +118,17 @@ const Settings = () => {
       setIsSaving(false);
     }
   };
- const handleDeleteAccount = async () => {
+  const handleDeleteAccount = async () => {
     try {
       await axios.delete("/deleteUser");
       alert("Ваш профіль було успішно видалено.");
       setUser(null);
       window.location.href = "/login";
     } catch (error) {
-      console.error("Помилка при видаленні профілю:", error.response?.data || error.message);
+      console.error(
+        "Помилка при видаленні профілю:",
+        error.response?.data || error.message
+      );
       alert("Не вдалося видалити профіль.");
     }
   };
@@ -210,22 +209,19 @@ const Settings = () => {
               <span className='checkmark'></span>
               Відображати події від деканату
             </label>
-           <button
-              className="delete_btn"
-              onClick={() => openModal("delete")}
-            >
+            <button className='delete_btn' onClick={() => openModal("delete")}>
               Видалити аккаунт
             </button>
             <button className='report_btn' onClick={handleReportIssue}>
               Повідомити про помилку
             </button>
           </div>
-            <ExitProfile
-        isOpen={isModalOpen}
-        onConfirm={handleModalConfirm}
-        onCancel={closeModal}
-        modalType={modalType}
-      />
+          <ExitProfile
+            isOpen={isModalOpen}
+            onConfirm={handleModalConfirm}
+            onCancel={closeModal}
+            modalType={modalType}
+          />
           <div className='profile_section'>
             <img
               className='avatar_large'
@@ -240,14 +236,11 @@ const Settings = () => {
             <div className='user_info_box'>
               <h3>Особиста інформація</h3>
               <p>Ім’я: {user?.user?.name || "Невідомо"}</p>
+              <p>Email: {user?.user?.email || "Невідомо"}</p>
               <p>
                 Статус:{" "}
                 {user?.user?.role ? translateRole(user.user.role) : "Невідомо"}
               </p>
-              <p>Спеціальність: Інженерія програмного забезпечення</p>
-              <p>Курс: 3</p>
-              <p>Група: 4</p>
-              <p>Підгрупа: 2</p>
             </div>
           </div>
         </div>

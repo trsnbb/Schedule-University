@@ -18,7 +18,6 @@
   max-width: 1000px;
   justify-content: space-between;
   align-items: center;
-
 }
 
 .form_inputs {
@@ -119,7 +118,7 @@
   padding: 15px 20px;
   border-radius: 10px;
   width: 80%;
- 
+  min-width: 380px;
   font-weight: 200;
   margin-bottom: 10px;
 }
@@ -133,7 +132,6 @@
   line-height: 2; /* або 1.6, якщо хочеш більше повітря */
   word-break: break-word; /* щоб переносило при потребі */
 }
-
 
 .form_inputs label {
   margin-left: 20px;
@@ -169,7 +167,7 @@
   box-shadow: 0 0 0 4px rgba(19, 23, 23, 1);
 }
 
-.custom_radio input:checked ~ .radio_mark  {
+.custom_radio input:checked ~ .radio_mark {
   background-color: #34833b;
 }
 
@@ -240,8 +238,12 @@
   transition: opacity 0.2s ease-in-out;
 }
 
-
 .save_btn:disabled {
-  background-color: rgba(52, 131, 59, 0.5); /* Світліший колір для неактивної кнопки */
+  background-color: rgba(
+    52,
+    131,
+    59,
+    0.5
+  ); /* Світліший колір для неактивної кнопки */
   cursor: not-allowed;
 }
