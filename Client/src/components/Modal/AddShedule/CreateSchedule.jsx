@@ -15,7 +15,6 @@ const CreateSchedule = ({ onClose }) => {
   const [courseNumber, setCourseNumber] = useState("");
   const [groupNumber, setGroupNumber] = useState("");
   const [format, setFormat] = useState("");
-  const [weekType, setWeekType] = useState("");
   const [shift, setShift] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -24,7 +23,6 @@ const CreateSchedule = ({ onClose }) => {
   const [showAllSubjects, setShowAllSubjects] = useState(false);
   const modalRef = useRef();
   const [searchTerm, setSearchTerm] = useState("");
-  
 
   useEffect(() => {
     const fetchSubjects = async () => {
@@ -93,7 +91,7 @@ const CreateSchedule = ({ onClose }) => {
           courseNumber={courseNumber}
           groupNumber={groupNumber}
           format={format}
-          weekType={weekType}
+          weekType=''
           shift={shift}
         />
       ) : (
@@ -194,45 +192,6 @@ const CreateSchedule = ({ onClose }) => {
                     />
                     <span className='radio_mark_modal'></span>
                     Дистанційно
-                  </label>
-                </div>
-              </div>
-
-              <div className='form-group'>
-                <label>Варіант</label>
-                <div className='radio-button-row'>
-                  <label className='custom_radio_modal'>
-                    <input
-                      type='radio'
-                      name='variant'
-                      value='1'
-                      checked={weekType === "1"}
-                      onChange={() => setWeekType("1")}
-                    />
-                    <span className='radio_mark_modal'></span>
-                    Перший
-                  </label>
-                  <label className='custom_radio_modal'>
-                    <input
-                      type='radio'
-                      name='variant'
-                      value='2'
-                      checked={weekType === "2"}
-                      onChange={() => setWeekType("2")}
-                    />
-                    <span className='radio_mark_modal'></span>
-                    Другий
-                  </label>
-                  <label className='custom_radio_modal'>
-                    <input
-                      type='radio'
-                      name='variant'
-                      value='both'
-                      checked={weekType === "both"}
-                      onChange={() => setWeekType("both")}
-                    />
-                    <span className='radio_mark_modal'></span>
-                    Обa варіанти
                   </label>
                 </div>
               </div>

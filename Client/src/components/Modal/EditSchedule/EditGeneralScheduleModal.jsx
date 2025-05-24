@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import plus from "./../../../image/plus.svg";
-import ScheduleModal from "./../AddShedule/ScheduleModal.jsx";
+import EditScheduleModal from "./EditScheduleModal.jsx";
 import axiosInstance from "../../../axios.js";
 import SelectGroupForm from "../../Calendar/SelectGroupForm.jsx";
 import Fuse from "fuse.js";
 import "./../AddShedule/createSchedule.css";
 import "./../../CustomRadio.css";
-import EditScheduleModal from "./EditScheduleModal.jsx";
 
 const EditGeneralScheduleModal = ({ onClose }) => {
   const [groupData, setGroupData] = useState(null);
@@ -20,6 +19,10 @@ const EditGeneralScheduleModal = ({ onClose }) => {
 
   const [lessons, setLessons] = useState([]);
 
+  // Нові стани для формату і зміни
+  const [format, setFormat] = useState("");
+  const [shift, setShift] = useState("");
+
   const extractUniqueSubjects = (lessons) => {
     const subjects = lessons
       .map((lesson) => lesson.predmetId?._id || lesson.predmetId)
@@ -29,7 +32,6 @@ const EditGeneralScheduleModal = ({ onClose }) => {
     return [...new Set(subjects)];
   };
 
-  // Завантаження предметів + розкладу
   useEffect(() => {
     const fetchData = async () => {
       if (
@@ -58,11 +60,11 @@ const EditGeneralScheduleModal = ({ onClose }) => {
 
         const usedSubjectIds = extractUniqueSubjects(lessons);
 
-        console.log("Унікальні предмети з розкладу:", usedSubjectIds);
-
         setSubjects(allSubjects);
         setSelectedSubjects(usedSubjectIds);
-        setLessons(lessons); // <-- додано
+        setLessons(lessons);
+
+
       } catch (err) {
         console.error("Помилка при завантаженні:", err);
         setError("Не вдалося завантажити дані");
@@ -113,6 +115,15 @@ const EditGeneralScheduleModal = ({ onClose }) => {
       setError("Будь ласка, оберіть спеціальність, курс і групу");
       return;
     }
+    if (!format) {
+      setError("Будь ласка, оберіть формат");
+      return;
+    }
+    if (!shift) {
+      setError("Будь ласка, оберіть зміну");
+      return;
+    }
+    setError(null);
     setScheduleModalOpen(true);
   };
 
@@ -133,13 +144,6 @@ const EditGeneralScheduleModal = ({ onClose }) => {
                   String(lesson.predmetId?._id || lesson.predmetId) ===
                   String(subj._id)
               );
-              console.log(
-                "lesson with teacherId:",
-                lessons.find((l) => l.teacherId)
-              );
-              console.log("lessons", lessons);
-              console.log("matchingLesson", matchingLesson);
-
               return {
                 ...subj,
                 countLec: matchingLesson?.countLec || 0,
@@ -147,13 +151,15 @@ const EditGeneralScheduleModal = ({ onClose }) => {
                 countLab: matchingLesson?.countLab || 0,
                 teacherId: matchingLesson?.teacherId || "",
                 link: matchingLesson?.link || "",
-                format: "online",
-                weekType: "",
+                format: matchingLesson?.format || format,
+                weekType: matchingLesson?.weekType || "",
               };
             })}
           specializationId={groupData.specializationId}
           courseId={groupData.courseId}
           groupId={groupData.groupId}
+          format={format}
+          shift={shift}
         />
       ) : (
         <div className='add-schedule-modal' onClick={handleClickOutside}>
@@ -199,6 +205,62 @@ const EditGeneralScheduleModal = ({ onClose }) => {
                       {showAllSubjects ? "Менше..." : "Ще..."}
                     </span>
                   )}
+                </div>
+              </div>
+
+              <div className='form-group'>
+                <label>Формат</label>
+                <div className='radio-button-row'>
+                  <label className='custom_radio_modal'>
+                    <input
+                      type='radio'
+                      name='format'
+                      value='Offline'
+                      checked={format === "Offline"}
+                      onChange={() => setFormat("Offline")}
+                    />
+                    <span className='radio_mark_modal'></span>
+                    Аудиторно
+                  </label>
+                  <label className='custom_radio_modal'>
+                    <input
+                      type='radio'
+                      name='format'
+                      value='Online'
+                      checked={format === "Online"}
+                      onChange={() => setFormat("Online")}
+                    />
+                    <span className='radio_mark_modal'></span>
+                    Дистанційно
+                  </label>
+                </div>
+              </div>
+
+              <div className='form-group'>
+                <label>Зміна</label>
+                <div className='radio-button-row'>
+                  <label className='custom_radio_modal'>
+                    <input
+                      type='radio'
+                      name='shift'
+                      value='1'
+                      checked={shift === "1"}
+                      onChange={() => setShift("1")}
+                    />
+                    <span className='radio_mark_modal'></span>
+                    Перша
+                  </label>
+                  <label className='custom_radio_modal'>
+                    <input
+                      type='radio'
+                      name='shift'
+                      value='2'
+                      checked={shift === "2"}
+                      onChange={() => setShift("2")}
+                    />
+                    <span className='radio_mark_modal'></span>
+                    Друга
+                  </label>
                 </div>
               </div>
 

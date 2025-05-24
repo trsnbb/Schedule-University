@@ -17,6 +17,11 @@ const ScheduleSchema = new mongoose.Schema(
       ref: "Specialization",
       required: true,
     },
+    shift: {
+      type: String,
+      enum: ["1", "2"],
+      required: true,
+    },
     lessons: [
       {
         predmetId: {

@@ -18,6 +18,7 @@ const EditScheduleModal = ({
   groupId,
   format,
   weekType,
+  shift,
 }) => {
   const modalRef = useRef();
   const accordionRef = useRef();
@@ -135,6 +136,7 @@ const EditScheduleModal = ({
       const payload = {
         groupId,
         lessons: updatedLessons,
+        shift,
       };
 
       console.log("📤 Payload для оновлення розкладу:", payload);
@@ -149,7 +151,7 @@ const EditScheduleModal = ({
   // Додаємо нову (редаговану) пару
 
   const weeksInSemester = 18;
-  console.log("📦 Вхідні предмети (initialSubjectsData):", initialSubjectsData);
+  
 
   const totalWeeklyLessons = Object.values(subjectCounts).reduce(
     (acc, curr) => {

@@ -18,6 +18,7 @@ const ScheduleModal = ({
   groupNumber,
   format,
   weekType,
+  shift,
 }) => {
   const modalRef = useRef();
   const accordionRef = useRef();
@@ -60,7 +61,7 @@ const ScheduleModal = ({
           format,
           weekType,
           link: subjectLinks[subject._id] || "",
-
+          shift,
           ...lessonCounts,
         });
       }
@@ -74,6 +75,7 @@ const ScheduleModal = ({
       groupNumber,
       format,
       weekType,
+      shift,
       lessons: groupedLessons,
     };
 
@@ -82,6 +84,11 @@ const ScheduleModal = ({
       onClose(); // Закриваємо модалку після успіху
     } catch (error) {
       console.error("❌ Помилка при створенні розкладу:", error);
+      if (error.response?.status === 400 && error.response.data?.message) {
+        alert(error.response.data.message);
+      } else {
+        alert("Помилка при створенні розкладу.");
+      }
     }
   };
 
@@ -187,7 +194,7 @@ const ScheduleModal = ({
   const subjects = selectedSubjectObjects || [];
 
   const teacherOptions = teachers.map((teacher) => ({
-    value: teacher.teacherId, 
+    value: teacher.teacherId,
     label: `${teacher.teacherName} (${teacher.teacherId})`,
   }));
 
@@ -195,7 +202,7 @@ const ScheduleModal = ({
     <div className='create_schedule-modal'>
       <div className='create_schedule-modal-content' ref={modalRef}>
         <div className='button_icon'>
-          <button className='back-icon' onClick={onBack}> 
+          <button className='back-icon' onClick={onBack}>
             <img src={back} alt='back' />
           </button>
           <h2>Автоматичне створення розкладу</h2>

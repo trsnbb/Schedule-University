@@ -4,7 +4,8 @@ import { Course, Group, Specialization } from "../models/Group.js";
 
 export const createSchedule = async (req, res) => {
   try {
-    const { specializationName, courseNumber, groupNumber, lessons } = req.body;
+    const { specializationName, courseNumber, groupNumber, shift, lessons } =
+      req.body;
 
     let specialization = await Specialization.findOne({
       name: specializationName,
@@ -107,6 +108,7 @@ export const createSchedule = async (req, res) => {
               teacherLessonsMap[teacherId] || new Set();
             teacherLessonsMap[teacherId].add(`${day}-${pair}`);
             groupOccupiedPairs[day].add(pair);
+            console.log("🧪 Додається заняття з форматом:", lesson.format);
 
             weeklySchedule.push({
               type: lt.type,
@@ -116,6 +118,7 @@ export const createSchedule = async (req, res) => {
               weekType: lesson.weekType,
               predmetId: new mongoose.Types.ObjectId(lesson.predmetId),
               teacherId,
+              shift: shift,
               link: lesson.link || "",
               groupInfo: {
                 groupInfo: {
@@ -129,9 +132,9 @@ export const createSchedule = async (req, res) => {
               countLab: lesson.countLab || 0,
             });
           } else {
-            console.warn(
-              `❌ Не вдалося знайти вільну пару для заняття типу ${lt.type}: ${lesson.predmetId} - ${lesson.teacherId}`
-            );
+            return res.status(400).json({
+              message: `Оберіть іншого викладача. У цього викладача немає вільних пар для заняття`,
+            });
           }
         }
       }
@@ -147,6 +150,7 @@ export const createSchedule = async (req, res) => {
       groupId: group._id,
       courseId: course._id,
       specializationId: specialization._id,
+      shift: shift,
       lessons: weeklySchedule,
     });
 
@@ -160,7 +164,8 @@ export const createSchedule = async (req, res) => {
 
 export const updateSchedule = async (req, res) => {
   try {
-    const { groupId, lessons } = req.body;
+    const { groupId, lessons, shift } = req.body;
+    console.log(shift, "shift");
 
     if (!groupId || !Array.isArray(lessons)) {
       return res
@@ -212,6 +217,8 @@ export const updateSchedule = async (req, res) => {
 
     // Очистити старі заняття
     schedule.lessons = [];
+
+    schedule.shift = shift;
 
     for (const lesson of lessons) {
       const {
