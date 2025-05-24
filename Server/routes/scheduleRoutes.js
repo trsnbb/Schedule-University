@@ -6,7 +6,8 @@ import {
   getGroupsByCourse,
   getCoursesBySpecialization,
   getAllSpecializations,
-  addLesson
+  addLesson,
+  updateSchedule
 } from "../controllers/sheduleController.js";
 
 dotenv.config();
@@ -15,7 +16,7 @@ const router = express.Router();
 
 router.post("/createSchedule", createSchedule);
 router.post("/addLesson", addLesson);
-
+router.patch("/updateSchedule", updateSchedule);
 router.get("/getScheduleByGroup", getScheduleByGroup);
 router.get("/specializations", getAllSpecializations);
 router.get("/courses", getCoursesBySpecialization);

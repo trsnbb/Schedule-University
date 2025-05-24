@@ -82,7 +82,6 @@ const Calendar = () => {
   const [selectedGroup, setSelectedGroup] = useState(null);
 
   const handleGroupChange = (groupData) => {
-    console.log("Нова група обрана:", groupData); // ➤ має вивестись після вибору групи
     setSelectedGroup(groupData);
   };
   useEffect(() => {
@@ -210,7 +209,6 @@ const Calendar = () => {
         specializationId: selectedGroup.specializationId,
         courseId: selectedGroup.courseId,
         groupId: selectedGroup.groupId,
-        // weekStart нам більше не потрібен на беку, але можна лишити
       });
 
       const monday = new Date(weekStartDate);

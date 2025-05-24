@@ -56,8 +56,6 @@ const EditGeneralScheduleModal = ({ onClose }) => {
         const allSubjects = predmetRes.data;
         const lessons = scheduleRes.data.lessons || [];
 
-        
-
         const usedSubjectIds = extractUniqueSubjects(lessons);
 
         console.log("Унікальні предмети з розкладу:", usedSubjectIds);
@@ -149,6 +147,8 @@ const EditGeneralScheduleModal = ({ onClose }) => {
                 countLab: matchingLesson?.countLab || 0,
                 teacherId: matchingLesson?.teacherId || "",
                 link: matchingLesson?.link || "",
+                format: "online",
+                weekType: "",
               };
             })}
           specializationId={groupData.specializationId}

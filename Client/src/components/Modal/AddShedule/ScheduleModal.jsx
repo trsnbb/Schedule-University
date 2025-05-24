@@ -230,7 +230,9 @@ const ScheduleModal = ({
                         <div className='input_group_accordion'>
                           <label>Кількість лекцій</label>
                           <input
-                            type='text'
+                            type='number'
+                            min='0'
+                            placeholder='0'
                             value={subjectCounts[subject._id]?.lectures || ""}
                             onChange={handleCountChange(
                               subject._id,
@@ -241,7 +243,9 @@ const ScheduleModal = ({
                         <div className='input_group_accordion'>
                           <label>Кількість практик</label>
                           <input
-                            type='text'
+                            type='number'
+                            min='0'
+                            placeholder='0'
                             value={subjectCounts[subject._id]?.practices || ""}
                             onChange={handleCountChange(
                               subject._id,
@@ -252,7 +256,9 @@ const ScheduleModal = ({
                         <div className='input_group_accordion'>
                           <label>Кількість лабораторних</label>
                           <input
-                            type='text'
+                            type='number'
+                            min='0'
+                            placeholder='0'
                             value={subjectCounts[subject._id]?.labs || ""}
                             onChange={handleCountChange(subject._id, "labs")}
                           />

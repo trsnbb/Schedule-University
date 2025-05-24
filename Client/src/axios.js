@@ -37,16 +37,20 @@ export const postSchedule = async (scheduleData) => {
   }
 };
 
-export const fetchSchedule = async ({ specializationId, courseId, groupId, date }) => {
+export const fetchSchedule = async ({
+  specializationId,
+  courseId,
+  groupId,
+  date,
+}) => {
   try {
     const response = await instance.get("/getScheduleByGroup", {
       params: {
         specializationId,
         courseId,
         groupId,
-        ...(date ? { date } : {}), 
+        ...(date ? { date } : {}),
       },
-      
     });
     console.log("Отримане розклад:", response.data);
     return response.data;
@@ -64,8 +68,21 @@ export const fetchSchedule = async ({ specializationId, courseId, groupId, date 
     throw error;
   }
 };
-
-
+export const updateSchedule = async ({ groupId, lessons }) => {
+  try {
+    const response = await instance.patch("/updateSchedule", {
+      groupId,
+      lessons,
+    });
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Помилка оновлення розкладу:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
 
 export const fetchAllSpecializations = async () => {
   const response = await instance.get("/specializations");
@@ -85,7 +102,6 @@ export const fetchGroupsByCourse = async (courseId) => {
   });
   return response.data;
 };
-
 
 instance.interceptors.response.use(
   (response) => response,

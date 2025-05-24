@@ -14,14 +14,14 @@
   z-index: 1000; /* Додаємо z-index для перекриття інших елементів */
 }
 
-.button_icon{
- display: flex;
- width: 100%;
- justify-content: space-between;
+.button_icon {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
   align-items: center;
 }
 
-.button_icon h2{
+.button_icon h2 {
   text-align: center;
   margin: 0;
   font-size: 20px;
@@ -108,6 +108,13 @@
   transform: rotate(180deg); /* Закритий стан */
 }
 
+/* Chrome, Safari, Edge, Opera */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 
 .input_group_accordion {
   display: flex;
@@ -137,37 +144,33 @@
   width: 80%;
   align-items: flex-start;
   margin-left: 30px;
-
 }
-.input_count_schedule{
+.input_count_schedule {
   margin-left: 30px;
-
 }
 
-.input_count_schedule input{
+.input_count_schedule input {
   width: 10%;
   padding: 10px;
   margin: 15px 0;
   border-radius: 10px;
-  background-color: #34403A;
+  background-color: #34403a;
 }
 
-.input_count_type{
+.input_count_type {
   display: flex;
-  
+
   font-size: 12px;
 }
-.input_count_type input{
-  width:40%;
-
+.input_count_type input {
+  width: 40%;
 }
 
-.input_count_schedule .input_group_accordion{
+.input_count_schedule .input_group_accordion {
   align-items: flex-start;
- margin-top: 20px;
+  margin-top: 20px;
 }
 
-
-.input_count_content{
+.input_count_content {
   margin-top: 50px;
 }

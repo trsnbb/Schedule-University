@@ -77,7 +77,8 @@ export const createSchedule = async (req, res) => {
       ];
 
       for (const lt of lessonTypes) {
-        const weeklyCount = Math.max(1, Math.floor(lt.count / weeksInSemester));
+        const weeklyCount = Math.floor(lt.count / weeksInSemester);
+        if (weeklyCount === 0) continue;
 
         for (let i = 0; i < weeklyCount; i++) {
           const result = getRandomDayAndPair();
@@ -90,13 +91,6 @@ export const createSchedule = async (req, res) => {
               (t) => t._id.toString() === lesson.teacherId
             );
             const teacherUserId = foundTeacher?.teacherId;
-
-            if (!teacherUserId) {
-              console.warn(
-                `❌ Викладач не знайдений у предметі ${lesson.predmetId}`
-              );
-              continue;
-            }
 
             weeklySchedule.push({
               type: lt.type,
@@ -145,6 +139,118 @@ export const createSchedule = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error creating schedule" });
+  }
+};
+
+export const updateSchedule = async (req, res) => {
+  try {
+    const { groupId, lessons } = req.body;
+
+    if (!groupId || !Array.isArray(lessons)) {
+      return res
+        .status(400)
+        .json({ message: "Потрібно передати groupId і масив lessons" });
+    }
+
+    const schedule = await Schedule.findOne({ groupId });
+
+    if (!schedule) {
+      return res
+        .status(404)
+        .json({ message: "Розклад для цієї групи не знайдено" });
+    }
+
+    if (lessons.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "Список занять порожній — нічого оновлювати" });
+    }
+
+    const weeksInSemester = 18;
+    const scheduleDays = [1, 2, 3, 4, 5];
+    const occupiedPairs = { 1: [], 2: [], 3: [], 4: [], 5: [] };
+
+    const getAvailablePair = (day) => {
+      for (let pair = 1; pair <= 6; pair++) {
+        if (!occupiedPairs[day].includes(pair)) {
+          return pair;
+        }
+      }
+      return null;
+    };
+
+    const getRandomDayAndPair = () => {
+      let tries = 0;
+      while (tries < 50) {
+        const day =
+          scheduleDays[Math.floor(Math.random() * scheduleDays.length)];
+        const pair = getAvailablePair(day);
+        if (pair !== null) {
+          occupiedPairs[day].push(pair);
+          return { day, pair };
+        }
+        tries++;
+      }
+      return null;
+    };
+
+    // Очистити старі заняття
+    schedule.lessons = [];
+
+    for (const lesson of lessons) {
+      const {
+        predmetId,
+        teacherId,
+        countLec = 0,
+        countPrac = 0,
+        countLab = 0,
+      } = lesson;
+
+      const lessonTypes = [
+        { type: "lec", count: countLec },
+        { type: "prac", count: countPrac },
+        { type: "lab", count: countLab },
+      ];
+
+      for (const lt of lessonTypes) {
+        const weeklyCount = Math.floor(lt.count / weeksInSemester);
+        if (weeklyCount === 0) continue;
+
+        for (let i = 0; i < weeklyCount; i++) {
+          let day = lesson.day?.[i];
+          let pairNumber = lesson.pairNumber?.[i];
+
+          // Якщо заняття змінено або позиції не задано — призначити автоматично
+          if (!day || !pairNumber) {
+            const result = getRandomDayAndPair();
+            if (result) {
+              day = result.day;
+              pairNumber = result.pair;
+            }
+          }
+
+          schedule.lessons.push({
+            predmetId: new mongoose.Types.ObjectId(predmetId),
+            teacherId: new mongoose.Types.ObjectId(teacherId),
+            type: lt.type,
+            format: lesson.format,
+            weekType: lesson.weekType,
+            day: [day],
+            pairNumber: [pairNumber],
+            link: lesson.link || "",
+            countLec,
+            countPrac,
+            countLab,
+          });
+        }
+      }
+    }
+
+    await schedule.save();
+    res.status(200).json({ message: "Розклад оновлено", schedule });
+  } catch (error) {
+    console.error("Помилка оновлення розкладу:", error);
+    res.status(500).json({ message: "Помилка сервера" });
   }
 };
 

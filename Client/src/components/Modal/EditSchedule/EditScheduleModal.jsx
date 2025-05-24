@@ -6,16 +6,16 @@ import back from "./../../../image/Vector.svg";
 import axios from "axios";
 import { fetchAllTeachers } from "../../../axios";
 import CustomDropdown from "./../../CustomDropdown/CustomDropdown.jsx";
-import { postSchedule } from "../../../axios";
+import { updateSchedule, fetchSchedule } from "../../../axios";
 import EditGeneralScheduleModal from "./EditGeneralScheduleModal.jsx";
 
 const EditScheduleModal = ({
   onClose,
   onBack,
   initialSubjectsData = [],
-  specializationName,
-  courseNumber,
-  groupNumber,
+  specializationId,
+  courseId,
+  groupId,
   format,
   weekType,
 }) => {
@@ -110,64 +110,43 @@ const EditScheduleModal = ({
     e.preventDefault();
     setOpenAccordionIndex((prevIndex) => (prevIndex === index ? null : index));
   };
+  const selectedSubject = initialSubjectsData[openAccordionIndex];
 
   const handleSubmit = async () => {
-    const weeksInSemester = 18;
+    try {
+      const updatedLessons = initialSubjectsData.map((subject) => {
+        const subjectId = subject._id;
+        const teacherId = subjectTeacherLinks[subjectId] || "";
+        const counts = subjectCounts[subjectId] || {};
+        const link = subjectLinks[subjectId] || "";
 
-    const groupedLessons = initialSubjectsData.reduce((acc, subject) => {
-      const counts = subjectCounts[subject._id] || {};
-      const teacherId = subjectTeacherLinks[subject._id];
-
-      if (!teacherId) return acc;
-
-      const existingLesson = acc.find(
-        (lesson) =>
-          lesson.predmetId === subject._id && lesson.teacherId === teacherId
-      );
-
-      const lessonCounts = {
-        countLec: counts.lectures || 0,
-        countLab: counts.labs || 0,
-        countPrac: counts.practices || 0,
-      };
-
-      if (existingLesson) {
-        existingLesson.countLec += lessonCounts.countLec;
-        existingLesson.countLab += lessonCounts.countLab;
-        existingLesson.countPrac += lessonCounts.countPrac;
-      } else {
-        acc.push({
-          predmetId: subject._id,
+        return {
+          predmetId: subjectId,
           teacherId,
           format,
           weekType,
-          link: subjectLinks[subject._id] || "",
-          ...lessonCounts,
-        });
-      }
+          countLec: counts.lectures || 0,
+          countLab: counts.labs || 0,
+          countPrac: counts.practices || 0,
+          link,
+        };
+      });
 
-      return acc;
-    }, []);
+      const payload = {
+        groupId,
+        lessons: updatedLessons,
+      };
 
-    const payload = {
-      specializationName,
-      courseNumber,
-      groupNumber,
-      format,
-      weekType,
-      lessons: groupedLessons,
-    };
-
-    console.log("📤 Payload до пост-запиту:", payload);
-
-    try {
-      await postSchedule(payload);
+      console.log("📤 Payload для оновлення розкладу:", payload);
+      await updateSchedule(payload);
       console.log("✅ Розклад успішно оновлено.");
       onClose();
     } catch (error) {
       console.error("❌ Помилка при оновленні розкладу:", error);
     }
   };
+
+  // Додаємо нову (редаговану) пару
 
   const weeksInSemester = 18;
   console.log("📦 Вхідні предмети (initialSubjectsData):", initialSubjectsData);
@@ -234,7 +213,9 @@ const EditScheduleModal = ({
                       <div className='input_group_accordion'>
                         <label>Кількість лекцій</label>
                         <input
-                          type='text'
+                          type='number'
+                          min='0'
+                          placeholder='0'
                           value={subjectCounts[subject._id]?.lectures || ""}
                           onChange={handleCountChange(subject._id, "lectures")}
                         />
@@ -242,7 +223,9 @@ const EditScheduleModal = ({
                       <div className='input_group_accordion'>
                         <label>Кількість практик</label>
                         <input
-                          type='text'
+                          type='number'
+                          min='0'
+                          placeholder='0'
                           value={subjectCounts[subject._id]?.practices || ""}
                           onChange={handleCountChange(subject._id, "practices")}
                         />
@@ -250,7 +233,9 @@ const EditScheduleModal = ({
                       <div className='input_group_accordion'>
                         <label>Кількість лабораторних</label>
                         <input
-                          type='text'
+                          type='number'
+                          min='0'
+                          placeholder='0'
                           value={subjectCounts[subject._id]?.labs || ""}
                           onChange={handleCountChange(subject._id, "labs")}
                         />
@@ -266,7 +251,7 @@ const EditScheduleModal = ({
                             label: t.teacherName,
                             value: t.teacherId, // string: '6823556179a4eb71e88619d1'
                           }))}
-                          value={subject.teacherId?._id}
+                          value={subjectTeacherLinks[subject._id] || ""}
                           onChange={handleTeacherChange(subject._id)}
                           placeholder='Оберіть викладача'
                           minWidth={200}
