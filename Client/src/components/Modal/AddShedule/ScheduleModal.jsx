@@ -187,7 +187,7 @@ const ScheduleModal = ({
   const subjects = selectedSubjectObjects || [];
 
   const teacherOptions = teachers.map((teacher) => ({
-    value: teacher._id, // тепер відправляється ID
+    value: teacher.teacherId, 
     label: `${teacher.teacherName} (${teacher.teacherId})`,
   }));
 
@@ -195,7 +195,7 @@ const ScheduleModal = ({
     <div className='create_schedule-modal'>
       <div className='create_schedule-modal-content' ref={modalRef}>
         <div className='button_icon'>
-          <button className='back-icon' onClick={onBack}>
+          <button className='back-icon' onClick={onBack}> 
             <img src={back} alt='back' />
           </button>
           <h2>Автоматичне створення розкладу</h2>

@@ -249,7 +249,7 @@ const EditScheduleModal = ({
                           name='teacher'
                           options={teachers.map((t) => ({
                             label: t.teacherName,
-                            value: t.teacherId, // string: '6823556179a4eb71e88619d1'
+                            value: t.teacherId, 
                           }))}
                           value={subjectTeacherLinks[subject._id] || ""}
                           onChange={handleTeacherChange(subject._id)}

@@ -1,13 +1,11 @@
 import mongoose from "mongoose";
 import Schedule from "../models/Schedule.js";
 import { Course, Group, Specialization } from "../models/Group.js";
-import Predmet from "../models/Predmet.js";
 
 export const createSchedule = async (req, res) => {
   try {
     const { specializationName, courseNumber, groupNumber, lessons } = req.body;
 
-    // Знаходимо або створюємо спеціалізацію
     let specialization = await Specialization.findOne({
       name: specializationName,
     });
@@ -17,7 +15,6 @@ export const createSchedule = async (req, res) => {
       });
     }
 
-    // Знаходимо або створюємо курс
     let course = await Course.findOne({
       courseNumber,
       specializationId: specialization._id,
@@ -31,7 +28,6 @@ export const createSchedule = async (req, res) => {
       await specialization.save();
     }
 
-    // Знаходимо або створюємо групу
     let group = await Group.findOne({ groupNumber, courseId: course._id });
     if (!group) {
       group = await Group.create({ groupNumber, courseId: course._id });
@@ -41,33 +37,53 @@ export const createSchedule = async (req, res) => {
 
     const weeksInSemester = 18;
     const scheduleDays = [1, 2, 3, 4, 5];
-    const occupiedPairs = { 1: [], 2: [], 3: [], 4: [], 5: [] };
 
-    const getAvailablePair = (day) => {
-      for (let pair = 1; pair <= 6; pair++) {
-        if (!occupiedPairs[day].includes(pair)) {
-          return pair;
+    const groupOccupiedPairs = {
+      1: new Set(),
+      2: new Set(),
+      3: new Set(),
+      4: new Set(),
+      5: new Set(),
+    };
+
+    // Зайнятість викладачів
+    const teacherLessonsMap = {};
+    const allSchedules = await Schedule.find({}).lean();
+    for (const sch of allSchedules) {
+      for (const lesson of sch.lessons) {
+        const key = lesson.teacherId.toString();
+        if (!teacherLessonsMap[key]) teacherLessonsMap[key] = new Set();
+        for (const d of lesson.day) {
+          for (const p of lesson.pairNumber) {
+            teacherLessonsMap[key].add(`${d}-${p}`);
+          }
+        }
+      }
+    }
+
+    const isTeacherBusy = (teacherId, day, pair) => {
+      const key = teacherId.toString();
+      return teacherLessonsMap[key]?.has(`${day}-${pair}`);
+    };
+
+    const findFirstFreeSlot = (teacherId) => {
+      for (const day of scheduleDays) {
+        for (let pair = 1; pair <= 6; pair++) {
+          const groupBusy = groupOccupiedPairs[day].has(pair);
+          const teacherBusy = isTeacherBusy(teacherId, day, pair);
+          if (!groupBusy && !teacherBusy) {
+            return { day, pair };
+          } else {
+            console.log(
+              `🔍 Пропущено: день ${day}, пара ${pair} — група: ${groupBusy}, викладач: ${teacherBusy}`
+            );
+          }
         }
       }
       return null;
     };
 
-    const getRandomDayAndPair = () => {
-      let tries = 0;
-      while (tries < 50) {
-        const day =
-          scheduleDays[Math.floor(Math.random() * scheduleDays.length)];
-        const pair = getAvailablePair(day);
-        if (pair !== null) {
-          occupiedPairs[day].push(pair);
-          return { day, pair };
-        }
-        tries++;
-      }
-      return null;
-    };
-
-    let weeklySchedule = [];
+    const weeklySchedule = [];
 
     for (const lesson of lessons) {
       const lessonTypes = [
@@ -81,16 +97,16 @@ export const createSchedule = async (req, res) => {
         if (weeklyCount === 0) continue;
 
         for (let i = 0; i < weeklyCount; i++) {
-          const result = getRandomDayAndPair();
-          if (result) {
-            const { day, pair } = result;
+          const teacherId = new mongoose.Types.ObjectId(lesson.teacherId);
+          const slot = findFirstFreeSlot(teacherId);
 
-            // 🔧 Знаходимо предмет і викладача з userId
-            const predmet = await Predmet.findById(lesson.predmetId);
-            const foundTeacher = predmet?.teachers.find(
-              (t) => t._id.toString() === lesson.teacherId
-            );
-            const teacherUserId = foundTeacher?.teacherId;
+          if (slot) {
+            const { day, pair } = slot;
+
+            teacherLessonsMap[teacherId] =
+              teacherLessonsMap[teacherId] || new Set();
+            teacherLessonsMap[teacherId].add(`${day}-${pair}`);
+            groupOccupiedPairs[day].add(pair);
 
             weeklySchedule.push({
               type: lt.type,
@@ -99,12 +115,14 @@ export const createSchedule = async (req, res) => {
               format: lesson.format,
               weekType: lesson.weekType,
               predmetId: new mongoose.Types.ObjectId(lesson.predmetId),
-              teacherId: new mongoose.Types.ObjectId(teacherUserId), // ✅ правильний userId
+              teacherId,
               link: lesson.link || "",
               groupInfo: {
-                specialization: specializationName,
-                course: courseNumber,
-                group: groupNumber,
+                groupInfo: {
+                  specialization: specialization._id,
+                  course: course._id,
+                  group: group._id,
+                },
               },
               countLec: lesson.countLec || 0,
               countPrac: lesson.countPrac || 0,
@@ -112,7 +130,7 @@ export const createSchedule = async (req, res) => {
             });
           } else {
             console.warn(
-              `❌ Не вдалося призначити заняття типу ${lt.type}: ${lesson.predmetId} - ${lesson.teacherId}`
+              `❌ Не вдалося знайти вільну пару для заняття типу ${lt.type}: ${lesson.predmetId} - ${lesson.teacherId}`
             );
           }
         }
@@ -125,12 +143,10 @@ export const createSchedule = async (req, res) => {
         .json({ message: "Немає доступних пар для цього розкладу" });
     }
 
-    weeklySchedule = weeklySchedule.slice(0, 22);
-
     const newSchedule = new Schedule({
-      groupId: new mongoose.Types.ObjectId(group._id),
-      courseId: new mongoose.Types.ObjectId(course._id),
-      specializationId: new mongoose.Types.ObjectId(specialization._id),
+      groupId: group._id,
+      courseId: course._id,
+      specializationId: specialization._id,
       lessons: weeklySchedule,
     });
 
