@@ -52,7 +52,6 @@ export const fetchSchedule = async ({
         ...(date ? { date } : {}),
       },
     });
-    console.log("Отримане розклад:", response.data);
     return response.data;
   } catch (error) {
     if (

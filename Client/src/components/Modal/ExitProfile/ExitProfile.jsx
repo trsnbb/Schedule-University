@@ -2,9 +2,8 @@ import React from "react";
 import "./exitProfile.css";
 
 const ExitProfile = ({ isOpen, onConfirm, onCancel, modalType }) => {
-  if (!isOpen) return null; // Якщо модалка неактивна, нічого не рендеримо
+  if (!isOpen) return null;
 
-  // Визначаємо текст модалки залежно від типу
   const modalText =
     modalType === "delete"
       ? "Ви впевнені, що хочете видалити свій аккаунт?"

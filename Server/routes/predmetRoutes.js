@@ -3,14 +3,12 @@ import Predmet from "../models/Predmet.js";
 
 const router = express.Router();
 
-// Отримати всі предмети
 router.get("/", async (req, res) => {
   try {
     const subjects = await Predmet.find({});
-    // Форматуємо дані для фронтенду
     const formattedSubjects = subjects.map(subject => ({
       _id: subject._id,
-      name: subject.predmet, // Використовуємо поле 'predmet' як назву
+      name: subject.predmet, 
       teacherId: subject.teachers[0]?.teacherId || null
     }));
     res.json(formattedSubjects);

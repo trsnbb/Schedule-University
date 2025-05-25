@@ -119,7 +119,7 @@ const AddEvent = ({
       onClose();
     } catch (error) {
       console.error("Не вдалося додати подію:", error);
-       console.error("Помилка:", error.response?.data); // <-- це ключове!
+       console.error("Помилка:", error.response?.data); 
     }
   };
 

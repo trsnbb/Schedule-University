@@ -1,19 +1,19 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./ProfileMenu.css";
-import avatarPlaceholder from "./../../image/User-avatar.png"; // Дефолтний аватар
+import avatarPlaceholder from "./../../image/User-avatar.png";
 import message from "./../../image/message.svg";
 import setting from "./../../image/setting-2.svg";
 import logOut from "./../../image/Log out.png";
 import ExitProfile from "../Modal/ExitProfile/ExitProfile.jsx";
 import { logout } from "../../axios.js";
-import { useAuth } from "../../AuthContext.jsx"; // Імпортуємо контекст авторизації
+import { useAuth } from "../../AuthContext.jsx"; 
 
 const ProfileMenu = ({ isOpen, onClose, disableAnimation = false }) => {
   const navigate = useNavigate();
   const [isLogoutModalOpen, setLogoutModalOpen] = useState(false);
   const { user } = useAuth();
-  const userData = user?.user; // Отримуємо вкладений об'єкт user
+  const userData = user?.user;
   const handleSettingsClick = () => {
     if (window.location.pathname !== "/settings") {
       navigate("/settings");
@@ -89,7 +89,7 @@ const ProfileMenu = ({ isOpen, onClose, disableAnimation = false }) => {
                   ? (() => {
                       const nameParts = userData?.name.split(" ");
                       return nameParts.length > 1
-                        ? `${nameParts[0]} ${nameParts[nameParts.length - 1]}` // Беремо перше і останнє слово
+                        ? `${nameParts[0]} ${nameParts[nameParts.length - 1]}`
                         : nameParts[0];
                     })()
                   : "Гість"}

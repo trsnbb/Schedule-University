@@ -31,14 +31,12 @@ const ScheduleModal = ({
   const handleSubmit = async () => {
     const weeksInSemester = 18;
 
-    // Групуємо предмети, щоб вони містили окремі поля countLec, countLab, countPrac
     const groupedLessons = subjects.reduce((acc, subject) => {
       const counts = subjectCounts[subject._id] || {};
       const teacherId = subjectTeacherLinks[subject._id];
 
       if (!teacherId) return acc;
 
-      // Якщо предмет уже є в acc, оновлюємо його значення
       const existingLesson = acc.find(
         (lesson) =>
           lesson.predmetId === subject._id && lesson.teacherId === teacherId
@@ -81,9 +79,9 @@ const ScheduleModal = ({
 
     try {
       const result = await postSchedule(payload);
-      onClose(); // Закриваємо модалку після успіху
+      onClose(); 
     } catch (error) {
-      console.error("❌ Помилка при створенні розкладу:", error);
+      console.error("Помилка при створенні розкладу:", error);
       if (error.response?.status === 400 && error.response.data?.message) {
         alert(error.response.data.message);
       } else {
@@ -130,7 +128,6 @@ const ScheduleModal = ({
   const handleCountChange = (subjectId, type) => (e) => {
     const value = e.target.value;
 
-    // Дозволити лише цифри або порожнє значення
     if (/^\d*$/.test(value)) {
       setSubjectCounts((prev) => ({
         ...prev,

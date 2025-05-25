@@ -4,19 +4,19 @@ import "./sidebar_style.css";
 import MiniCalendar from "./../Mini Calendar/MiniCalendar.jsx";
 import Notes from "./../Notes/Notes.jsx";
 import ProfileMenu from "./../Burger/ProfileMenu.jsx";
-import { useAuth } from "../../AuthContext.jsx"; // Імпортуємо контекст авторизації
+import { useAuth } from "../../AuthContext.jsx";
 import CreateSchedule from "../Modal/AddShedule/CreateSchedule.jsx";
 import EditGeneralScheduleModal from "./../Modal/EditSchedule/EditGeneralScheduleModal.jsx";
 
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAuthenticated, user } = useAuth(); // Додаємо user до деструктуризації
+  const { isAuthenticated, user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isCreateScheduleOpen, setIsCreateScheduleOpen] = useState(false);
-  const [initialScheduleData, setInitialScheduleData] = useState(null); // Додано
+  const [initialScheduleData, setInitialScheduleData] = useState(null); 
   const handleEditSchedule = () => {
-    setIsEditGeneralScheduleOpen(true); // відкриває нову модалку
+    setIsEditGeneralScheduleOpen(true); 
   };
   const [isEditGeneralScheduleOpen, setIsEditGeneralScheduleOpen] =
     useState(false);
@@ -31,7 +31,6 @@ const Sidebar = () => {
   }, [location.pathname]);
 
   const handleCloseMenu = (navigateHome = true) => {
-    // Не закриваємо меню, якщо ми вже на сторінці settings або feedback і не хочемо редиректу
     if (
       !navigateHome &&
       (location.pathname === "/settings" || location.pathname === "/feedback")
@@ -77,7 +76,7 @@ const Sidebar = () => {
               <button
                 className='deanery_btn'
                 onClick={() => {
-                  setInitialScheduleData(null); // Створити з нуля
+                  setInitialScheduleData(null);
                   setIsCreateScheduleOpen(true);
                 }}
               >

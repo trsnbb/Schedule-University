@@ -7,7 +7,6 @@ import plus from "./../../../image/plus.svg";
 import { fetchAllTeachers } from "../../../axios";
 import CustomDropdown from "./../../CustomDropdown/CustomDropdown.jsx";
 import axiosInstance from "../../../axios";
-// ... імпорти залишаються ті самі
 
 const AddPare = ({
   onClose,

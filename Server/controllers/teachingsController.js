@@ -1,7 +1,6 @@
 import Predmet from "../models/Predmet.js";
 import User from "../models/User.js"; 
 
-// ✅ Додати викладача до предмета
 export const addPredmetToTeacher = async (req, res) => {
   try {
     const { teacherName, teacherEmail, predmet } = req.body;
@@ -62,7 +61,6 @@ export const addPredmetToTeacher = async (req, res) => {
   }
 };
 
-// ✅ Видалити викладача з предмета
 export const removePredmetFromTeacher = async (req, res) => {
   try {
     const { teacherEmail, predmet } = req.body;
@@ -91,7 +89,6 @@ export const removePredmetFromTeacher = async (req, res) => {
   }
 };
 
-// ✅ Прив'язати викладача до предмета після реєстрації (якщо був тимчасовим)
 export const linkPredmetToRegisteredTeacher = async (userId, teacherEmail, predmet) => {
   try {
     const subject = await Predmet.findOne({ predmet });
@@ -111,7 +108,6 @@ export const linkPredmetToRegisteredTeacher = async (userId, teacherEmail, predm
   }
 };
 
-// ✅ Отримати всіх викладачів за предметом
 export const getTeachersByPredmet = async (req, res) => {
   try {
     const { predmet } = req.body;
@@ -132,15 +128,12 @@ export const getTeachersByPredmet = async (req, res) => {
   }
 };
 
-// ✅ Отримати всіх викладачів
 export const getAllTeachers = async (req, res) => {
   try {
     const allSubjects = await Predmet.find({}, { teachers: 1 });
 
-    // Об'єднуємо всіх викладачів з усіх предметів в один масив
     const allTeachers = allSubjects.flatMap(subject => subject.teachers);
 
-    // Прибираємо дублі (за email)
     const uniqueTeachersMap = new Map();
     for (const teacher of allTeachers) {
       if (!uniqueTeachersMap.has(teacher.teacherEmail)) {

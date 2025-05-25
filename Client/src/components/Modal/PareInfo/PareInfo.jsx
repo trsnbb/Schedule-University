@@ -68,7 +68,6 @@ const PareInfo = ({ lesson, position, onClose }) => {
     return `${hour}:${minute} ${ampm}`;
   };
 
-  // Якщо це інтервал (напр. "08:00 – 09:20")
   const parts = timeStr.split(/–|-/).map((part) => part.trim());
   if (parts.length === 2) {
     return `${to12Hour(parts[0])} – ${to12Hour(parts[1])}`;
@@ -101,8 +100,8 @@ const PareInfo = ({ lesson, position, onClose }) => {
     ? {
         title: lesson.eventTitle || "Подія",
         type: "Подія",
-        time: lesson.time || "—", // додано: реальний час події
-        date: lesson.date || "—", // додано: дата події
+        time: lesson.time || "—", 
+        date: lesson.date || "—", 
         mode: lesson.format || "—",
         link: lesson.link || null,
         descriptionEvent: lesson.descriptionEvent || "Опис відсутній",
@@ -129,8 +128,6 @@ const PareInfo = ({ lesson, position, onClose }) => {
         studentNotes: lesson?.studentNotes || "Немає особистих нотаток",
       };
 
-  console.log("lesson", lesson);
-  console.log("teacherId", lesson?.teacherId);
 
   const getModalBackground = (type) => {
     if (type === "Лекція") return "rgba(3, 105, 161, 0.4)";

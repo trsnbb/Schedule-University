@@ -1,7 +1,7 @@
 import React from "react";
 import "./../../layouts/backround.css";
 import Sidebar from "../../components/Side bar/Sidebar.jsx";
-import "./feedback.css"; // створимо окремий CSS файл для стилів
+import "./feedback.css";
 
 const Feedback = () => {
   return (

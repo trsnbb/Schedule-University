@@ -47,7 +47,6 @@ export const createSchedule = async (req, res) => {
       5: new Set(),
     };
 
-    // Зайнятість викладачів
     const teacherLessonsMap = {};
     const allSchedules = await Schedule.find({}).lean();
     for (const sch of allSchedules) {
@@ -75,9 +74,7 @@ export const createSchedule = async (req, res) => {
           if (!groupBusy && !teacherBusy) {
             return { day, pair };
           } else {
-            console.log(
-              `🔍 Пропущено: день ${day}, пара ${pair} — група: ${groupBusy}, викладач: ${teacherBusy}`
-            );
+            
           }
         }
       }
@@ -108,7 +105,6 @@ export const createSchedule = async (req, res) => {
               teacherLessonsMap[teacherId] || new Set();
             teacherLessonsMap[teacherId].add(`${day}-${pair}`);
             groupOccupiedPairs[day].add(pair);
-            console.log("🧪 Додається заняття з форматом:", lesson.format);
 
             weeklySchedule.push({
               type: lt.type,
@@ -165,7 +161,6 @@ export const createSchedule = async (req, res) => {
 export const updateSchedule = async (req, res) => {
   try {
     const { groupId, lessons, shift } = req.body;
-    console.log(shift, "shift");
 
     if (!groupId || !Array.isArray(lessons)) {
       return res
@@ -215,7 +210,6 @@ export const updateSchedule = async (req, res) => {
       return null;
     };
 
-    // Очистити старі заняття
     schedule.lessons = [];
 
     schedule.shift = shift;
@@ -243,7 +237,6 @@ export const updateSchedule = async (req, res) => {
           let day = lesson.day?.[i];
           let pairNumber = lesson.pairNumber?.[i];
 
-          // Якщо заняття змінено або позиції не задано — призначити автоматично
           if (!day || !pairNumber) {
             const result = getRandomDayAndPair();
             if (result) {
@@ -313,10 +306,8 @@ export const getScheduleByGroup = async (req, res) => {
     }
 
     let lessons = schedule.lessons.filter((lesson) => {
-      // Постійна пара: включаємо завжди
       if (!lesson.temporary) return true;
 
-      // Тимчасова пара: включаємо тільки якщо співпадає дата
       if (lesson.temporary && date) {
         const lessonDate = new Date(lesson.date).toISOString().split("T")[0];
         const requestDate = new Date(date).toISOString().split("T")[0];
@@ -341,7 +332,6 @@ export const getScheduleByTeacher = async (req, res) => {
       return res.status(400).json({ message: "Не вказано teacherId" });
     }
 
-    // Отримуємо всі розклади, де є викладач
     const schedules = await Schedule.find({ "lessons.teacherId": teacherId });
     if (!schedules || schedules.length === 0) {
       return res
@@ -349,7 +339,6 @@ export const getScheduleByTeacher = async (req, res) => {
         .json({ message: "Розклади для викладача не знайдено" });
     }
 
-    // Вибираємо всі пари цього викладача
     const result = [];
 
     for (const schedule of schedules) {
@@ -358,10 +347,8 @@ export const getScheduleByTeacher = async (req, res) => {
 
         if (!isSameTeacher) return false;
 
-        // Постійна пара — включаємо завжди
         if (!lesson.temporary) return true;
 
-        // Тимчасова пара — тільки якщо є дата і вона збігається
         if (lesson.temporary && date) {
           const lessonDate = new Date(lesson.date).toISOString().split("T")[0];
           const requestDate = new Date(date).toISOString().split("T")[0];
@@ -371,7 +358,6 @@ export const getScheduleByTeacher = async (req, res) => {
         return false;
       });
 
-      // Популяція вручну (через Promise.all)
       const populatedLessons = await Promise.all(
         filteredLessons.map(async (lesson) => {
           const populatedTeacher = await mongoose
@@ -402,7 +388,6 @@ export const getScheduleByTeacher = async (req, res) => {
   }
 };
 
-// GET /api/specializations
 export const getAllSpecializations = async (req, res) => {
   try {
     const specs = await Specialization.find();
@@ -412,7 +397,6 @@ export const getAllSpecializations = async (req, res) => {
   }
 };
 
-// GET /api/courses?specializationId=...
 export const getCoursesBySpecialization = async (req, res) => {
   try {
     const { specializationId } = req.query;
@@ -422,7 +406,6 @@ export const getCoursesBySpecialization = async (req, res) => {
     res.status(500).json({ message: "Помилка отримання курсів" });
   }
 };
-// GET /api/groups?courseId=...
 export const getGroupsByCourse = async (req, res) => {
   try {
     const { courseId } = req.query;
@@ -482,7 +465,6 @@ export const addLesson = async (req, res) => {
         if (matchedIndex !== -1) {
           determinedPairNumber = matchedIndex + 1;
         } else {
-          // fallback логіка якщо час не входить в жодну пару
           if (shift === 1 && startTime >= "16:00") {
             determinedPairNumber = 5;
           } else if (shift === 2 && startTime < "13:00") {
@@ -518,7 +500,6 @@ export const addLesson = async (req, res) => {
       return res.json({ success: true, schedule });
     }
 
-    // --- звичайна пара ---
     const allowedTypes = ["lec", "lab", "prac"];
     if (!allowedTypes.includes(lesson.type)) {
       return res

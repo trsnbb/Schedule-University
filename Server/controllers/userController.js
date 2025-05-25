@@ -67,7 +67,7 @@ export const googleAuthCallback = async (req, res) => {
     }
   );
 
-  res.json({ token, user: req.user }); // Переконайтеся, що токен повертається
+  res.json({ token, user: req.user }); 
 };
 
 export const updateUserProfile = async (req, res) => {
@@ -85,11 +85,11 @@ export const updateUserProfile = async (req, res) => {
     }
 
     if (req.body.name) {
-      user.name = req.body.name; // Оновлюємо ім'я
+      user.name = req.body.name; 
     }
 
     if (req.body.timeFormat) {
-      user.timeFormat = req.body.timeFormat; // Оновлюємо формат часу
+      user.timeFormat = req.body.timeFormat;
     }
     if (req.body.eventVision !== undefined) {
       user.eventVision = req.body.eventVision;

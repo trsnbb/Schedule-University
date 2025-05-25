@@ -95,7 +95,7 @@ const MiniCalendar = () => {
     const direction = diff > 0 ? "right" : "left";
     const steps = Math.abs(diff);
   
-    const fastAnimationInterval = 60; // Швидкість перемикання
+    const fastAnimationInterval = 60; 
     let animating = false;
   
     const fastInterval = setInterval(() => {

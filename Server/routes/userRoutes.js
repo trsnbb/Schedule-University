@@ -40,8 +40,7 @@ router.get(
     failureRedirect: "/login",
   }),
   (req, res) => {
-    // Успішна авторизація
-    res.redirect("http://localhost:3000"); // Перенаправлення на клієнт
+    res.redirect("http://localhost:3000");
   }
 );
 router.get("/auth/user", (req, res) => {
@@ -51,7 +50,7 @@ router.get("/auth/user", (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "30d" }
     );
-    res.json({ token, user: req.user }); // Повертаємо токен і дані користувача
+    res.json({ token, user: req.user }); 
   } else {
     res.status(401).json({ message: "Необхідна авторизація" });
   }

@@ -42,18 +42,6 @@ const EditScheduleModal = ({
       links[subject._id] = subject.link || "";
       teacherLinks[subject._id] =
         subject.teacherId?._id || subject.teacherId || "";
-
-      console.log("▶️ Предмет:", subject.name);
-      console.log("   ↪ Викладач з бази:", subject.teacherId);
-      console.log(
-        "   ↪ Лекцій:",
-        subject.countLec,
-        "Лаб:",
-        subject.countLab,
-        "Прак:",
-        subject.countPrac
-      );
-      console.log("   ↪ Посилання:", subject.link);
     });
 
     setSubjectCounts(counts);
@@ -65,10 +53,9 @@ const EditScheduleModal = ({
     const fetchTeachers = async () => {
       try {
         const data = await fetchAllTeachers();
-        console.log("✅ Викладачі з бекенда:", data);
         setTeachers(data);
       } catch (error) {
-        console.error("❌ Помилка при завантаженні викладачів:", error);
+        console.error("Помилка при завантаженні викладачів:", error);
       }
     };
     fetchTeachers();
@@ -139,19 +126,14 @@ const EditScheduleModal = ({
         shift,
       };
 
-      console.log("📤 Payload для оновлення розкладу:", payload);
       await updateSchedule(payload);
-      console.log("✅ Розклад успішно оновлено.");
       onClose();
     } catch (error) {
-      console.error("❌ Помилка при оновленні розкладу:", error);
+      console.error("Помилка при оновленні розкладу:", error);
     }
   };
 
-  // Додаємо нову (редаговану) пару
-
   const weeksInSemester = 18;
-  
 
   const totalWeeklyLessons = Object.values(subjectCounts).reduce(
     (acc, curr) => {
@@ -251,7 +233,7 @@ const EditScheduleModal = ({
                           name='teacher'
                           options={teachers.map((t) => ({
                             label: t.teacherName,
-                            value: t.teacherId, 
+                            value: t.teacherId,
                           }))}
                           value={subjectTeacherLinks[subject._id] || ""}
                           onChange={handleTeacherChange(subject._id)}

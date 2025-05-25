@@ -19,7 +19,6 @@ const EditGeneralScheduleModal = ({ onClose }) => {
 
   const [lessons, setLessons] = useState([]);
 
-  // Нові стани для формату і зміни
   const [format, setFormat] = useState("");
   const [shift, setShift] = useState("");
 
@@ -65,12 +64,10 @@ const EditGeneralScheduleModal = ({ onClose }) => {
         setSelectedSubjects(usedSubjectIds);
         setLessons(lessons);
 
-        // Автоматичне встановлення формату (з уроків)
         if (lessons.length > 0 && lessons[0].format) {
           setFormat(lessons[0].format);
         }
 
-        // Автоматичне встановлення зміни (з загального розкладу)
         if (scheduleShift) {
           setShift(String(scheduleShift));
         }

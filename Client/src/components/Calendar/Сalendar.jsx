@@ -3,13 +3,13 @@ import "./calendar.css";
 import dzyobik from "./../../image/dzyobik.svg";
 import LessonBlock from "./../LessonBlock/LessonBlock.jsx";
 import PareInfo from "../Modal/PareInfo/PareInfo.jsx";
-import CreateSchedule from "../Modal/AddShedule/CreateSchedule.jsx"; // Імпорт компонента AddPareModal
-import { useAuth } from "../../AuthContext.jsx"; // Імпортуємо контекст авторизації
+import CreateSchedule from "../Modal/AddShedule/CreateSchedule.jsx"; 
+import { useAuth } from "../../AuthContext.jsx";
 import { fetchSchedule } from "./../../axios.js";
 import { useRef } from "react";
 import AddPare from "../Modal/AddPare/AddPare.jsx";
 import ChooseType from "../Modal/AddPare/ChooseType.jsx";
-import AddEvent from "../Modal/AddPare/AddEvent.jsx"; // Додайте цей імпорт
+import AddEvent from "../Modal/AddPare/AddEvent.jsx";
 import SelectGroupForm from "./SelectGroupForm.jsx";
 import axios from "axios";
 import CustomDropdown from "../CustomDropdown/CustomDropdown.jsx";
@@ -73,8 +73,8 @@ const getWeekRangeText = (monday) => {
 };
 
 const Calendar = () => {
-  const { user } = useAuth(); // Отримуємо дані користувача з контексту
-  const [hoveredCell, setHoveredCell] = useState(null); // Додаємо стан для наведеної клітинки
+  const { user } = useAuth(); 
+  const [hoveredCell, setHoveredCell] = useState(null);
   const [lessonStatus, setLessonStatus] = useState({
     current: null,
     next: null,
@@ -84,9 +84,9 @@ const Calendar = () => {
   const [modalData, setModalData] = useState(null);
   const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
 
-  const [isAddPareModalOpen, setAddPareModalOpen] = useState(false); // Додано стан для відкриття AddPareModal
+  const [isAddPareModalOpen, setAddPareModalOpen] = useState(false);
   const [isChooseTypeOpen, setChooseTypeOpen] = useState(false);
-  const [isAddEventModalOpen, setAddEventModalOpen] = useState(false); // Додаємо стан для модалки події
+  const [isAddEventModalOpen, setAddEventModalOpen] = useState(false);
   const [selectedCell, setSelectedCell] = useState(null);
   const [shift, setShift] = useState(null);
   const [selectedShift, setSelectedShift] = useState("1");
@@ -100,7 +100,7 @@ const Calendar = () => {
     loadSchedule();
   }, [selectedGroup, weekStartDate, selectedShift]);
 
-  const [schedule, setSchedule] = useState([]); // Стан для розкладу
+  const [schedule, setSchedule] = useState([]); 
 
   useEffect(() => {
     setDays(getWeekDays(weekStartDate));
@@ -131,7 +131,7 @@ const Calendar = () => {
   };
 
   const closeAddPareModal = () => {
-    setAddPareModalOpen(false); // Закриваємо модальне вікно AddPare
+    setAddPareModalOpen(false);
   };
   const closeAddEventModal = () => setAddEventModalOpen(false);
 
@@ -225,11 +225,7 @@ const Calendar = () => {
           const teacherId = user.user._id;
           const formattedDate = monday.toISOString().split("T")[0];
 
-          console.log("📅 Завантаження розкладу для викладача");
-          console.log("👤 Teacher ID:", teacherId);
-          console.log("📆 Date (початок тижня):", formattedDate);
-          console.log("🔁 Обрана зміна:", selectedShift);
-
+     
           const res = await axios.get(
             "http://localhost:5000/getScheduleByTeacher",
             {
@@ -240,16 +236,12 @@ const Calendar = () => {
             }
           );
 
-          console.log("📦 Отримано розкладів:", res.data.length);
 
           const filteredSchedules = res.data.filter(
             (schedule) => schedule.shift === String(selectedShift)
           );
 
-          console.log(
-            "✅ Розкладів після фільтрації по зміні:",
-            filteredSchedules.length
-          );
+          
 
           const allLessons = filteredSchedules.flatMap(
             (schedule) => schedule.lessons
@@ -263,10 +255,7 @@ const Calendar = () => {
             return true;
           });
 
-          console.log(
-            "📚 Уроків після фільтрації по даті:",
-            filteredLessons.length
-          );
+        
 
           setSchedule(filteredLessons);
         }
@@ -314,7 +303,6 @@ const Calendar = () => {
                 ]}
                 onChange={(e) => {
                   const shiftValue = e?.target?.value;
-                  console.log("NEW SHIFT:", shiftValue);
                   setSelectedShift(shiftValue);
                 }}
                 placeholder='Виберіть зміну'
@@ -396,7 +384,7 @@ const Calendar = () => {
                   const selectedDate = new Date(weekStartDate);
                   selectedDate.setDate(weekStartDate.getDate() + column);
                   const dayOfWeek =
-                    selectedDate.getDay() === 0 ? 7 : selectedDate.getDay(); // Пн=1, ..., Нд=7
+                    selectedDate.getDay() === 0 ? 7 : selectedDate.getDay();
                   const pairNumber = row + 1;
 
                   const lesson = schedule.find((lesson) => {
@@ -463,7 +451,7 @@ const Calendar = () => {
                             const dayOfWeek =
                               selectedDate.getDay() === 0
                                 ? 7
-                                : selectedDate.getDay(); // Пн=1, ..., Нд=7
+                                : selectedDate.getDay();
                             setSelectedCell({ dayOfWeek, pairNumber: row + 1 });
                             setChooseTypeOpen(true);
                           }}

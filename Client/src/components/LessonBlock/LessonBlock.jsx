@@ -1,8 +1,7 @@
 import React from "react";
 import "./lesson.css";
-import { useAuth } from "../../AuthContext.jsx"; // Імпортуємо контекст авторизації
+import { useAuth } from "../../AuthContext.jsx";
 
-// Мапа для відображення українських назв
 const typeLabelMap = {
   lec: "Лекція",
   lab: "Лаб",
@@ -36,13 +35,12 @@ const LessonBlock = ({
   isEvent = false,
   eventTime = "",
 }) => {
-  const { user } = useAuth(); // Отримуємо роль користувача
+  const { user } = useAuth(); 
 
  if (isEvent && user?.user?.eventVision === false) {
     return null;
   }
   const formatTime = (timeStr, format) => {
-    console.log("⌛ Вхідний час:", timeStr);
     if (!timeStr || String(format) == "24") return timeStr;
 
     const parts = timeStr.split(/–|-/).map((part) => part.trim());
@@ -86,7 +84,6 @@ const LessonBlock = ({
   const displayTime =
     isEvent && eventTime ? formatTime(eventTime, user?.user?.timeFormat) : time;
 
-  // Рендеринг для студента
   const renderStudentView = () => (
     <div
       className={`lesson_block ${typeClass}`}
@@ -105,7 +102,6 @@ const LessonBlock = ({
     </div>
   );
 
-  // Рендеринг для викладача
   const renderTeacherView = () => (
     <div
       className={`lesson_block teacher_view ${typeClass}`}
@@ -145,13 +141,12 @@ const LessonBlock = ({
     </div>
   );
 
-  // Умовний рендеринг залежно від ролі
   if (user?.role === "teacher") {
     return renderTeacherView();
   } else if (user?.role === "deanery") {
     return renderDeaneryView();
   } else {
-    return renderStudentView(); // За замовчуванням для студента
+    return renderStudentView();
   }
 };
 

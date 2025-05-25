@@ -48,7 +48,6 @@ const SelectGroupForm = ({ onChange }) => {
           localStorage.removeItem("selectedCourse");
         }
 
-        // Скинути групи при зміні спеціальності
         setGroups([]);
         setSelectedGroup(null);
         localStorage.removeItem("selectedGroup");
@@ -105,7 +104,7 @@ const SelectGroupForm = ({ onChange }) => {
             localStorage.removeItem("selectedSpec");
             localStorage.removeItem("selectedCourse");
             localStorage.removeItem("selectedGroup");
-            window.location.reload(); // Перезавантажити сторінку
+            window.location.reload(); 
           } else {
             setSelectedSpec(value);
             localStorage.setItem("selectedSpec", value);

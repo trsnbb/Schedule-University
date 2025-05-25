@@ -44,10 +44,10 @@ const ScheduleSchema = new mongoose.Schema(
           enum: [1, 2],
         },
         day: {
-          type: [Number], // Масив днів
+          type: [Number], 
         },
         pairNumber: {
-          type: [Number], // Масив номерів пар
+          type: [Number], 
         },
         link: {
           type: String,

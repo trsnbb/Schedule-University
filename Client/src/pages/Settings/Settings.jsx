@@ -56,8 +56,8 @@ const Settings = () => {
   };
 
   const handleEventVisionChange = async () => {
-    const newEventVision = !eventVision; // Перемикаємо значення
-    setEventVision(newEventVision); // Оновлюємо локальний стан
+    const newEventVision = !eventVision; 
+    setEventVision(newEventVision); 
     try {
       const response = await axios.patch(
         "/updateUserProfile",
@@ -203,8 +203,8 @@ const Settings = () => {
             <label className='custom_checkbox'>
               <input
                 type='checkbox'
-                checked={eventVision} // Відображаємо стан
-                onChange={handleEventVisionChange} // Викликаємо обробник
+                checked={eventVision} 
+                onChange={handleEventVisionChange}
               />
               <span className='checkmark'></span>
               Відображати події від деканату

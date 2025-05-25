@@ -1,4 +1,3 @@
-// models/Predmet.js
 import mongoose from "mongoose";
 
 const PredmetSchema = new mongoose.Schema({
