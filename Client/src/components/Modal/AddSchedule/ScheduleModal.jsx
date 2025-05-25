@@ -5,9 +5,9 @@ import close from "./../../../image/close.svg";
 import dzyobik from "./../../../image/dzyobik.svg";
 import back from "./../../../image/Vector.svg";
 import axios from "axios";
-import { fetchAllTeachers } from "../../../axios";
-import CustomDropdown from "./../../CustomDropdown/CustomDropdown.jsx";
-import { postSchedule } from "../../../axios";
+import { fetchAllTeachers } from "../../../axios.js";
+import CustomDropdown from "../../CustomDropdown/CustomDropdown.jsx";
+import { postSchedule } from "../../../axios.js";
 
 const ScheduleModal = ({
   onClose,

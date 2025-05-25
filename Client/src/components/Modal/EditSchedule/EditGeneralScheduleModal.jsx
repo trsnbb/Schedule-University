@@ -4,7 +4,7 @@ import EditScheduleModal from "./EditScheduleModal.jsx";
 import axiosInstance from "../../../axios.js";
 import SelectGroupForm from "../../Calendar/SelectGroupForm.jsx";
 import Fuse from "fuse.js";
-import "./../AddShedule/createSchedule.css";
+import "./../AddSchedule/createSchedule.css";
 import "./../../CustomRadio.css";
 
 const EditGeneralScheduleModal = ({ onClose }) => {

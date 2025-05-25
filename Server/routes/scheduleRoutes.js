@@ -1,5 +1,5 @@
 import express from "express";
-import { createSchedule } from "../controllers/sheduleController.js";
+import { createSchedule } from "../controllers/scheduleController.js";
 import dotenv from "dotenv";
 import {
   getScheduleByGroup,
@@ -9,7 +9,7 @@ import {
   addLesson,
   updateSchedule,
   getScheduleByTeacher
-} from "../controllers/sheduleController.js";
+} from "../controllers/scheduleController.js";
 
 dotenv.config();
 
