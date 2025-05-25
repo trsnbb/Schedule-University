@@ -57,6 +57,7 @@ const EditGeneralScheduleModal = ({ onClose }) => {
 
         const allSubjects = predmetRes.data;
         const lessons = scheduleRes.data.lessons || [];
+        const scheduleShift = scheduleRes.data.shift;
 
         const usedSubjectIds = extractUniqueSubjects(lessons);
 
@@ -64,7 +65,15 @@ const EditGeneralScheduleModal = ({ onClose }) => {
         setSelectedSubjects(usedSubjectIds);
         setLessons(lessons);
 
+        // Автоматичне встановлення формату (з уроків)
+        if (lessons.length > 0 && lessons[0].format) {
+          setFormat(lessons[0].format);
+        }
 
+        // Автоматичне встановлення зміни (з загального розкладу)
+        if (scheduleShift) {
+          setShift(String(scheduleShift));
+        }
       } catch (err) {
         console.error("Помилка при завантаженні:", err);
         setError("Не вдалося завантажити дані");

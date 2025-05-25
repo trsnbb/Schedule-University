@@ -333,6 +333,75 @@ export const getScheduleByGroup = async (req, res) => {
   }
 };
 
+export const getScheduleByTeacher = async (req, res) => {
+  try {
+    const { teacherId, date } = req.query;
+
+    if (!teacherId) {
+      return res.status(400).json({ message: "Не вказано teacherId" });
+    }
+
+    // Отримуємо всі розклади, де є викладач
+    const schedules = await Schedule.find({ "lessons.teacherId": teacherId });
+    if (!schedules || schedules.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "Розклади для викладача не знайдено" });
+    }
+
+    // Вибираємо всі пари цього викладача
+    const result = [];
+
+    for (const schedule of schedules) {
+      const filteredLessons = schedule.lessons.filter((lesson) => {
+        const isSameTeacher = lesson.teacherId?.toString() === teacherId;
+
+        if (!isSameTeacher) return false;
+
+        // Постійна пара — включаємо завжди
+        if (!lesson.temporary) return true;
+
+        // Тимчасова пара — тільки якщо є дата і вона збігається
+        if (lesson.temporary && date) {
+          const lessonDate = new Date(lesson.date).toISOString().split("T")[0];
+          const requestDate = new Date(date).toISOString().split("T")[0];
+          return lessonDate === requestDate;
+        }
+
+        return false;
+      });
+
+      // Популяція вручну (через Promise.all)
+      const populatedLessons = await Promise.all(
+        filteredLessons.map(async (lesson) => {
+          const populatedTeacher = await mongoose
+            .model("User")
+            .findById(lesson.teacherId);
+          const populatedPredmet = await mongoose
+            .model("Predmet")
+            .findById(lesson.predmetId);
+
+          return {
+            ...lesson.toObject(),
+            teacherId: populatedTeacher,
+            predmetId: populatedPredmet,
+          };
+        })
+      );
+
+      result.push({
+        ...schedule.toObject(),
+        lessons: populatedLessons,
+      });
+    }
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Помилка отримання розкладу для викладача:", error);
+    res.status(500).json({ message: "Помилка сервера" });
+  }
+};
+
 // GET /api/specializations
 export const getAllSpecializations = async (req, res) => {
   try {
@@ -373,39 +442,57 @@ export const addLesson = async (req, res) => {
       return res.status(404).json({ error: "Schedule not found" });
     }
 
-    const lessonsSchedule = [
-      { start: "08:00", end: "09:20" },
-      { start: "09:40", end: "11:00" },
-      { start: "11:20", end: "12:40" },
-      { start: "13:00", end: "14:20" },
-      { start: "14:40", end: "16:00" },
-    ];
+    const shift = schedule.shift || 1;
+
+    const shiftSchedules = {
+      1: [
+        { start: "08:00", end: "09:20" },
+        { start: "09:40", end: "11:00" },
+        { start: "11:20", end: "12:40" },
+        { start: "13:00", end: "14:20" },
+        { start: "14:40", end: "16:00" },
+      ],
+      2: [
+        { start: "13:00", end: "14:20" },
+        { start: "14:40", end: "16:00" },
+        { start: "16:20", end: "17:40" },
+        { start: "18:00", end: "19:20" },
+        { start: "19:40", end: "21:00" },
+      ],
+    };
+
+    const lessonsSchedule = shiftSchedules[shift];
 
     if (lesson.isEvent) {
       if (!lesson.date) {
         return res.status(400).json({ error: "Для події обов'язкова дата" });
       }
 
-      // Визначаємо день з дати
       const dayFromDate = new Date(lesson.date).getDay();
-
-      // Визначаємо номер пари з часу
       let determinedPairNumber = pairNumber;
 
       if (lesson.time) {
-        const [startTime] = lesson.time.split("-");
+        const [startTimeRaw] = lesson.time.split("-");
+        const startTime = startTimeRaw.trim();
+
         const matchedIndex = lessonsSchedule.findIndex((pair) => {
-          const lessonStart = startTime.trim();
-          return lessonStart >= pair.start && lessonStart < pair.end;
+          return startTime <= pair.start;
         });
 
-        if (matchedIndex === -1) {
-          return res.status(400).json({
-            error: `Не вдалося визначити номер пари за часом: ${lesson.time}`,
-          });
+        if (matchedIndex !== -1) {
+          determinedPairNumber = matchedIndex + 1;
+        } else {
+          // fallback логіка якщо час не входить в жодну пару
+          if (shift === 1 && startTime >= "16:00") {
+            determinedPairNumber = 5;
+          } else if (shift === 2 && startTime < "13:00") {
+            determinedPairNumber = 1;
+          } else {
+            return res.status(400).json({
+              error: `Не вдалося визначити номер пари за часом: ${lesson.time}`,
+            });
+          }
         }
-
-        determinedPairNumber = matchedIndex + 1;
       }
 
       if (!determinedPairNumber) {
@@ -415,24 +502,23 @@ export const addLesson = async (req, res) => {
       }
 
       const newEvent = {
-  isEvent: true,
-  eventTitle: lesson.eventTitle || "Подія",
-  descriptionEvent: lesson.descriptionEvent || "",
-  date: lesson.date,
-  time: lesson.time || "",
-  format: lesson.format || "—",
-  pairNumber: [determinedPairNumber],
-  day: [dayFromDate],
-  temporary: lesson.temporary || false,
-};
-
+        isEvent: true,
+        eventTitle: lesson.eventTitle || "Подія",
+        descriptionEvent: lesson.descriptionEvent || "",
+        date: lesson.date,
+        time: lesson.time || "",
+        format: lesson.format || "—",
+        pairNumber: [determinedPairNumber],
+        day: [dayFromDate],
+        temporary: lesson.temporary || false,
+      };
 
       schedule.lessons.push(newEvent);
       await schedule.save();
       return res.json({ success: true, schedule });
     }
 
-    // Якщо це не подія — звичайна пара
+    // --- звичайна пара ---
     const allowedTypes = ["lec", "lab", "prac"];
     if (!allowedTypes.includes(lesson.type)) {
       return res

@@ -8,6 +8,7 @@ const CustomDropdown = ({
   onChange,
   placeholder,
   minWidth = 120,
+  isTeacher = false,
 }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef();
@@ -25,8 +26,11 @@ const CustomDropdown = ({
   }, []);
 
   return (
-    <div className='custom-dropdown' ref={ref} >
-      <div className='dropdown-selected' onClick={() => setOpen((o) => !o)}>
+    <div className={`custom-dropdown ${isTeacher ? "isTeacher" : ""}`} ref={ref}>
+      <div
+        className="dropdown-selected"
+        onClick={() => setOpen((o) => !o)}
+      >
         {options.find((opt) => opt.value === value)?.label || placeholder}
         <span className='dropdown-arrow'>{open ? "▲" : "▼"}</span>
       </div>

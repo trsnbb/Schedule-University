@@ -68,12 +68,12 @@ export const fetchSchedule = async ({
     throw error;
   }
 };
-export const updateSchedule = async ({ groupId, lessons, shift}) => {
+export const updateSchedule = async ({ groupId, lessons, shift }) => {
   try {
     const response = await instance.patch("/updateSchedule", {
       groupId,
       lessons,
-      shift
+      shift,
     });
     return response.data;
   } catch (error) {

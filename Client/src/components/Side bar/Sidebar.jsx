@@ -72,9 +72,7 @@ const Sidebar = () => {
               <button className='deanery_btn' onClick={handleEditSchedule}>
                 Редагувати загальний розклад
               </button>
-              <button className='deanery_btn'>
-                Переглянути розклад викладача
-              </button>
+
               <button className='deanery_btn'>Експортувати розклад</button>
               <button
                 className='deanery_btn'

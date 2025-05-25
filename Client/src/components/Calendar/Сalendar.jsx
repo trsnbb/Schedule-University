@@ -11,13 +11,23 @@ import AddPare from "../Modal/AddPare/AddPare.jsx";
 import ChooseType from "../Modal/AddPare/ChooseType.jsx";
 import AddEvent from "../Modal/AddPare/AddEvent.jsx"; // Додайте цей імпорт
 import SelectGroupForm from "./SelectGroupForm.jsx";
+import axios from "axios";
+import CustomDropdown from "../CustomDropdown/CustomDropdown.jsx";
 
-const defaultLessonsSchedule = [
+const firstShiftSchedule = [
   { start: "08:00", end: "09:20" },
   { start: "09:40", end: "11:00" },
   { start: "11:20", end: "12:40" },
   { start: "13:00", end: "14:20" },
   { start: "14:40", end: "16:00" },
+];
+
+const secondShiftSchedule = [
+  { start: "13:00", end: "14:20" },
+  { start: "14:40", end: "16:00" },
+  { start: "16:20", end: "17:40" },
+  { start: "18:00", end: "19:20" },
+  { start: "19:40", end: "21:00" },
 ];
 
 const getMonday = (date = new Date()) => {
@@ -78,6 +88,8 @@ const Calendar = () => {
   const [isChooseTypeOpen, setChooseTypeOpen] = useState(false);
   const [isAddEventModalOpen, setAddEventModalOpen] = useState(false); // Додаємо стан для модалки події
   const [selectedCell, setSelectedCell] = useState(null);
+  const [shift, setShift] = useState(null);
+  const [selectedShift, setSelectedShift] = useState("1");
 
   const [selectedGroup, setSelectedGroup] = useState(null);
 
@@ -86,7 +98,7 @@ const Calendar = () => {
   };
   useEffect(() => {
     loadSchedule();
-  }, [selectedGroup, weekStartDate]);
+  }, [selectedGroup, weekStartDate, selectedShift]);
 
   const [schedule, setSchedule] = useState([]); // Стан для розкладу
 
@@ -140,7 +152,14 @@ const Calendar = () => {
 
     setModalData(lesson);
   };
-  const lessonsSchedule = defaultLessonsSchedule;
+  const lessonsSchedule =
+    user?.user?.role === "teacher"
+      ? selectedShift === "1"
+        ? firstShiftSchedule
+        : secondShiftSchedule
+      : shift === "1"
+      ? firstShiftSchedule
+      : secondShiftSchedule;
 
   const handleChooseType = (type) => {
     setChooseTypeOpen(false);
@@ -196,28 +215,79 @@ const Calendar = () => {
     return () => clearInterval(interval);
   }, []);
   const loadSchedule = async () => {
-    if (!selectedGroup) return;
-
     try {
-      const scheduleData = await fetchSchedule({
-        specializationId: selectedGroup.specializationId,
-        courseId: selectedGroup.courseId,
-        groupId: selectedGroup.groupId,
-      });
-
       const monday = new Date(weekStartDate);
       const sunday = new Date(weekStartDate);
       sunday.setDate(monday.getDate() + 6);
 
-      const filteredLessons = scheduleData.lessons.filter((lesson) => {
-        if (lesson.date) {
-          const d = new Date(lesson.date);
-          return d >= monday && d <= sunday;
-        }
-        return true;
-      });
+      if (user?.user?.role === "teacher") {
+        if (user?.user?.role === "teacher") {
+          const teacherId = user.user._id;
+          const formattedDate = monday.toISOString().split("T")[0];
 
-      setSchedule(filteredLessons);
+          console.log("📅 Завантаження розкладу для викладача");
+          console.log("👤 Teacher ID:", teacherId);
+          console.log("📆 Date (початок тижня):", formattedDate);
+          console.log("🔁 Обрана зміна:", selectedShift);
+
+          const res = await axios.get(
+            "http://localhost:5000/getScheduleByTeacher",
+            {
+              params: {
+                teacherId,
+                date: formattedDate,
+              },
+            }
+          );
+
+          console.log("📦 Отримано розкладів:", res.data.length);
+
+          const filteredSchedules = res.data.filter(
+            (schedule) => schedule.shift === String(selectedShift)
+          );
+
+          console.log(
+            "✅ Розкладів після фільтрації по зміні:",
+            filteredSchedules.length
+          );
+
+          const allLessons = filteredSchedules.flatMap(
+            (schedule) => schedule.lessons
+          );
+
+          const filteredLessons = allLessons.filter((lesson) => {
+            if (lesson.date) {
+              const d = new Date(lesson.date);
+              return d >= monday && d <= sunday;
+            }
+            return true;
+          });
+
+          console.log(
+            "📚 Уроків після фільтрації по даті:",
+            filteredLessons.length
+          );
+
+          setSchedule(filteredLessons);
+        }
+      } else if (selectedGroup) {
+        const scheduleData = await fetchSchedule({
+          specializationId: selectedGroup.specializationId,
+          courseId: selectedGroup.courseId,
+          groupId: selectedGroup.groupId,
+        });
+
+        const filteredLessons = scheduleData.lessons.filter((lesson) => {
+          if (lesson.date) {
+            const d = new Date(lesson.date);
+            return d >= monday && d <= sunday;
+          }
+          return true;
+        });
+
+        setSchedule(filteredLessons);
+        setShift(scheduleData.shift);
+      }
     } catch (error) {
       console.error("Помилка завантаження розкладу:", error);
     }
@@ -227,8 +297,31 @@ const Calendar = () => {
     <>
       <div className='header_calendar'>
         <div className='group_calendar'>
-          {user?.role === "teacher" ? (
-            <p className='style_group'>{user?.name || "Ім'я викладача"}</p>
+          {user?.user?.role === "teacher" ? (
+            <>
+              <p
+                className='style_group teacher_name'
+                style={{ whiteSpace: "nowrap" }}
+              >
+                {user?.user?.name || "Ім'я викладача"}
+              </p>
+              <CustomDropdown
+                name='shift'
+                value={selectedShift}
+                options={[
+                  { value: "1", label: "1 зміна" },
+                  { value: "2", label: "2 зміна" },
+                ]}
+                onChange={(e) => {
+                  const shiftValue = e?.target?.value;
+                  console.log("NEW SHIFT:", shiftValue);
+                  setSelectedShift(shiftValue);
+                }}
+                placeholder='Виберіть зміну'
+                minWidth={250}
+                isTeacher={true}
+              />
+            </>
           ) : (
             <>
               <SelectGroupForm onChange={handleGroupChange} />
@@ -327,10 +420,10 @@ const Calendar = () => {
                   const pairTime = lessonsSchedule[pairNumber - 1]
                     ? `${formatTime(
                         lessonsSchedule[pairNumber - 1].start,
-                         user?.user?.timeFormat
+                        user?.user?.timeFormat
                       )}–${formatTime(
                         lessonsSchedule[pairNumber - 1].end,
-                         user?.user?.timeFormat
+                        user?.user?.timeFormat
                       )}`
                     : "";
 
