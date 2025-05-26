@@ -44,10 +44,10 @@ const ScheduleSchema = new mongoose.Schema(
           enum: [1, 2],
         },
         day: {
-          type: [Number], 
+          type: [Number],
         },
         pairNumber: {
-          type: [Number], 
+          type: [Number],
         },
         link: {
           type: String,
@@ -62,14 +62,8 @@ const ScheduleSchema = new mongoose.Schema(
           type: Number,
         },
         auditorium: {
-          num: {
-            type: Number,
-          },
-          size: {
-            type: Number,
-          },
+          type: String,
         },
-
         isEvent: {
           type: Boolean,
         },

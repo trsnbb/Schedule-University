@@ -37,7 +37,7 @@ export const createSchedule = async (req, res) => {
     }
 
     const weeksInSemester = 18;
-    const scheduleDays = [1, 2, 3, 4, 5];
+    const scheduleDays = [1, 2, 3, 4, 5, 6];
 
     const groupOccupiedPairs = {
       1: new Set(),
@@ -45,6 +45,7 @@ export const createSchedule = async (req, res) => {
       3: new Set(),
       4: new Set(),
       5: new Set(),
+      6: new Set(),
     };
 
     const teacherLessonsMap = {};
@@ -66,18 +67,37 @@ export const createSchedule = async (req, res) => {
       return teacherLessonsMap[key]?.has(`${day}-${pair}`);
     };
 
-    const findFirstFreeSlot = (teacherId) => {
-      for (const day of scheduleDays) {
-        for (let pair = 1; pair <= 6; pair++) {
-          const groupBusy = groupOccupiedPairs[day].has(pair);
-          const teacherBusy = isTeacherBusy(teacherId, day, pair);
-          if (!groupBusy && !teacherBusy) {
-            return { day, pair };
-          } else {
-            
-          }
+    const getRandomDayAndPair = (teacherId) => {
+      const maxTries = 50;
+
+      const isSlotFree = (day, pair) => {
+        const groupBusy = groupOccupiedPairs[day].has(pair);
+        const teacherBusy = isTeacherBusy(teacherId, day, pair);
+        return !groupBusy && !teacherBusy;
+      };
+
+      for (let tries = 0; tries < maxTries; tries++) {
+        const day =
+          scheduleDays[Math.floor(Math.random() * scheduleDays.length)];
+        const pair = Math.floor(Math.random() * 4) + 1;
+        if (isSlotFree(day, pair)) {
+          groupOccupiedPairs[day].add(pair);
+          teacherLessonsMap[teacherId.toString()].add(`${day}-${pair}`);
+          return { day, pair };
         }
       }
+
+      for (let tries = 0; tries < maxTries; tries++) {
+        const day =
+          scheduleDays[Math.floor(Math.random() * scheduleDays.length)];
+        const pair = 5;
+        if (isSlotFree(day, pair)) {
+          groupOccupiedPairs[day].add(pair);
+          teacherLessonsMap[teacherId.toString()].add(`${day}-${pair}`);
+          return { day, pair };
+        }
+      }
+
       return null;
     };
 
@@ -96,17 +116,15 @@ export const createSchedule = async (req, res) => {
 
         for (let i = 0; i < weeklyCount; i++) {
           const teacherId = new mongoose.Types.ObjectId(lesson.teacherId);
-          const slot = findFirstFreeSlot(teacherId);
+          if (!teacherLessonsMap[teacherId.toString()]) {
+            teacherLessonsMap[teacherId.toString()] = new Set();
+          }
 
+          const slot = getRandomDayAndPair(teacherId);
           if (slot) {
             const { day, pair } = slot;
 
-            teacherLessonsMap[teacherId] =
-              teacherLessonsMap[teacherId] || new Set();
-            teacherLessonsMap[teacherId].add(`${day}-${pair}`);
-            groupOccupiedPairs[day].add(pair);
-
-            weeklySchedule.push({
+            const lessonData = {
               type: lt.type,
               day: [day],
               pairNumber: [pair],
@@ -115,18 +133,25 @@ export const createSchedule = async (req, res) => {
               predmetId: new mongoose.Types.ObjectId(lesson.predmetId),
               teacherId,
               shift: shift,
-              link: lesson.link || "",
               groupInfo: {
-                groupInfo: {
-                  specialization: specialization._id,
-                  course: course._id,
-                  group: group._id,
-                },
+                specialization: specialization._id,
+                course: course._id,
+                group: group._id,
               },
               countLec: lesson.countLec || 0,
               countPrac: lesson.countPrac || 0,
               countLab: lesson.countLab || 0,
-            });
+            };
+
+            const format = lesson.format.toLowerCase();
+
+            if (format === "online") {
+              lessonData.link = lesson.link || "";
+            } else if (format === "offline") {
+              lessonData.auditorium = lesson.auditorium || "";
+            }
+
+            weeklySchedule.push(lessonData);
           } else {
             return res.status(400).json({
               message: `Оберіть іншого викладача. У цього викладача немає вільних пар для заняття`,
@@ -492,7 +517,7 @@ export const addLesson = async (req, res) => {
         format: lesson.format || "—",
         pairNumber: [determinedPairNumber],
         day: [dayFromDate],
-        temporary: lesson.temporary || false,
+        temporary: lesson.ен || false,
       };
 
       schedule.lessons.push(newEvent);
@@ -507,9 +532,10 @@ export const addLesson = async (req, res) => {
         .json({ error: `Невірний тип заняття: ${lesson.type}` });
     }
 
-    const day = lesson.temporary ? null : new Date().getDay();
+    const isTemporary = lesson.lessonType === "single";
+    const day = isTemporary ? new Date(lesson.date).getDay() : req.body.day;
 
-    if (!lesson.temporary) {
+    if (!isTemporary) {
       const isOccupied = schedule.lessons.some(
         (l) => l.day.includes(day) && l.pairNumber.includes(pairNumber)
       );
@@ -523,11 +549,12 @@ export const addLesson = async (req, res) => {
 
     const newLesson = {
       ...lesson,
-      day: lesson.temporary ? [] : [day],
+      temporary: isTemporary,
+      day: isTemporary ? [new Date(lesson.date).getDay()] : [day],
       pairNumber: [pairNumber],
     };
 
-    if (lesson.temporary && lesson.date) {
+    if (isTemporary && lesson.date) {
       newLesson.date = lesson.date;
     }
 

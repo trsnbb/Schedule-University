@@ -23,7 +23,7 @@ export const configurePassport = () => {
           } else if (email.endsWith("@uzhnu.edu.ua")) {
             role = "teacher";
           } else {
-            return done(new Error("Використайте будь ласка корпоративну пошту"), null);
+           return done(null, false, { message: "Використайте будь ласка корпоративну пошту" });
           }
 
           let user = await UserSchema.findOne({ email });

@@ -27,11 +27,20 @@ const EditScheduleModal = ({
   const [subjectCounts, setSubjectCounts] = useState({});
   const [subjectTeacherLinks, setSubjectTeacherLinks] = useState({});
   const [subjectLinks, setSubjectLinks] = useState({});
+  const [subjectRooms, setSubjectRooms] = useState({});
 
+  const handleRoomChange = (subjectId) => (e) => {
+    const { value } = e.target;
+    setSubjectRooms((prev) => ({
+      ...prev,
+      [subjectId]: value,
+    }));
+  };
   useEffect(() => {
     const counts = {};
     const links = {};
     const teacherLinks = {};
+    const auditorium = {};
 
     initialSubjectsData.forEach((subject) => {
       counts[subject._id] = {
@@ -42,11 +51,13 @@ const EditScheduleModal = ({
       links[subject._id] = subject.link || "";
       teacherLinks[subject._id] =
         subject.teacherId?._id || subject.teacherId || "";
+      auditorium[subject._id] = subject.auditorium || "";
     });
 
     setSubjectCounts(counts);
     setSubjectLinks(links);
     setSubjectTeacherLinks(teacherLinks);
+     setSubjectRooms(auditorium); 
   }, [initialSubjectsData]);
 
   useEffect(() => {
@@ -106,7 +117,10 @@ const EditScheduleModal = ({
         const subjectId = subject._id;
         const teacherId = subjectTeacherLinks[subjectId] || "";
         const counts = subjectCounts[subjectId] || {};
-        const link = subjectLinks[subjectId] || "";
+
+        const isOnline = format === "online";
+        const link = isOnline ? subjectLinks[subjectId] || "" : "";
+        const auditorium = !isOnline ? subjectRooms[subjectId] || "" : "";
 
         return {
           predmetId: subjectId,
@@ -117,6 +131,7 @@ const EditScheduleModal = ({
           countLab: counts.labs || 0,
           countPrac: counts.practices || 0,
           link,
+          auditorium,
         };
       });
 
@@ -242,11 +257,24 @@ const EditScheduleModal = ({
                         />
                       </div>
                       <div className='input_group_accordion'>
-                        <label>Введіть посилання</label>
+                        <label>
+                          {" "}
+                          {format === "online"
+                            ? "Введіть посилання"
+                            : "Введіть авдиторію"}
+                        </label>
                         <input
                           type='text'
-                          value={subjectLinks[subject._id] || ""}
-                          onChange={handleLinkChange(subject._id)}
+                          value={
+                            format === "online"
+                              ? subjectLinks[subject._id] || ""
+                              : subjectRooms[subject._id] || ""
+                          }
+                          onChange={
+                            format === "online"
+                              ? handleLinkChange(subject._id)
+                              : handleRoomChange(subject._id)
+                          }
                         />
                       </div>
                     </div>

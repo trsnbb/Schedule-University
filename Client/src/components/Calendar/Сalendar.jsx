@@ -3,7 +3,7 @@ import "./calendar.css";
 import dzyobik from "./../../image/dzyobik.svg";
 import LessonBlock from "./../LessonBlock/LessonBlock.jsx";
 import PareInfo from "../Modal/PareInfo/PareInfo.jsx";
-import CreateSchedule from "../Modal/AddShedule/CreateSchedule.jsx"; 
+import CreateSchedule from "../Modal/AddSchedule/CreateSchedule.jsx"; 
 import { useAuth } from "../../AuthContext.jsx";
 import { fetchSchedule } from "./../../axios.js";
 import { useRef } from "react";

@@ -5,7 +5,7 @@ import MiniCalendar from "./../Mini Calendar/MiniCalendar.jsx";
 import Notes from "./../Notes/Notes.jsx";
 import ProfileMenu from "./../Burger/ProfileMenu.jsx";
 import { useAuth } from "../../AuthContext.jsx";
-import CreateSchedule from "../Modal/AddShedule/CreateSchedule.jsx";
+import CreateSchedule from "../Modal/AddSchedule/CreateSchedule.jsx";
 import EditGeneralScheduleModal from "./../Modal/EditSchedule/EditGeneralScheduleModal.jsx";
 
 const Sidebar = () => {

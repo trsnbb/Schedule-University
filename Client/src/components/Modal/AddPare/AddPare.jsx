@@ -30,6 +30,7 @@ const AddPare = ({
     teacher: "",
     link: "",
     date: "",
+    auditory: "",
   });
 
   const teacherOptions = teachers.map((teacher) => ({
@@ -77,7 +78,7 @@ const AddPare = ({
     setLessonData((prev) => ({
       ...prev,
       [name]: value,
-    }));  
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -88,14 +89,16 @@ const AddPare = ({
       teacherId: lessonData.teacher,
       type: lessonData.type,
       format: lessonData.mode,
-      link: lessonData.link,
+      link: lessonData.mode === "online" ? lessonData.link : null,
+      auditorium: lessonData.mode === "offline" ? lessonData.auditorium : null,
       date: lessonData.lessonType === "single" ? lessonData.date : null,
+      lessonType: lessonData.lessonType, 
+      
     };
 
     try {
       await axios.post("http://localhost:5000/addLesson", {
         groupId,
-        day: dayOfWeek,
         pairNumber: pair,
         lesson: newLesson,
       });
@@ -184,18 +187,30 @@ const AddPare = ({
               ))}
             </div>
           </div>
-
-          <div className='form-group'>
-            <label>Посилання</label>
-            <input
-              type='text'
-              name='link'
-              value={lessonData.link}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-
+          {lessonData.mode === "offline" && (
+            <div className='form-group'>
+              <label>Аудиторія</label>
+              <input
+                type='text'
+                name='auditorium'
+                value={lessonData.auditorium}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+          )}
+          {lessonData.mode === "online" && (
+            <div className='form-group'>
+              <label>Посилання</label>
+              <input
+                type='text'
+                name='link'
+                value={lessonData.link}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+          )}
           <div className='form-group'>
             <label>Тип заняття</label>
             <div className='radio_button_modal_format'>

@@ -27,6 +27,15 @@ const ScheduleModal = ({
   const [subjectCounts, setSubjectCounts] = useState({});
   const [subjectTeacherLinks, setSubjectTeacherLinks] = useState({});
   const [subjectLinks, setSubjectLinks] = useState({});
+  const [subjectRooms, setSubjectRooms] = useState({});
+
+  const handleRoomChange = (subjectId) => (e) => {
+    const { value } = e.target;
+    setSubjectRooms((prev) => ({
+      ...prev,
+      [subjectId]: value,
+    }));
+  };
 
   const handleSubmit = async () => {
     const weeksInSemester = 18;
@@ -58,7 +67,10 @@ const ScheduleModal = ({
           teacherId: teacherId,
           format,
           weekType,
-          link: subjectLinks[subject._id] || "",
+          ...(format === "online"
+            ? { link: subjectLinks[subject._id] || "" }
+            : { auditorium: subjectRooms[subject._id] || "" }),
+
           shift,
           ...lessonCounts,
         });
@@ -76,10 +88,11 @@ const ScheduleModal = ({
       shift,
       lessons: groupedLessons,
     };
+    console.log(payload);
 
     try {
       const result = await postSchedule(payload);
-      onClose(); 
+      onClose();
     } catch (error) {
       console.error("Помилка при створенні розкладу:", error);
       if (error.response?.status === 400 && error.response.data?.message) {
@@ -192,7 +205,7 @@ const ScheduleModal = ({
 
   const teacherOptions = teachers.map((teacher) => ({
     value: teacher.teacherId,
-    label: `${teacher.teacherName} (${teacher.teacherId})`,
+    label: `${teacher.teacherName} (${teacher.teacherEmail})`,
   }));
 
   return (
@@ -281,11 +294,23 @@ const ScheduleModal = ({
                           />
                         </div>
                         <div className='input_group_accordion'>
-                          <label>Введіть посилання</label>
+                          <label>
+                            {format === "online"
+                              ? "Введіть посилання"
+                              : "Введіть авдиторію"}
+                          </label>
                           <input
                             type='text'
-                            value={subjectLinks[subject._id] || ""}
-                            onChange={handleLinkChange(subject._id)}
+                            value={
+                              format === "online"
+                                ? subjectLinks[subject._id] || ""
+                                : subjectRooms[subject._id] || ""
+                            }
+                            onChange={
+                              format === "online"
+                                ? handleLinkChange(subject._id)
+                                : handleRoomChange(subject._id)
+                            }
                           />
                         </div>
                       </div>

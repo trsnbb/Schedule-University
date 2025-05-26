@@ -58,24 +58,23 @@ const PareInfo = ({ lesson, position, onClose }) => {
   }, [onClose]);
 
   const formatTime = (timeStr) => {
-  if (!timeStr || String(user?.user?.timeFormat) === "24") return timeStr;
+    if (!timeStr || String(user?.user?.timeFormat) === "24") return timeStr;
 
-  const to12Hour = (time) => {
-    const [hourStr, minute] = time.split(":");
-    let hour = parseInt(hourStr, 10);
-    const ampm = hour >= 12 ? "PM" : "AM";
-    hour = hour % 12 || 12;
-    return `${hour}:${minute} ${ampm}`;
+    const to12Hour = (time) => {
+      const [hourStr, minute] = time.split(":");
+      let hour = parseInt(hourStr, 10);
+      const ampm = hour >= 12 ? "PM" : "AM";
+      hour = hour % 12 || 12;
+      return `${hour}:${minute} ${ampm}`;
+    };
+
+    const parts = timeStr.split(/–|-/).map((part) => part.trim());
+    if (parts.length === 2) {
+      return `${to12Hour(parts[0])} – ${to12Hour(parts[1])}`;
+    }
+
+    return to12Hour(timeStr);
   };
-
-  const parts = timeStr.split(/–|-/).map((part) => part.trim());
-  if (parts.length === 2) {
-    return `${to12Hour(parts[0])} – ${to12Hour(parts[1])}`;
-  }
-
-  return to12Hour(timeStr);
-};
-
 
   const pairTimes = {
     1: "08:00 – 09:20",
@@ -100,8 +99,8 @@ const PareInfo = ({ lesson, position, onClose }) => {
     ? {
         title: lesson.eventTitle || "Подія",
         type: "Подія",
-        time: lesson.time || "—", 
-        date: lesson.date || "—", 
+        time: lesson.time || "—",
+        date: lesson.date || "—",
         mode: lesson.format || "—",
         link: lesson.link || null,
         descriptionEvent: lesson.descriptionEvent || "Опис відсутній",
@@ -126,8 +125,8 @@ const PareInfo = ({ lesson, position, onClose }) => {
         link: lesson?.link || null,
         teacherNotes: lesson?.teacherNotes || "Немає нотаток від викладача",
         studentNotes: lesson?.studentNotes || "Немає особистих нотаток",
+        auditorium: lesson?.auditorium || "—",
       };
-
 
   const getModalBackground = (type) => {
     if (type === "Лекція") return "rgba(3, 105, 161, 0.4)";
@@ -142,7 +141,6 @@ const PareInfo = ({ lesson, position, onClose }) => {
     if (type === "Подія") return "#BFBD29";
     return "#1BAF23";
   };
-  
 
   return (
     <>
@@ -178,23 +176,32 @@ const PareInfo = ({ lesson, position, onClose }) => {
           </div>
 
           <div className='modal-row'>
-            <span className='label'>Формат:</span> {normalizedLesson.mode}
+            <span className='label'>Формат:</span>{" "}
+            {normalizedLesson.mode === "online" ? "Онлайн" : "Очно"}
           </div>
-          <div className='modal-row'>
-            <span className='label'>Посилання:</span>{" "}
-            {normalizedLesson.link ? (
-              <a
-                href={normalizedLesson.link}
-                target='_blank'
-                rel='noopener noreferrer'
-                style={{ color: "#fff" }}
-              >
-                {normalizedLesson.link}
-              </a>
-            ) : (
-              "—"
-            )}
-          </div>
+
+          {normalizedLesson.mode === "online" ? (
+            <div className='modal-row'>
+              <span className='label'>Посилання:</span>{" "}
+              {normalizedLesson.link ? (
+                <a
+                  href={normalizedLesson.link}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  style={{ color: "#fff" }}
+                >
+                  {normalizedLesson.link}
+                </a>
+              ) : (
+                "—"
+              )}
+            </div>
+          ) : (
+            <div className='modal-row'>
+              <span className='label'>Аудиторія:</span>{" "}
+              {normalizedLesson.auditorium || "—"}
+            </div>
+          )}
 
           {lesson?.isEvent ? (
             <div className='modal-row'>
