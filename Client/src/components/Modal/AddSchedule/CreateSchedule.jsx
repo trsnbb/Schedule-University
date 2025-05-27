@@ -174,9 +174,9 @@ const CreateSchedule = ({ onClose }) => {
                     <input
                       type='radio'
                       name='format'
-                      value='Offline'
-                      checked={format === "Offline"}
-                      onChange={() => setFormat("Offline")}
+                      value='offline'
+                      checked={format === "offline"}
+                      onChange={() => setFormat("offline")}
                     />
                     <span className='radio_mark_modal'></span>
                     Аудиторно
@@ -185,9 +185,9 @@ const CreateSchedule = ({ onClose }) => {
                     <input
                       type='radio'
                       name='format'
-                      value='Online'
-                      checked={format === "Online"}
-                      onChange={() => setFormat("Online")}
+                      value='online'
+                      checked={format === "online"}
+                      onChange={() => setFormat("online")}
                     />
                     <span className='radio_mark_modal'></span>
                     Дистанційно

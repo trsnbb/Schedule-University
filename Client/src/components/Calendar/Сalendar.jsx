@@ -3,7 +3,7 @@ import "./calendar.css";
 import dzyobik from "./../../image/dzyobik.svg";
 import LessonBlock from "./../LessonBlock/LessonBlock.jsx";
 import PareInfo from "../Modal/PareInfo/PareInfo.jsx";
-import CreateSchedule from "../Modal/AddSchedule/CreateSchedule.jsx"; 
+import CreateSchedule from "../Modal/AddSchedule/CreateSchedule.jsx";
 import { useAuth } from "../../AuthContext.jsx";
 import { fetchSchedule } from "./../../axios.js";
 import { useRef } from "react";
@@ -13,6 +13,7 @@ import AddEvent from "../Modal/AddPare/AddEvent.jsx";
 import SelectGroupForm from "./SelectGroupForm.jsx";
 import axios from "axios";
 import CustomDropdown from "../CustomDropdown/CustomDropdown.jsx";
+import { useMemo } from "react";
 
 const firstShiftSchedule = [
   { start: "08:00", end: "09:20" },
@@ -73,7 +74,7 @@ const getWeekRangeText = (monday) => {
 };
 
 const Calendar = () => {
-  const { user } = useAuth(); 
+  const { user } = useAuth();
   const [hoveredCell, setHoveredCell] = useState(null);
   const [lessonStatus, setLessonStatus] = useState({
     current: null,
@@ -100,7 +101,7 @@ const Calendar = () => {
     loadSchedule();
   }, [selectedGroup, weekStartDate, selectedShift]);
 
-  const [schedule, setSchedule] = useState([]); 
+  const [schedule, setSchedule] = useState([]);
 
   useEffect(() => {
     setDays(getWeekDays(weekStartDate));
@@ -152,14 +153,16 @@ const Calendar = () => {
 
     setModalData(lesson);
   };
-  const lessonsSchedule =
-    user?.user?.role === "teacher"
-      ? selectedShift === "1"
-        ? firstShiftSchedule
-        : secondShiftSchedule
-      : shift === "1"
-      ? firstShiftSchedule
-      : secondShiftSchedule;
+  const lessonsSchedule = useMemo(() => {
+    if (user?.user?.role === "teacher") {
+      return selectedShift === "1" ? firstShiftSchedule : secondShiftSchedule;
+    }
+
+    if (shift === "1") return firstShiftSchedule;
+    if (shift === "2") return secondShiftSchedule;
+
+    return [];
+  }, [user, selectedShift, shift]);
 
   const handleChooseType = (type) => {
     setChooseTypeOpen(false);
@@ -213,7 +216,8 @@ const Calendar = () => {
     checkLessonTime();
     const interval = setInterval(checkLessonTime, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [lessonsSchedule]);
+
   const loadSchedule = async () => {
     try {
       const monday = new Date(weekStartDate);
@@ -225,7 +229,6 @@ const Calendar = () => {
           const teacherId = user.user._id;
           const formattedDate = monday.toISOString().split("T")[0];
 
-     
           const res = await axios.get(
             "http://localhost:5000/getScheduleByTeacher",
             {
@@ -236,12 +239,9 @@ const Calendar = () => {
             }
           );
 
-
           const filteredSchedules = res.data.filter(
             (schedule) => schedule.shift === String(selectedShift)
           );
-
-          
 
           const allLessons = filteredSchedules.flatMap(
             (schedule) => schedule.lessons
@@ -254,8 +254,6 @@ const Calendar = () => {
             }
             return true;
           });
-
-        
 
           setSchedule(filteredLessons);
         }
@@ -281,7 +279,7 @@ const Calendar = () => {
       console.error("Помилка завантаження розкладу:", error);
     }
   };
-
+  console.log("Shift:", shift);
   return (
     <>
       <div className='header_calendar'>
@@ -426,7 +424,7 @@ const Calendar = () => {
                         <LessonBlock
                           title={lesson.predmetId?.predmet || lesson.eventTitle}
                           type={lesson.type || "event"}
-                          mode={lesson.format || "Offline"}
+                          mode={lesson.format || "offline"}
                           time={pairTime}
                           eventTime={lesson.time}
                           groupInfo={{

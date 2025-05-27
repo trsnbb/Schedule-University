@@ -132,7 +132,6 @@ const EditGeneralScheduleModal = ({ onClose }) => {
     setError(null);
     setScheduleModalOpen(true);
   };
-
   return (
     <>
       {isScheduleModalOpen ? (
@@ -150,12 +149,18 @@ const EditGeneralScheduleModal = ({ onClose }) => {
                   String(lesson.predmetId?._id || lesson.predmetId) ===
                   String(subj._id)
               );
+              console.log("🔍 matchingLesson:", matchingLesson);
+
               return {
                 ...subj,
                 countLec: matchingLesson?.countLec || 0,
                 countPrac: matchingLesson?.countPrac || 0,
                 countLab: matchingLesson?.countLab || 0,
-                teacherId: matchingLesson?.teacherId || "",
+                teacherId:
+                  matchingLesson?.teacherId?._id ||
+                  matchingLesson?.teacherId ||
+                  "",
+
                 link: matchingLesson?.link || "",
                 format: matchingLesson?.format || format,
                 weekType: matchingLesson?.weekType || "",
@@ -232,9 +237,9 @@ const EditGeneralScheduleModal = ({ onClose }) => {
                     <input
                       type='radio'
                       name='format'
-                      value='Online'
-                      checked={format === "Online"}
-                      onChange={() => setFormat("Online")}
+                      value='online'
+                      checked={format === "online"}
+                      onChange={() => setFormat("online")}
                     />
                     <span className='radio_mark_modal'></span>
                     Дистанційно

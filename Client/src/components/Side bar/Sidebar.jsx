@@ -72,7 +72,6 @@ const Sidebar = () => {
                 Редагувати загальний розклад
               </button>
 
-              <button className='deanery_btn'>Експортувати розклад</button>
               <button
                 className='deanery_btn'
                 onClick={() => {

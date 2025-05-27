@@ -57,7 +57,7 @@ const EditScheduleModal = ({
     setSubjectCounts(counts);
     setSubjectLinks(links);
     setSubjectTeacherLinks(teacherLinks);
-     setSubjectRooms(auditorium); 
+    setSubjectRooms(auditorium);
   }, [initialSubjectsData]);
 
   useEffect(() => {
@@ -164,6 +164,21 @@ const EditScheduleModal = ({
       return acc + lec + lab + prac;
     },
     0
+  );
+  const weeklyCounts = Object.values(subjectCounts).reduce(
+    (acc, curr) => {
+      acc.lectures += curr.lectures
+        ? Math.max(1, Math.floor(curr.lectures / weeksInSemester))
+        : 0;
+      acc.labs += curr.labs
+        ? Math.max(1, Math.floor(curr.labs / weeksInSemester))
+        : 0;
+      acc.practices += curr.practices
+        ? Math.max(1, Math.floor(curr.practices / weeksInSemester))
+        : 0;
+      return acc;
+    },
+    { lectures: 0, labs: 0, practices: 0 }
   );
 
   const totalCounts = Object.values(subjectCounts).reduce(
@@ -298,15 +313,15 @@ const EditScheduleModal = ({
               <div className='input_count_type'>
                 <div className='input_group_accordion'>
                   <label>Лекцій</label>
-                  <input type='text' value={totalCounts.lectures} disabled />
+                  <input type='text' value={weeklyCounts.lectures} disabled />
                 </div>
                 <div className='input_group_accordion'>
                   <label>Лабораторних</label>
-                  <input type='text' value={totalCounts.labs} disabled />
+                  <input type='text' value={weeklyCounts.labs} disabled />
                 </div>
                 <div className='input_group_accordion'>
                   <label>Практик</label>
-                  <input type='text' value={totalCounts.practices} disabled />
+                  <input type='text' value={weeklyCounts.practices} disabled />
                 </div>
               </div>
             </div>

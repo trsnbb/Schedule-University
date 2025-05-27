@@ -102,7 +102,8 @@ const PareInfo = ({ lesson, position, onClose }) => {
         time: lesson.time || "—",
         date: lesson.date || "—",
         mode: lesson.format || "—",
-        link: lesson.link || null,
+        link: lesson?.link || null,
+        auditorium: lesson?.auditorium || "—",
         descriptionEvent: lesson.descriptionEvent || "Опис відсутній",
       }
     : {
@@ -127,6 +128,8 @@ const PareInfo = ({ lesson, position, onClose }) => {
         studentNotes: lesson?.studentNotes || "Немає особистих нотаток",
         auditorium: lesson?.auditorium || "—",
       };
+  console.log("🔍 Normalized Lesson:", normalizedLesson);
+  console.log("Подія format:", lesson?.format);
 
   const getModalBackground = (type) => {
     if (type === "Лекція") return "rgba(3, 105, 161, 0.4)";
