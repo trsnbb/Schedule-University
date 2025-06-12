@@ -16,7 +16,7 @@ export function handleUserChange(change, io) {
       console.log("[users] Інша зміна:", change);
   }
   io.emit("dbChange", {
-    collection: "schedules",
+    collection: "users",
     change,
   });
 }

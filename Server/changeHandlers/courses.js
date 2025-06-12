@@ -13,7 +13,7 @@ export function handleCourseChange(change, io) {
       console.log('[courses] Інша зміна:', change);
   }
    io.emit("dbChange", {
-    collection: "schedules",
+    collection: "courses",
     change,
   });
 }

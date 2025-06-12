@@ -13,7 +13,7 @@ export function handleGroupChange(change, io) {
       console.log('[groups] Інша зміна:', change);
   }
    io.emit("dbChange", {
-    collection: "schedules",
+    collection: "groups",
     change,
   });
 }

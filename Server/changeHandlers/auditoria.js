@@ -16,7 +16,7 @@ export function handleAuditoriaChange(change, io) {
       console.log("[auditoria] Інша зміна:", change);
   }
   io.emit("dbChange", {
-    collection: "schedules",
+    collection: "auditoria",
     change,
   });
 }

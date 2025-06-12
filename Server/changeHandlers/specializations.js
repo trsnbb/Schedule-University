@@ -11,7 +11,7 @@ export function handleSpecializationChange(change, io) {
       console.log("[specializations] Інша зміна:", change);
   }
    io.emit("dbChange", {
-    collection: "schedules",
+    collection: "specializations",
     change,
   });
 }

@@ -121,7 +121,6 @@ const Settings = () => {
   const handleDeleteAccount = async () => {
     try {
       await axios.delete("/deleteUser");
-      alert("Ваш профіль було успішно видалено.");
       setUser(null);
       window.location.href = "/login";
     } catch (error) {
