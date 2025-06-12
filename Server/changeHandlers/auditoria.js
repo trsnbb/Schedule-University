@@ -1,0 +1,15 @@
+export function handleAuditoriaChange(change) {
+  switch (change.operationType) {
+    case 'insert':
+      console.log('[auditoria] Додано аудиторію:', change.fullDocument);
+      break;
+    case 'update':
+      console.log('[auditoria] Оновлено аудиторію:', change.updateDescription);
+      break;
+    case 'delete':
+      console.log('[auditoria] Видалено аудиторію з _id:', change.documentKey._id);
+      break;
+    default:
+      console.log('[auditoria] Інша зміна:', change);
+  }
+}
