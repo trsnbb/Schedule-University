@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 import store from "./redux/store.js";
 import "./styles/main.css";
 import { AuthProvider } from "./AuthContext.jsx"; 
-
+import SocketListener from "./SocketListener.jsx";
 
 import HomePage from "./pages/HomePage/HomePage.jsx";
 import Settings from "./pages/Settings/Settings.jsx";
@@ -14,10 +14,11 @@ function App() {
     <Provider store={store}>
       <AuthProvider>
         <Router>
+          <SocketListener /> 
           <Routes>
-            <Route path='/' element={<HomePage />} />
-            <Route path='/settings' element={<Settings />} />
-            <Route path='/feedback' element={<Feedback />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/feedback" element={<Feedback />} />
           </Routes>
         </Router>
       </AuthProvider>

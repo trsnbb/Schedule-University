@@ -1,4 +1,4 @@
-export function handleScheduleChange(change) {
+export function handleScheduleChange(change, io) {
   switch (change.operationType) {
     case 'insert':
       console.log('[schedules] Додано розклад:', change.fullDocument);
@@ -12,4 +12,8 @@ export function handleScheduleChange(change) {
     default:
       console.log('[schedules] Інша зміна:', change);
   }
+   io.emit("dbChange", {
+    collection: "schedules",
+    change,
+  });
 }

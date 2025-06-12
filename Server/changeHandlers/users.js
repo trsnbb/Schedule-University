@@ -1,15 +1,22 @@
-export function handleUserChange(change) {
+export function handleUserChange(change, io) {
   switch (change.operationType) {
-    case 'insert':
-      console.log('[users] Додано нового користувача:', change.fullDocument);
+    case "insert":
+      console.log("[users] Додано нового користувача:", change.fullDocument);
       break;
-    case 'update':
-      console.log('[users] Оновлено користувача:', change.updateDescription);
+    case "update":
+      console.log("[users] Оновлено користувача:", change.updateDescription);
       break;
-    case 'delete':
-      console.log('[users] Видалено користувача з _id:', change.documentKey._id);
+    case "delete":
+      console.log(
+        "[users] Видалено користувача з _id:",
+        change.documentKey._id
+      );
       break;
     default:
-      console.log('[users] Інша зміна:', change);
+      console.log("[users] Інша зміна:", change);
   }
+  io.emit("dbChange", {
+    collection: "schedules",
+    change,
+  });
 }

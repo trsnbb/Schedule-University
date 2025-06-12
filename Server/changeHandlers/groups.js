@@ -1,4 +1,4 @@
-export function handleGroupChange(change) {
+export function handleGroupChange(change, io) {
   switch (change.operationType) {
     case 'insert':
       console.log('[groups] Додано групу:', change.fullDocument);
@@ -12,4 +12,8 @@ export function handleGroupChange(change) {
     default:
       console.log('[groups] Інша зміна:', change);
   }
+   io.emit("dbChange", {
+    collection: "schedules",
+    change,
+  });
 }

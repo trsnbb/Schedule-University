@@ -1,4 +1,4 @@
-export function handleSpecializationChange(change) {
+export function handleSpecializationChange(change, io) {
   switch (change.operationType) {
     case "insert":
       console.log(
@@ -10,4 +10,8 @@ export function handleSpecializationChange(change) {
     default:
       console.log("[specializations] Інша зміна:", change);
   }
+   io.emit("dbChange", {
+    collection: "schedules",
+    change,
+  });
 }

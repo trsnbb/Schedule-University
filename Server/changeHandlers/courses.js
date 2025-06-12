@@ -1,4 +1,4 @@
-export function handleCourseChange(change) {
+export function handleCourseChange(change, io) {
   switch (change.operationType) {
     case 'insert':
       console.log('[courses] Додано курс:', change.fullDocument);
@@ -12,4 +12,8 @@ export function handleCourseChange(change) {
     default:
       console.log('[courses] Інша зміна:', change);
   }
+   io.emit("dbChange", {
+    collection: "schedules",
+    change,
+  });
 }

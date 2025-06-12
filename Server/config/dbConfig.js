@@ -9,7 +9,7 @@ import { handleGroupChange } from "../changeHandlers/groups.js";
 import { handleCourseChange } from "../changeHandlers/courses.js";
 import { handleAuditoriaChange } from "../changeHandlers/auditoria.js";
 
-export const connectDB = () => {
+export const connectDB = (io) => {
   mongoose
     .connect(process.env.DATABASE_URL)
     .then(() => {
@@ -30,23 +30,25 @@ export const connectDB = () => {
 
           switch (col) {
             case "users":
-              stream.on("change", handleUserChange);
+              stream.on("change", (change) => handleUserChange(change, io));
               break;
             case "specializations":
-              stream.on("change", handleSpecializationChange);
+              stream.on("change", (change) =>
+                handleSpecializationChange(change, io)
+              );
               break;
             case "schedules":
-              stream.on("change", handleScheduleChange);
+              stream.on("change", (change) => handleScheduleChange(change, io));
               break;
 
             case "groups":
-              stream.on("change", handleGroupChange);
+              stream.on("change", (change) => handleGroupChange(change, io));
               break;
             case "courses":
-              stream.on("change", handleCourseChange);
+              stream.on("change", (change) => handleCourseChange(change, io));
               break;
             case "auditoria":
-              stream.on("change", handleAuditoriaChange);
+              stream.on("change", (change) => handleAuditoriaChange(change, io));
               break;
             default:
               stream.on("change", (change) => {
