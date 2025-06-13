@@ -304,6 +304,7 @@ export const getScheduleByGroup = async (req, res) => {
         .status(400)
         .json({ message: "Вкажіть specializationId, courseId і groupId" });
     }
+    
 
     const specializationDoc = await Specialization.findById(specializationId);
     const courseDoc = await Course.findOne({
@@ -332,16 +333,17 @@ export const getScheduleByGroup = async (req, res) => {
 
     let lessons = schedule.lessons.filter((lesson) => {
       if (!lesson.temporary) return true;
-
       if (lesson.temporary && date) {
         const lessonDate = new Date(lesson.date).toISOString().split("T")[0];
         const requestDate = new Date(date).toISOString().split("T")[0];
         return lessonDate === requestDate;
       }
-
-      return false;
+      // Якщо немає дати — просто пропускаємо тимчасові уроки
+      return true; // <-- або false, якщо хочеш виключати
     });
-
+console.log("Дата з запиту:", date);
+    console.log("Всього уроків у розкладі:", schedule.lessons.length);
+    console.log("Уроків після фільтрації:", lessons.length);
     res.status(200).json({ ...schedule.toObject(), lessons });
   } catch (error) {
     console.error("Помилка отримання розкладу:", error);
@@ -476,7 +478,9 @@ export const addLesson = async (req, res) => {
         return res.status(400).json({ error: "Для події обов'язкова дата" });
       }
 
-      const dayFromDate = new Date(lesson.date).getDay();
+      const jsDay = new Date(lesson.date).getDay(); // 0=неділя, 1=понеділок...
+      const dayFromDate = (jsDay + 6) % 7;
+
       let determinedPairNumber = pairNumber;
 
       if (lesson.time) {
@@ -533,7 +537,9 @@ export const addLesson = async (req, res) => {
     }
 
     const isTemporary = lesson.lessonType === "single";
-    const day = isTemporary ? new Date(lesson.date).getDay() : req.body.day;
+    const day = isTemporary
+      ? [(new Date(lesson.date).getDay() + 6) % 7]
+      : [req.body.day];
 
     if (!isTemporary) {
       const isOccupied = schedule.lessons.some(
@@ -550,7 +556,8 @@ export const addLesson = async (req, res) => {
     const newLesson = {
       ...lesson,
       temporary: isTemporary,
-      day: isTemporary ? [new Date(lesson.date).getDay()] : [day],
+      day: isTemporary ? [(new Date(lesson.date).getDay() + 6) % 7] : day,
+
       pairNumber: [pairNumber],
     };
 

@@ -217,6 +217,7 @@ const Calendar = () => {
     const interval = setInterval(checkLessonTime, 30000);
     return () => clearInterval(interval);
   }, [lessonsSchedule]);
+  console.log(schedule);
 
   const loadSchedule = async () => {
     try {
@@ -279,7 +280,17 @@ const Calendar = () => {
       console.error("Помилка завантаження розкладу:", error);
     }
   };
-  console.log("Shift:", shift);
+
+  console.log("schedule", schedule);
+  schedule.forEach((l) => {
+    const d = l.date ? new Date(l.date) : null;
+    console.log(
+      `Pair: ${l.predmetId?.predmet || l.eventTitle}, date: ${d}, day: ${
+        l.day
+      }, pair: ${l.pairNumber}`
+    );
+  });
+
   return (
     <>
       <div className='header_calendar'>
@@ -381,20 +392,29 @@ const Calendar = () => {
                   const row = Math.floor(index / 6);
                   const selectedDate = new Date(weekStartDate);
                   selectedDate.setDate(weekStartDate.getDate() + column);
-                  const dayOfWeek =
-                    selectedDate.getDay() === 0 ? 7 : selectedDate.getDay();
+                  const dayOfWeek = selectedDate.getDay(); // не змінюй 0 → 7
+
                   const pairNumber = row + 1;
 
                   const lesson = schedule.find((lesson) => {
+                    // Якщо у пари є конкретна дата, перевір її
+                    if (lesson.date) {
+                      const lessonDate = new Date(lesson.date);
+                      return (
+                        lessonDate.toDateString() ===
+                          selectedDate.toDateString() &&
+                        lesson.pairNumber?.[0] === pairNumber
+                      );
+                    }
+
+                    // Якщо дата відсутня — перевір по дню тижня
                     const isCorrectDay =
                       lesson.day?.[0] === dayOfWeek &&
                       lesson.pairNumber?.[0] === pairNumber;
 
                     if (!isCorrectDay) return false;
 
-                    if (!lesson.week || lesson.week === "") {
-                      return true;
-                    }
+                    if (!lesson.week || lesson.week === "") return true;
 
                     const lessonWeekStart = new Date(lesson.week);
                     return (

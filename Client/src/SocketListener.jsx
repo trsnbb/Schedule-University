@@ -48,21 +48,14 @@ function SocketListener() {
   useEffect(() => {
     const socket = io("http://localhost:5000", { withCredentials: true });
 
-    socket.on("dbChange", ({ collection, change }) => {
-      console.log("Received DB change:", collection, change);
+    socket.on("dbChange", ({ collection, short, full }) => {
+      console.log("Received DB change:", collection, short, full);
 
-      const msg = `Оновлено ${collection}`;
-      const det = JSON.stringify(
-        change.updateDescription || change.fullDocument || change,
-        null,
-        2
-      );
-
-      setMessage(msg);
-      setDetails(det);
+      setMessage(short);
+      setDetails(full);
       setExpanded(false);
 
-      saveToLocalStorage(msg, det, false);
+      saveToLocalStorage(short, full, false);
 
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
@@ -106,11 +99,11 @@ function SocketListener() {
       ref={notifRef}
       className={`notif-box ${expanded ? "expanded" : ""}`}
       onClick={() => setExpanded((prev) => !prev)}
-      role="alert"
-      aria-live="assertive"
+      role='alert'
+      aria-live='assertive'
     >
-      <div className="notif-title">✅ {message}</div>
-      {expanded && <pre className="notif-details">{details}</pre>}
+      <div className='notif-title'> {message}</div>
+      {expanded && <pre className='notif-details'>{details}</pre>}
     </div>
   );
 }

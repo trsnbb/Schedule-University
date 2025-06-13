@@ -13,7 +13,7 @@ export const connectDB = (io) => {
   mongoose
     .connect(process.env.DATABASE_URL)
     .then(() => {
-      console.log("✅ DB connected");
+      console.log("DB connected");
 
       const collections = [
         "users",
