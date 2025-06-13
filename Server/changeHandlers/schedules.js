@@ -33,11 +33,24 @@ const getPredmetName = async (predmetId) => {
   }
 };
 
-// Простий кеш розкладів у пам’яті (для демонстрації)
+// Простий кеш розкладів у пам’яті
 const scheduleCache = new Map();
 
 const getCachedSchedule = async (scheduleId) => {
-  return scheduleCache.get(scheduleId.toString()) || null;
+  const key = scheduleId.toString();
+  if (scheduleCache.has(key)) {
+    return scheduleCache.get(key);
+  }
+
+  try {
+    const schedule = await Schedule.findById(scheduleId).lean();
+    if (schedule) {
+      scheduleCache.set(key, schedule);
+    }
+    return schedule || null;
+  } catch {
+    return null;
+  }
 };
 
 const updateCachedSchedule = (schedule) => {
@@ -57,10 +70,10 @@ export async function handleScheduleChange(change, io) {
       const lessonMessages = await Promise.all(
         lessons.map(async (lesson, index) => {
           if (lesson.isEvent) {
-            return `🎉 Подія "${lesson.eventTitle}" запланована на ${lesson.date} о ${lesson.time}`;
+            return `Подія "${lesson.eventTitle}" запланована на ${lesson.date} о ${lesson.time}`;
           } else {
             const predmetName = await getPredmetName(lesson.predmetId);
-            return `✅ Додано пару №${
+            return `Додано пару №${
               index + 1
             }: предмет "${predmetName}", тип: ${formatType(
               lesson.type
@@ -71,106 +84,102 @@ export async function handleScheduleChange(change, io) {
         })
       );
 
-      shortMessage = "📅 Створено розклад";
-      fullMessage = `📅 Створено розклад для групи ${groupId}:\n${lessonMessages.join(
+      shortMessage = "Створено розклад";
+      fullMessage = `Створено розклад для групи ${groupId}:\n${lessonMessages.join(
         "\n"
       )}`;
 
-      // Оновлюємо кеш
       updateCachedSchedule(doc);
-
       break;
     }
 
     case "update": {
       const scheduleId = change.documentKey._id;
 
-      // Новий стан документу повністю
+      const scheduleOld = await getCachedSchedule(scheduleId);
       const scheduleNew = await Schedule.findById(scheduleId).lean();
 
-      // Старий стан з кешу
-      const scheduleOld = await getCachedSchedule(scheduleId);
-
-      // Оновлюємо кеш після отримання
       updateCachedSchedule(scheduleNew);
 
       const oldLessons = scheduleOld?.lessons || [];
       const newLessons = scheduleNew?.lessons || [];
 
-      let messages = [];
-
-      // Знаходимо додані
       const added = newLessons.filter(
-        (nl) => !oldLessons.some((ol) => ol._id.toString() === nl._id.toString())
+        (nl) =>
+          !oldLessons.some((ol) => JSON.stringify(ol) === JSON.stringify(nl))
       );
-      // Знаходимо видалені
-      const removed = oldLessons.filter(
-        (ol) => !newLessons.some((nl) => nl._id.toString() === ol._id.toString())
-      );
-      // Знаходимо оновлені
-      const updated = newLessons.filter((nl) => {
-        const ol = oldLessons.find((o) => o._id.toString() === nl._id.toString());
-        if (!ol) return false; // це новий, не оновлений
-        // Порівнюємо серіалізовані об'єкти, можна зробити глибше, якщо треба
-        return JSON.stringify(ol) !== JSON.stringify(nl);
-      });
 
-      for (const l of added) {
-        if (l.isEvent) {
-          messages.push(`➕ Додано подію "${l.eventTitle}" на ${l.date}`);
-        } else {
-          const name = await getPredmetName(l.predmetId);
+      const removed = oldLessons.filter(
+        (ol) =>
+          !newLessons.some((nl) => JSON.stringify(ol) === JSON.stringify(nl))
+      );
+
+      const messages = [];
+
+      for (const lesson of added) {
+        if (lesson.isEvent) {
           messages.push(
-            `➕ Додано пару: "${name}", формат: ${l.format || "невідомий"}, тип: ${formatType(l.type)}, дні: ${formatDays(l.day)}, пари: ${l.pairNumber?.join(", ") || "невідомі"}, аудиторія: ${l.auditorium || "нема"}, посилання: ${l.link || "нема"}`
+            `Додано подію "${lesson.eventTitle}" на ${lesson.date}`
+          );
+        } else {
+          const name = await getPredmetName(lesson.predmetId);
+          messages.push(
+            `Додано пару: "${name}", формат: ${
+              lesson.format || "невідомий"
+            }, тип: ${formatType(lesson.type)}, дні: ${formatDays(
+              lesson.day
+            )}, пари: ${
+              lesson.pairNumber?.join(", ") || "невідомі"
+            }, аудиторія: ${lesson.auditorium || "нема"}, посилання: ${
+              lesson.link || "нема"
+            }`
           );
         }
       }
 
-      for (const l of removed) {
-        if (l.isEvent) {
-          messages.push(`➖ Видалено подію "${l.eventTitle}" (${l.date})`);
-        } else {
-          const name = await getPredmetName(l.predmetId);
-          // Спрощене повідомлення для видалених пар:
-          messages.push(`➖ Видалено пару: "${name}", пари: ${l.pairNumber?.join(", ") || "невідомі"}`);
-        }
-      }
-
-      for (const l of updated) {
-        if (l.isEvent) {
-          messages.push(`✏️ Оновлено подію "${l.eventTitle}" на ${l.date}`);
-        } else {
-          const name = await getPredmetName(l.predmetId);
+      for (const lesson of removed) {
+        if (lesson.isEvent) {
           messages.push(
-            `✏️ Оновлено пару: "${name}", формат: ${l.format || "невідомий"}, тип: ${formatType(l.type)}, дні: ${formatDays(l.day)}, пари: ${l.pairNumber?.join(", ") || "невідомі"}, аудиторія: ${l.auditorium || "нема"}, посилання: ${l.link || "нема"}`
+            `Видалено подію "${lesson.eventTitle}" з ${lesson.date}`
+          );
+        } else {
+          const name = await getPredmetName(lesson.predmetId);
+          messages.push(
+            `Видалено пару: "${name}", формат: ${
+              lesson.format || "невідомий"
+            }, тип: ${formatType(lesson.type)}, дні: ${formatDays(
+              lesson.day
+            )}, пари: ${
+              lesson.pairNumber?.join(", ") || "невідомі"
+            }, аудиторія: ${lesson.auditorium || "нема"}, посилання: ${
+              lesson.link || "нема"
+            }`
           );
         }
       }
 
       if (messages.length === 0) {
-        messages.push("🔄 Змін не виявлено");
+        messages.push("Змін не виявлено");
       }
 
-      shortMessage = "📘 Зміни в парах";
-      fullMessage = `📘 Зміни в розкладі:\n${messages.join("\n")}`;
+      shortMessage = "Зміни в розкладі";
+      fullMessage = `Зміни в розкладі:\n${messages.join("\n")}`;
 
       break;
     }
 
     case "delete": {
       const id = change.documentKey._id;
-      shortMessage = "❌ Видалено розклад";
-      fullMessage = `❌ Видалено розклад з ID ${id}`;
+      shortMessage = "Видалено розклад";
+      fullMessage = `Видалено розклад з ID ${id}`;
 
-      // Видаляємо з кешу
       scheduleCache.delete(id.toString());
-
       break;
     }
 
     default: {
-      shortMessage = "📦 Зміна в розкладі";
-      fullMessage = "📦 Інша зміна в колекції schedules";
+      shortMessage = "Зміна в розкладі";
+      fullMessage = "Інша зміна в колекції schedules";
     }
   }
 

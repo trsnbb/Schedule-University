@@ -397,7 +397,6 @@ const Calendar = () => {
                   const pairNumber = row + 1;
 
                   const lesson = schedule.find((lesson) => {
-                    // Якщо у пари є конкретна дата, перевір її
                     if (lesson.date) {
                       const lessonDate = new Date(lesson.date);
                       return (

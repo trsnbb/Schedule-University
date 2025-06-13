@@ -1,22 +1,43 @@
-export function handleUserChange(change, io) {
+import User from "../models/User.js"; // Якщо є модель User
+
+export async function handleUserChange(change, io) {
+  let shortMessage = "";
+  let fullMessage = "";
+
   switch (change.operationType) {
-    case "insert":
-      console.log("[users] Додано нового користувача:", change.fullDocument);
+    case "insert": {
+      const user = change.fullDocument;
+      shortMessage = `Додано нового користувача: ${user.username || user.email || "невідомий"}`;
+      fullMessage = `Додано нового користувача:\nID: ${user._id}\nІм'я: ${user.name || "нема"}\nEmail: ${user.email || "нема"}`;
       break;
-    case "update":
-      console.log("[users] Оновлено користувача:", change.updateDescription);
+    }
+    case "update": {
+      const userId = change.documentKey._id;
+      const updatedFields = Object.entries(change.updateDescription.updatedFields || {})
+        .map(([key, val]) => `${key}: ${val}`)
+        .join("\n") || "без деталей";
+
+      shortMessage = `Оновлено користувача`;
+      fullMessage = `Оновлено користувача ID ${userId}:\n${updatedFields}`;
       break;
-    case "delete":
-      console.log(
-        "[users] Видалено користувача з _id:",
-        change.documentKey._id
-      );
+    }
+    case "delete": {
+      const userId = change.documentKey._id;
+      shortMessage = `Видалено користувача`;
+      fullMessage = `Видалено користувача з ID ${userId}`;;
       break;
-    default:
-      console.log("[users] Інша зміна:", change);
+    }
+    default: {
+      shortMessage = "Зміна в користувачах";
+      fullMessage = "Інша зміна в колекції users";
+    }
   }
+
   io.emit("dbChange", {
     collection: "users",
-    change,
+    short: shortMessage,
+    full: fullMessage,
   });
+
+  console.log(`[users] ${shortMessage}`);
 }
