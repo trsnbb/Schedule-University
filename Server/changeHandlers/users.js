@@ -8,15 +8,20 @@ export async function handleUserChange(change, io) {
   switch (change.operationType) {
     case "insert": {
       const user = change.fullDocument;
-      shortMessage = `Додано нового користувача: ${user.username || user.email || "невідомий"}`;
-      fullMessage = `Додано нового користувача:\nID: ${user._id}\nІм'я: ${user.name || "нема"}\nEmail: ${user.email || "нема"}`;
+      shortMessage = `Додано нового користувача: ${
+        user.username || user.email || "невідомий"
+      }`;
+      fullMessage = `Додано нового користувача:\nID: ${user._id}\nІм'я: ${
+        user.name || "нема"
+      }\nEmail: ${user.email || "нема"}`;
       break;
     }
     case "update": {
       const userId = change.documentKey._id;
-      const updatedFields = Object.entries(change.updateDescription.updatedFields || {})
-        .map(([key, val]) => `${key}: ${val}`)
-        .join("\n") || "без деталей";
+      const updatedFields =
+        Object.entries(change.updateDescription.updatedFields || {})
+          .map(([key, val]) => `${key}: ${val}`)
+          .join("\n") || "без деталей";
 
       shortMessage = `Оновлено користувача`;
       fullMessage = `Оновлено користувача ID ${userId}:\n${updatedFields}`;
@@ -25,7 +30,7 @@ export async function handleUserChange(change, io) {
     case "delete": {
       const userId = change.documentKey._id;
       shortMessage = `Видалено користувача`;
-      fullMessage = `Видалено користувача з ID ${userId}`;;
+      fullMessage = `Видалено користувача з ID ${userId}`;
       break;
     }
     default: {
@@ -40,5 +45,12 @@ export async function handleUserChange(change, io) {
     full: fullMessage,
   });
 
+  await logDbChange({
+    collection: "users",
+    operation: change.operationType,
+    short: shortMessage,
+    full: fullMessage,
+    documentId: change.documentKey?._id || change.fullDocument?._id,
+  });
   console.log(`[users] ${shortMessage}`);
 }
