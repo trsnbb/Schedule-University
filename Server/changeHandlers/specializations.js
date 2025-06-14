@@ -1,3 +1,6 @@
+import { logDbChange } from "./../logDbChange.js";
+
+
 export function handleSpecializationChange(change, io) {
   switch (change.operationType) {
     case "insert":

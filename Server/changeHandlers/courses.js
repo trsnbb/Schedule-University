@@ -1,3 +1,6 @@
+import { logDbChange } from "./../logDbChange.js";
+
+
 export function handleCourseChange(change, io) {
   switch (change.operationType) {
     case 'insert':

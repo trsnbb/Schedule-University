@@ -1,5 +1,6 @@
 import Predmet from "./../models/Predmet.js";
 import Schedule from "../models/Schedule.js";
+import { logDbChange } from "./../logDbChange.js";
 
 const dayNames = {
   0: "Пн",
@@ -188,6 +189,14 @@ export async function handleScheduleChange(change, io) {
     short: shortMessage,
     full: fullMessage,
   });
+
+  await logDbChange({
+  collection: "schedules",
+  operation: change.operationType,
+  short: shortMessage,
+  full: fullMessage,
+  documentId: change.documentKey?._id || change.fullDocument?._id,
+});
 
   console.log(`[schedules] ${shortMessage}`);
 }
