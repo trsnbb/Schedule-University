@@ -1,4 +1,3 @@
-// utils/logDbChange.js
 import DbChangeLog from "./models/DbChangeLog.js";
 
 export async function logDbChange({ collection, operation, short, full, documentId }) {

@@ -1,0 +1,85 @@
+.log-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.log-container h2 {
+  margin-bottom: 1rem;
+  color: #333;
+  text-align: center;
+}
+
+.log-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.log-item {
+  background: white;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-left: 6px solid #888;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.log-item:hover {
+  background: #f1f1f1;
+}
+
+.log-item.insert {
+  border-color: #2ecc71;
+}
+.log-item.update {
+  border-color: #f39c12;
+}
+.log-item.delete {
+  border-color: #e74c3c;
+}
+
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.log-operation {
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.log-collection {
+  font-style: italic;
+}
+
+.log-time {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.log-short {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: #222;
+}
+
+.log-details summary {
+  cursor: pointer;
+  color: #007bff;
+}
+
+.log-details pre {
+  background: #f0f0f0;
+  padding: 0.75rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin-top: 0.5rem;
+}
