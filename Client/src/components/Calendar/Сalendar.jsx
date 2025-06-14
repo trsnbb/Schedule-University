@@ -392,7 +392,7 @@ const Calendar = () => {
                   const row = Math.floor(index / 6);
                   const selectedDate = new Date(weekStartDate);
                   selectedDate.setDate(weekStartDate.getDate() + column);
-                  const dayOfWeek = selectedDate.getDay(); // не змінюй 0 → 7
+                  const dayOfWeek = selectedDate.getDay();
 
                   const pairNumber = row + 1;
 
@@ -406,7 +406,6 @@ const Calendar = () => {
                       );
                     }
 
-                    // Якщо дата відсутня — перевір по дню тижня
                     const isCorrectDay =
                       lesson.day?.[0] === dayOfWeek &&
                       lesson.pairNumber?.[0] === pairNumber;

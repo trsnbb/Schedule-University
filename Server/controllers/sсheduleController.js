@@ -338,8 +338,7 @@ export const getScheduleByGroup = async (req, res) => {
         const requestDate = new Date(date).toISOString().split("T")[0];
         return lessonDate === requestDate;
       }
-      // Якщо немає дати — просто пропускаємо тимчасові уроки
-      return true; // <-- або false, якщо хочеш виключати
+      return true;
     });
 console.log("Дата з запиту:", date);
     console.log("Всього уроків у розкладі:", schedule.lessons.length);
@@ -478,7 +477,7 @@ export const addLesson = async (req, res) => {
         return res.status(400).json({ error: "Для події обов'язкова дата" });
       }
 
-      const jsDay = new Date(lesson.date).getDay(); // 0=неділя, 1=понеділок...
+      const jsDay = new Date(lesson.date).getDay();
       const dayFromDate = (jsDay + 6) % 7;
 
       let determinedPairNumber = pairNumber;

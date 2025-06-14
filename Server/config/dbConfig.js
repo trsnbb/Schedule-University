@@ -57,11 +57,11 @@ export const connectDB = (io) => {
           }
         } catch (err) {
           console.error(
-            `❌ Не вдалося підключити Change Stream для ${col}:`,
+            `Не вдалося підключити Change Stream для ${col}:`,
             err.message
           );
         }
       });
     })
-    .catch((err) => console.error("❌ DB connection error", err));
+    .catch((err) => console.error("DB connection error", err));
 };

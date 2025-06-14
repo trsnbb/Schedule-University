@@ -34,7 +34,6 @@ const getPredmetName = async (predmetId) => {
   }
 };
 
-// Простий кеш розкладів у пам’яті
 const scheduleCache = new Map();
 
 const getCachedSchedule = async (scheduleId) => {

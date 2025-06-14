@@ -17,7 +17,7 @@ import dbLogsRouter from "./routes/dbLogs.js";
   dotenv.config();
 
   const app = express();
-  const server = http.createServer(app);  // створюємо HTTP сервер
+  const server = http.createServer(app); 
   const io = new Server(server, {
     cors: {
       origin: "http://localhost:3000",
@@ -42,7 +42,7 @@ import dbLogsRouter from "./routes/dbLogs.js";
   app.use(passport.initialize());
   app.use(passport.session());
 
-  connectDB(io);  // Передаємо io, щоб працювати з Change Streams
+  connectDB(io);
 
   configurePassport();
 
@@ -62,7 +62,6 @@ import dbLogsRouter from "./routes/dbLogs.js";
     console.log(`Server is running on port ${PORT}`);
   });
 
-  // Логіка підключення клієнтів WebSocket
   io.on("connection", (socket) => {
     console.log("New client connected:", socket.id);
 

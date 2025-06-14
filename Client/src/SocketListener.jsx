@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
-import { useAuth } from "./AuthContext.jsx"; // або правильний шлях до useAuth
+import { useAuth } from "./AuthContext.jsx";
 import "./SocketListener.css";
 
 const LOCALSTORAGE_KEY = "notifMessageData";
 
 function SocketListener() {
-  const { user } = useAuth(); // Отримуємо користувача з контексту
+  const { user } = useAuth();
 
   if (!user || user?.user?.role !== "deanery") return null;
 

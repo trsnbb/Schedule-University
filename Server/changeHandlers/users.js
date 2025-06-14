@@ -1,4 +1,4 @@
-import User from "../models/User.js"; // Якщо є модель User
+import User from "../models/User.js"; 
 import { logDbChange } from "./../logDbChange.js";
 
 export async function handleUserChange(change, io) {
