@@ -14,12 +14,13 @@ const Sidebar = () => {
   const { isAuthenticated, user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isCreateScheduleOpen, setIsCreateScheduleOpen] = useState(false);
-  const [initialScheduleData, setInitialScheduleData] = useState(null); 
-  const handleEditSchedule = () => {
-    setIsEditGeneralScheduleOpen(true); 
-  };
+  const [initialScheduleData, setInitialScheduleData] = useState(null);
   const [isEditGeneralScheduleOpen, setIsEditGeneralScheduleOpen] =
     useState(false);
+
+  const handleEditSchedule = () => {
+    setIsEditGeneralScheduleOpen(true);
+  };
 
   useEffect(() => {
     if (
@@ -64,6 +65,7 @@ const Sidebar = () => {
         <div className='sidebar_mini_kalendar'>
           <MiniCalendar />
         </div>
+
         {isAuthenticated &&
           user &&
           (user.user?.role === "deanery" ? (
@@ -81,6 +83,14 @@ const Sidebar = () => {
               >
                 Створити розклад автоматично
               </button>
+
+              {/* Ось додана кнопка переходу на /db-logs */}
+              <button
+                className='deanery_btn'
+                onClick={() => window.open("/db-logs", "_blank")}
+              >
+                Логи бази даних
+              </button>
             </div>
           ) : (
             user.user?.role !== "deanery" && (
@@ -90,17 +100,20 @@ const Sidebar = () => {
             )
           ))}
       </div>
+
       {isCreateScheduleOpen && (
         <CreateSchedule
           onClose={() => setIsCreateScheduleOpen(false)}
           initialData={initialScheduleData}
         />
       )}
+
       {isEditGeneralScheduleOpen && (
         <EditGeneralScheduleModal
           onClose={() => setIsEditGeneralScheduleOpen(false)}
         />
       )}
+
       <ProfileMenu
         isOpen={menuOpen}
         onClose={handleCloseMenu}
