@@ -1,17 +1,21 @@
 import React, { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
+import { useAuth } from "./AuthContext.jsx"; // або правильний шлях до useAuth
 import "./SocketListener.css";
 
 const LOCALSTORAGE_KEY = "notifMessageData";
 
 function SocketListener() {
+  const { user } = useAuth(); // Отримуємо користувача з контексту
+
+  if (!user || user?.user?.role !== "deanery") return null;
+
   const [message, setMessage] = useState(null);
   const [details, setDetails] = useState(null);
   const [expanded, setExpanded] = useState(false);
   const timeoutRef = useRef(null);
   const notifRef = useRef(null);
 
-  // Функція збереження у localStorage
   const saveToLocalStorage = (msg, det, exp) => {
     localStorage.setItem(
       LOCALSTORAGE_KEY,
@@ -24,14 +28,11 @@ function SocketListener() {
     );
   };
 
-  // Відновлення з localStorage при монтуванні
   useEffect(() => {
     const saved = localStorage.getItem(LOCALSTORAGE_KEY);
     if (saved) {
       try {
         const { message, details, expanded, timestamp } = JSON.parse(saved);
-
-        // Якщо повідомлення свіже (наприклад, не старше 1 хвилини)
         if (Date.now() - timestamp < 60000) {
           setMessage(message);
           setDetails(details);
@@ -50,25 +51,21 @@ function SocketListener() {
 
     socket.on("dbChange", ({ collection, short, full }) => {
       console.log("Received DB change:", collection, short, full);
-
       setMessage(short);
       setDetails(full);
       setExpanded(false);
-
       saveToLocalStorage(short, full, false);
 
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
-
       timeoutRef.current = setTimeout(() => {
-        setMessage((prev) => (expanded ? prev : null));
-        setDetails((prev) => (expanded ? prev : null));
         if (!expanded) {
+          setMessage(null);
+          setDetails(null);
           localStorage.removeItem(LOCALSTORAGE_KEY);
         }
       }, 10000);
     });
 
-    // Клік поза віконцем
     const handleClickOutside = (e) => {
       if (notifRef.current && !notifRef.current.contains(e.target)) {
         setExpanded(false);
@@ -87,7 +84,6 @@ function SocketListener() {
     };
   }, [expanded]);
 
-  // Збереження expanded при зміні
   useEffect(() => {
     if (message) saveToLocalStorage(message, details, expanded);
   }, [expanded, message, details]);
@@ -102,7 +98,7 @@ function SocketListener() {
       role='alert'
       aria-live='assertive'
     >
-      <div className='notif-title'> {message}</div>
+      <div className='notif-title'>{message}</div>
       {expanded && <pre className='notif-details'>{details}</pre>}
     </div>
   );
